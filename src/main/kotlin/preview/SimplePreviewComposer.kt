@@ -23,13 +23,11 @@ class SimplePreviewComposer : PreviewComposer {
         val directory = images.resolve("previews").resolve(image.path.nameWithoutExtension)
 
         if (directory.exists()) {
-            // TODO: add log statement that folder already exists
             return Previews(directory.listDirectoryEntries("*.png"), image)
         } else {
             directory.createDirectory()
         }
 
-        // TODO: add a `PreviewFetcher` class to fetch previews, based on prompt
         val poster = imageLoader.fromPath(image.path)
         val previews = images.resolve("templates")
             .listDirectoryEntries("*.png")
