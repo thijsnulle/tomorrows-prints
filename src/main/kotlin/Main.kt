@@ -1,3 +1,13 @@
-fun main(args: Array<String>) {
+import preview.Poster
+import preview.SimplePreviewComposer
+import kotlin.io.path.Path
 
+suspend fun main(args: Array<String>) {
+    val poster = Poster(
+        path = Path("/Users/thijsnulle/Documents/Git/tomorrows-prints/src/main/resources/images/posters/poster_horizontal.png"),
+        prompt = "prompt"
+    )
+
+    val previewComposer = SimplePreviewComposer()
+    previewComposer.compose(poster)
 }

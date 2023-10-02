@@ -2,9 +2,11 @@ package preview
 
 import java.nio.file.Path
 
-data class Image(val path: Path, val prompt: String)
-data class Previews(val previews: List<Path>, val image: Image)
-
+data class Poster(
+    val path: Path,
+    val prompt: String,
+    val previews: List<Path> = emptyList(),
+)
 interface PreviewComposer {
-    fun compose(image: Image): Previews
+    suspend fun compose(poster: Poster): Poster
 }

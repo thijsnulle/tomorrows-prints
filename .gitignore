@@ -185,3 +185,5 @@ gradle-app.setting
 gradle/
 gradlew
 gradlew.bat
+
+src/main/resources/images/previews/**

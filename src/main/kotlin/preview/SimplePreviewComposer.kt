@@ -3,38 +3,48 @@ package preview
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import com.sksamuel.scrimage.pixels.Pixel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Random
 import kotlin.io.path.*
-import kotlin.time.measureTime
 
 data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
+
+const val NUMBER_OF_TEMPLATES = 15
 
 class SimplePreviewComposer : PreviewComposer {
 
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
-    private val shadow = imageLoader.fromPath(images.resolve("shadow.png"))
 
-    override fun compose(image: Image): Previews {
-        val directory = images.resolve("previews").resolve(image.path.nameWithoutExtension)
+    override suspend fun compose(poster: Poster): Poster {
+        val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
 
         if (directory.exists()) {
-            return Previews(directory.listDirectoryEntries("*.png"), image)
+            println("$directory already exists.")
+            return poster.copy(previews=directory.listDirectoryEntries("*.png"))
         } else {
             directory.createDirectory()
         }
 
-        val poster = imageLoader.fromPath(image.path)
-        val previews = images.resolve("templates")
-            .listDirectoryEntries("*.png")
+        val image = imageLoader.fromPath(poster.path)
+        val previews = fetchTemplates(image)
             .map { path -> imageLoader.fromPath(path) }
-            .map { template -> composePreview(template, poster, directory) }
+            .map { template -> composePreview(template, image, directory) }
 
-        return Previews(previews, image)
+        return poster.copy(previews=previews)
+    }
+
+    private fun fetchTemplates(image: ImmutableImage): List<Path> {
+        val orientation = when {
+            image.width > image.height -> "horizontal"
+            image.width < image.height -> "vertical"
+            else -> "square"
+        }
+
+        return images.resolve("templates").resolve(orientation)
+            .listDirectoryEntries("*.png")
+            .shuffled()
+            .take(NUMBER_OF_TEMPLATES)
     }
 
     private fun composePreview(
@@ -42,8 +52,9 @@ class SimplePreviewComposer : PreviewComposer {
         poster: ImmutableImage,
         outputPath: Path
     ): Path {
-        val (x, y, w, h) = locateFrame(template)
+        val (x, y, w, h) = locateFrameIn(template)
         val previewPath = outputPath.resolve("preview-${System.currentTimeMillis()}.png")
+        val shadow = imageLoader.fromPath(images.resolve("shadow.png"))
 
         template
             .overlay(poster.cover(w, h), x, y)
@@ -53,17 +64,18 @@ class SimplePreviewComposer : PreviewComposer {
         return previewPath
     }
 
-    private fun locateFrame(image: ImmutableImage): GreenScreen {
-        val centerX = image.width / 2
-        val centerY = image.height / 2
-
+    private fun locateFrameIn(image: ImmutableImage): GreenScreen {
         val isGreen = { pixel: Pixel -> pixel.toRGB().contentEquals(intArrayOf(0, 255, 0)) }
-        val minX = generateSequence(centerX) { it - 1 }.takeWhile { isGreen(image.pixel(it, centerY)) }.last()
-        val maxX = generateSequence(centerX) { it + 1 }.takeWhile { isGreen(image.pixel(it, centerY)) }.last()
-        val minY = generateSequence(centerY) { it - 1 }.takeWhile { isGreen(image.pixel(centerX, it)) }.last()
-        val maxY = generateSequence(centerY) { it + 1 }.takeWhile { isGreen(image.pixel(centerX, it)) }.last()
 
-        return GreenScreen(minX, minY, maxX - minX + 1, maxY - minY + 1)
+        val centerX = image.width / 2
+        val minY = generateSequence(0) { it + 1 }.takeWhile { !isGreen(image.pixel(centerX, it)) }.last()
+        val maxY = generateSequence(image.height - 1) { it - 1 }.takeWhile { !isGreen(image.pixel(centerX, it)) }.last() + 1
+
+        val centerY = (minY + maxY) / 2
+        val minX = generateSequence(0) { it + 1 }.takeWhile { !isGreen(image.pixel(it, centerY)) }.last()
+        val maxX = generateSequence(image.width - 1) { it - 1 }.takeWhile { !isGreen(image.pixel(it, centerY)) }.last() + 1
+
+        return GreenScreen(minX, minY , maxX - minX, maxY - minY)
     }
 
 }
