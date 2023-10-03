@@ -16,7 +16,7 @@ class SimplePreviewComposer : PreviewComposer {
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
 
-    override suspend fun compose(poster: Poster): Poster {
+    override fun compose(poster: Poster): Poster {
         val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
 
         if (directory.exists()) {
@@ -27,14 +27,14 @@ class SimplePreviewComposer : PreviewComposer {
         }
 
         val image = imageLoader.fromPath(poster.path)
-        val previews = fetchTemplates(image)
+        val previews = fetchTemplatePaths(image)
             .map { path -> imageLoader.fromPath(path) }
             .map { template -> composePreview(template, image, directory) }
 
         return poster.copy(previews=previews)
     }
 
-    private fun fetchTemplates(image: ImmutableImage): List<Path> {
+    private fun fetchTemplatePaths(image: ImmutableImage): List<Path> {
         val orientation = when {
             image.width > image.height -> "horizontal"
             image.width < image.height -> "vertical"

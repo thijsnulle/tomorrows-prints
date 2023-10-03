@@ -8,5 +8,5 @@ data class Poster(
     val previews: List<Path> = emptyList(),
 )
 interface PreviewComposer {
-    suspend fun compose(poster: Poster): Poster
+    fun compose(poster: Poster): Poster
 }
