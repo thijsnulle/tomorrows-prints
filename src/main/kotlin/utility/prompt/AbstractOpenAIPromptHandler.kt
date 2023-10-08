@@ -6,15 +6,16 @@ import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
+import io.github.cdimascio.dotenv.dotenv
 
 data class Example(val input: String, val output: String)
 
-abstract class AbstractOpenAIPromptHandler<Response>(
+abstract class AbstractPromptHandler<Response>(
     val prompt: String,
     val examples: List<Example>
 ): PromptHandler<Response> {
     private val openAI = OpenAI(
-        token="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",
+        token = dotenv().get("OPENAI_KEY"),
         logging = LoggingConfig(logLevel = LogLevel.None)
     )
 
@@ -22,7 +23,8 @@ abstract class AbstractOpenAIPromptHandler<Response>(
     override suspend fun ask(input: String): Response {
         val request = CompletionRequest(
             model = ModelId("gpt-3.5-turbo-instruct"),
-            prompt = formatPrompt(input)
+            prompt = formatPrompt(input),
+            maxTokens = 128,
         )
 
         return process(
