@@ -11,10 +11,14 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
     implementation("com.sksamuel.scrimage:scrimage-core:4.1.0")
     implementation("com.aallam.openai:openai-client:3.4.0")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+    implementation("org.seleniumhq.selenium:selenium-java:4.13.0")
+
     runtimeOnly("io.ktor:ktor-client-java-jvm:2.3.4")
+
+    testImplementation(kotlin("test"))
 }
 
 tasks.test {

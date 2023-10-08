@@ -9,7 +9,7 @@ enum class InteriorStyle {
 
 typealias InteriorStyles = List<InteriorStyle>
 
-class TemplatePromptHandler: AbstractOpenAIPromptHandler<InteriorStyles>(
+class TemplatePromptHandler: AbstractPromptHandler<InteriorStyles>(
     prompt = """
         Your task is to determine, based on a set of keywords used to 
         generate a poster image, the interior style that is best associated
@@ -20,7 +20,10 @@ class TemplatePromptHandler: AbstractOpenAIPromptHandler<InteriorStyles>(
         top three interior styles in order of similarity based on the keywords provided.
     """.trimIndent(),
     examples = listOf(
-        Example("a red and black circle sticker with the fingerprints in it, in the style of modernist landscapes, poster art, undulating lines, minimalist portraits, screen printing, humanist approach, afro-colombian themes", "bauhaus, midcentury_modern, minimalist"),
+        Example(
+            "a red and black circle sticker with the fingerprints in it, in the style of modernist landscapes, poster art, undulating lines, minimalist portraits, screen printing, humanist approach, afro-colombian themes",
+            "bauhaus, midcentury_modern, minimalist"
+        ),
     )
 ) {
     // TODO: assert that all template styles have folder in `templates` folder on instantiation
