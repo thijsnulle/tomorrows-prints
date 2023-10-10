@@ -10,11 +10,11 @@ const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
 const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 
-class PinterestInfluencer {
+class PinterestInfluencer: Influencer {
 
     private val driver = ChromeDriver()
 
-    fun post(poster: Poster) {
+    override fun post(poster: Poster) {
         // TODO: implement method of what content to post per poster
     }
 
