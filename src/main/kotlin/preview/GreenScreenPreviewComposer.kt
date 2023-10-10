@@ -11,7 +11,7 @@ data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
 
 const val NUMBER_OF_TEMPLATES = 15
 
-class SimplePreviewComposer : PreviewComposer {
+class GreenScreenPreviewComposer : PreviewComposer {
 
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
