@@ -1,4 +1,4 @@
-package social
+package social.pinterest
 
 import utility.prompt.AbstractPromptHandler
 import utility.prompt.Example

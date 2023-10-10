@@ -1,19 +1,10 @@
-package social
+package social.pinterest
 
 import io.github.cdimascio.dotenv.dotenv
-import kotlinx.coroutines.delay
-import org.openqa.selenium.By
-import org.openqa.selenium.By.ById
-import org.openqa.selenium.By.ByXPath
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
 import preview.Poster
+import social.*
 import java.nio.file.Path
-import java.time.Duration
-import kotlin.io.path.Path
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
@@ -22,10 +13,8 @@ const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 class PinterestInfluencer {
 
     private val driver = ChromeDriver()
-    private val timeout = Duration.ofSeconds(60)
-    private val interval = Duration.ofMillis(100)
 
-    fun post(posters: List<Poster>) {
+    fun post(poster: Poster) {
         // TODO: implement method of what content to post per poster
     }
 
@@ -90,19 +79,4 @@ class PinterestInfluencer {
 
         driver.url("pinterest.com/pin")
     }
-
-    private fun WebDriver.find(xpath: String): WebElement = WebDriverWait(this, timeout, interval)
-            .until(ExpectedConditions.presenceOfElementLocated(ByXPath(xpath)))
-
-    private fun WebDriver.invisible(xpath: String) = WebDriverWait(this, timeout, interval)
-            .until(ExpectedConditions.invisibilityOfElementLocated(ByXPath(xpath)))
-
-    private fun WebDriver.click(xpath: String) = WebDriverWait(this, timeout, interval)
-            .until(ExpectedConditions.elementToBeClickable(ByXPath(xpath))).click()
-
-    private fun WebDriver.url(url: String) = WebDriverWait(this, timeout)
-        .until(ExpectedConditions.urlMatches(url))
-
-    private fun WebDriver.sendKeys(keys: String, xpath: String) = this.find(xpath).sendKeys(keys)
-    private fun WebDriver.sendKeys(path: Path, xpath: String) = this.sendKeys(path.toString(), xpath)
 }
