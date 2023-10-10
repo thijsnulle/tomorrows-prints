@@ -25,7 +25,7 @@ class PinterestInfluencer {
     private val timeout = Duration.ofSeconds(60)
     private val interval = Duration.ofMillis(100)
 
-    suspend fun post(posters: List<Poster>) {
+    fun post(posters: List<Poster>) {
         // TODO: implement method of what content to post per poster
     }
 
@@ -40,7 +40,7 @@ class PinterestInfluencer {
         driver.url("pinterest.com/business/hub")
     }
 
-    private suspend fun createPin(
+    private fun createPin(
         title: String,
         description: String,
         altText: String,
@@ -64,8 +64,8 @@ class PinterestInfluencer {
         driver.sendKeys(posterUrl, "//input[@type='file']")
 
         driver.click("//div[text()='Publish']")
-        delay(5000)
 
+        driver.find("//svg[@aria-label='Saving Pin...']")
         driver.invisible("//svg[@aria-label='Saving Pin...']")
     }
 
