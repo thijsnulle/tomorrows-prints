@@ -1,10 +1,14 @@
 package social.pinterest
 
 import io.github.cdimascio.dotenv.dotenv
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
 import social.*
 import java.nio.file.Path
+import java.time.Duration
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
@@ -12,13 +16,28 @@ const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 
 class PinterestInfluencer: Influencer {
 
-    private val driver = ChromeDriver()
+    private val driver = ChromeDriver(ChromeOptions().addArguments("--log-level=3"))
+    private var isLoggedIn = false
 
     override fun post(poster: Poster) {
-        // TODO: implement method of what content to post per poster
+        login()
+
+        val promptHandler = PinterestPromptHandler()
+        poster.previews.forEach { preview ->
+            val pinContent = promptHandler.ask(poster.prompt)
+            val ideaPinContent = promptHandler.ask(poster.prompt)
+
+            createPin(pinContent.title, pinContent.description, pinContent.altText, "", preview, poster.path)
+            runBlocking { delay(1000) }
+
+            createIdeaPin(ideaPinContent.title, ideaPinContent.description, "", preview)
+            runBlocking { delay(1000) }
+        }
     }
 
     private fun login() {
+        if (isLoggedIn) return
+
         driver.get(HOME_PAGE)
 
         driver.click("//div[text()='Log in']")
@@ -27,6 +46,8 @@ class PinterestInfluencer: Influencer {
         driver.click("//button[@type='submit']")
 
         driver.url("pinterest.com/business/hub")
+
+        isLoggedIn = true
     }
 
     private fun createPin(
@@ -52,9 +73,12 @@ class PinterestInfluencer: Influencer {
         driver.click("//div[text()='Create carousel']")
         driver.sendKeys(posterUrl, "//input[@type='file']")
 
+        runBlocking { delay(1000) }
+
         driver.click("//div[text()='Publish']")
 
-        driver.find("//svg[@aria-label='Saving Pin...']")
+        runBlocking { delay(1000) }
+
         driver.invisible("//svg[@aria-label='Saving Pin...']")
     }
 
@@ -75,6 +99,8 @@ class PinterestInfluencer: Influencer {
 
         driver.click("//button[@data-test-id='board-dropdown-select-button']")
         driver.click("//div[@data-test-id='board-row-Posters']")
+        runBlocking { delay(1000) }
+
         driver.click("//div[text()='Publish']")
 
         driver.url("pinterest.com/pin")

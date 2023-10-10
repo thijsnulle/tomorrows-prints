@@ -12,7 +12,7 @@ import kotlin.io.path.*
 
 data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
 
-const val NUMBER_OF_TEMPLATES = 15
+const val NUMBER_OF_TEMPLATES = 5
 
 class GreenScreenPreviewComposer : PreviewComposer {
 

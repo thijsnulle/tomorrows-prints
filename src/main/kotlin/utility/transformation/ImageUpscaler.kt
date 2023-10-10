@@ -25,12 +25,6 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
         }
     }
 
-    fun upscaleFolder(inputFolder: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER): List<Path> {
-        return inputFolder
-            .listDirectoryEntries("*.png")
-            .map { input -> upscale(input, maxPixelsPerSide) }
-    }
-
     private fun downscale(image: ImmutableImage, output: Path, maxPixelsPerSide: Int): Path {
         return when(image.width > image.height) {
             true -> image.scaleToWidth(maxPixelsPerSide)
