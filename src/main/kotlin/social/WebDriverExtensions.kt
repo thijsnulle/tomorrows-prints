@@ -1,6 +1,7 @@
 package social
 
 import org.openqa.selenium.By.ByXPath
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions.*
@@ -11,8 +12,14 @@ import java.time.Duration
 val timeout: Duration = Duration.ofSeconds(60)
 val interval: Duration = Duration.ofMillis(100)
 
-fun WebDriver.find(xpath: String): WebElement = WebDriverWait(this, timeout, interval)
-        .until(presenceOfElementLocated(ByXPath(xpath)))
+fun WebDriver.find(xpath: String): WebElement {
+        val element = WebDriverWait(this, timeout, interval)
+                .until(presenceOfElementLocated(ByXPath(xpath)))
+
+        (this as JavascriptExecutor).executeScript("arguments[0].scrollIntoView(true);", element)
+
+        return element
+}
 
 fun WebDriver.invisible(xpath: String): Boolean = WebDriverWait(this, timeout, interval)
         .until(invisibilityOfElementLocated(ByXPath(xpath)))
