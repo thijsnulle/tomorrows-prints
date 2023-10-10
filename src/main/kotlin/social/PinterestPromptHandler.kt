@@ -9,16 +9,19 @@ data class PinterestContent(
     val altText: String,
 )
 
-class PinterestPromptHandler: AbstractPromptHandler<PinterestContent>(
+const val MAXIMUM_DESCRIPTION_LENGTH: Int = 500
+
+class PinterestPromptHandler : AbstractPromptHandler<PinterestContent>(
     // TODO: remove descriptions of the poster from the description
     prompt = """
         Your task is to generate, based on a set of keywords used to
         generate a poster image, a title, description, and alt text for
         a social media post. The title should be minimum 60-80 characters
         long, it should contain the word poster, and it should contain a
-        description of the style. The description should be less than 250 characters.
-        The description should not describe anything happening in the poster.
-        The alt text should describe the poster's content in maximum 100 characters.
+        description of the style. The description should be less than
+        250 characters. The description should not describe anything
+        happening in the poster. The alt text should describe the
+        poster's content in maximum 100 characters.
     """.trimIndent(),
     examples = listOf(
         Example(
@@ -31,8 +34,37 @@ class PinterestPromptHandler: AbstractPromptHandler<PinterestContent>(
         )
     )
 ) {
+    companion object {
+        private val hashtags = listOf(
+            "aesthetic",
+            "art",
+            "artinspiration",
+            "artist",
+            "artwork",
+            "decor",
+            "decoratingideas",
+            "design",
+            "designideas",
+            "gift",
+            "gifts",
+            "giftsforher",
+            "giftsforhim",
+            "giftideas",
+            "homeinspiration",
+            "interiordesign",
+            "interiordesire",
+            "interiorlovers",
+            "interiors",
+            "interiorstylist",
+            "lifestyle",
+            "modernhome",
+            "pinterestart",
+            "pinterestideas",
+            "pinterestinspired",
+            "walldecor",
+        )
+    }
 
-    // Embrace the organic shapes and bold curves of this stunning stencil poster, featuring dark beige and white bloomcore designs. Letras y figuras add an element of sophistication, while bold color blobs make a statement.
     override fun process(output: String): PinterestContent {
         val result = Regex("""
             Title: (.*)
@@ -42,6 +74,12 @@ class PinterestPromptHandler: AbstractPromptHandler<PinterestContent>(
 
         require(result != null) { "Generated Pinterest content should follow the correct structure" }
 
-        return PinterestContent(result.groupValues[1], result.groupValues[2], result.groupValues[3])
+        val (_, title, descriptionWithoutHashtags, altText) = result.groupValues
+        val description = hashtags.asSequence().shuffled()
+            .fold("$descriptionWithoutHashtags\n\n") { current, hashtag ->
+                if ("$current #$hashtag".length > MAXIMUM_DESCRIPTION_LENGTH) current else "$current #$hashtag"
+            }
+
+        return PinterestContent(title, description, altText)
     }
 }
