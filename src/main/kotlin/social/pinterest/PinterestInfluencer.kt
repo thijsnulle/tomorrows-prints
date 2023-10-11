@@ -1,35 +1,43 @@
-package social
+package social.pinterest
 
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.delay
-import org.openqa.selenium.By
-import org.openqa.selenium.By.ById
-import org.openqa.selenium.By.ByXPath
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
+import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
+import social.*
 import java.nio.file.Path
 import java.time.Duration
-import kotlin.io.path.Path
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
 const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 
-class PinterestInfluencer {
+class PinterestInfluencer: Influencer {
 
-    private val driver = ChromeDriver()
-    private val timeout = Duration.ofSeconds(60)
-    private val interval = Duration.ofMillis(100)
+    private val driver = ChromeDriver(ChromeOptions().addArguments("--log-level=3"))
+    private var isLoggedIn = false
 
-    suspend fun post(posters: List<Poster>) {
-        // TODO: implement method of what content to post per poster
+    override fun post(poster: Poster) {
+        login()
+
+        val promptHandler = PinterestPromptHandler()
+        poster.previews.forEach { preview ->
+            val pinContent = promptHandler.ask(poster.prompt)
+            val ideaPinContent = promptHandler.ask(poster.prompt)
+
+            createPin(pinContent.title, pinContent.description, pinContent.altText, "", preview, poster.path)
+            runBlocking { delay(1000) }
+
+            createIdeaPin(ideaPinContent.title, ideaPinContent.description, "", preview)
+            runBlocking { delay(1000) }
+        }
     }
 
     private fun login() {
+        if (isLoggedIn) return
+
         driver.get(HOME_PAGE)
 
         driver.click("//div[text()='Log in']")
@@ -38,9 +46,11 @@ class PinterestInfluencer {
         driver.click("//button[@type='submit']")
 
         driver.url("pinterest.com/business/hub")
+
+        isLoggedIn = true
     }
 
-    private suspend fun createPin(
+    private fun createPin(
         title: String,
         description: String,
         altText: String,
@@ -63,8 +73,11 @@ class PinterestInfluencer {
         driver.click("//div[text()='Create carousel']")
         driver.sendKeys(posterUrl, "//input[@type='file']")
 
+        runBlocking { delay(1000) }
+
         driver.click("//div[text()='Publish']")
-        delay(5000)
+
+        runBlocking { delay(1000) }
 
         driver.invisible("//svg[@aria-label='Saving Pin...']")
     }
@@ -86,23 +99,10 @@ class PinterestInfluencer {
 
         driver.click("//button[@data-test-id='board-dropdown-select-button']")
         driver.click("//div[@data-test-id='board-row-Posters']")
+        runBlocking { delay(1000) }
+
         driver.click("//div[text()='Publish']")
 
         driver.url("pinterest.com/pin")
     }
-
-    private fun WebDriver.find(xpath: String): WebElement = WebDriverWait(this, timeout, interval)
-            .until(ExpectedConditions.presenceOfElementLocated(ByXPath(xpath)))
-
-    private fun WebDriver.invisible(xpath: String) = WebDriverWait(this, timeout, interval)
-            .until(ExpectedConditions.invisibilityOfElementLocated(ByXPath(xpath)))
-
-    private fun WebDriver.click(xpath: String) = WebDriverWait(this, timeout, interval)
-            .until(ExpectedConditions.elementToBeClickable(ByXPath(xpath))).click()
-
-    private fun WebDriver.url(url: String) = WebDriverWait(this, timeout)
-        .until(ExpectedConditions.urlMatches(url))
-
-    private fun WebDriver.sendKeys(keys: String, xpath: String) = this.find(xpath).sendKeys(keys)
-    private fun WebDriver.sendKeys(path: Path, xpath: String) = this.sendKeys(path.toString(), xpath)
 }

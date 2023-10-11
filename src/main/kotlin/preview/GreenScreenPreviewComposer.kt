@@ -3,15 +3,18 @@ package preview
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import com.sksamuel.scrimage.pixels.Pixel
+import utility.transformation.ImageUpscaler
+import utility.transformation.MAX_PIXELS_PER_SIDE_PREVIEW
+import utility.transformation.upscaleWithRealESRGAN
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.*
 
 data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
 
-const val NUMBER_OF_TEMPLATES = 15
+const val NUMBER_OF_TEMPLATES = 5
 
-class SimplePreviewComposer : PreviewComposer {
+class GreenScreenPreviewComposer : PreviewComposer {
 
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
@@ -27,9 +30,11 @@ class SimplePreviewComposer : PreviewComposer {
         }
 
         val image = imageLoader.fromPath(poster.path)
+        val upscaler = ImageUpscaler(upscaleWithRealESRGAN)
         val previews = fetchTemplatePaths(image)
             .map { path -> imageLoader.fromPath(path) }
             .map { template -> composePreview(template, image, directory) }
+            .map { preview -> upscaler.upscale(preview, MAX_PIXELS_PER_SIDE_PREVIEW, true) }
 
         return poster.copy(previews=previews)
     }

@@ -4,32 +4,31 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import java.nio.file.Path
 import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
 
-const val MAX_PIXELS_PER_SIDE = 10800
+const val MAX_PIXELS_PER_SIDE_POSTER = 10800
+const val MAX_PIXELS_PER_SIDE_PREVIEW = 1920
 
 class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
-
-    fun upscale(input: Path, output: Path, target: Int = MAX_PIXELS_PER_SIDE): Path {
+    fun upscale(input: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER, deleteInput: Boolean = false): Path {
         val image = ImmutableImage.loader().fromPath(input)
-        val imageIsLargerThanTarget = image.width > target || image.height > target
+        val imageIsLargerThanTarget = image.width > maxPixelsPerSide || image.height > maxPixelsPerSide
+
+        val output = when(deleteInput) {
+            true -> input
+            false -> input.parent.resolve("${input.nameWithoutExtension}-upscaled.png")
+        }
 
         return when(imageIsLargerThanTarget) {
-            true -> downscale(image, output, target)
-            false -> upscale(upscaler.upscale(input, output), output, target)
+            true -> downscale(image, output, maxPixelsPerSide)
+            false -> upscale(upscaler.upscale(input, output), maxPixelsPerSide, true)
         }
     }
 
-    fun upscaleFolder(inputFolder: Path, outputFolder: Path, target: Int = MAX_PIXELS_PER_SIDE): List<Path> {
-        return inputFolder
-            .listDirectoryEntries("*.png")
-            .map { input -> upscale(input, outputFolder.resolve(input.name), target) }
-    }
-
-    private fun downscale(image: ImmutableImage, output: Path, target: Int): Path {
+    private fun downscale(image: ImmutableImage, output: Path, maxPixelsPerSide: Int): Path {
         return when(image.width > image.height) {
-            true -> image.scaleToWidth(target)
-            false -> image.scaleToHeight(target)
+            true -> image.scaleToWidth(maxPixelsPerSide)
+            false -> image.scaleToHeight(maxPixelsPerSide)
         }.output(PngWriter(), output)
     }
 }
