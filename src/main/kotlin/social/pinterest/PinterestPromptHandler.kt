@@ -9,28 +9,48 @@ data class PinterestContent(
     val altText: String,
 )
 
-const val MAXIMUM_DESCRIPTION_LENGTH: Int = 500
+const val MAX_TITLE_LENGTH = 60
+const val MAX_DESCRIPTION_LENGTH = 250
+const val MAX_ALT_TEXT_LENGTH = 100
+const val PINTEREST_DESCRIPTION_LENGTH: Int = 500
 
 class PinterestPromptHandler : AbstractPromptHandler<PinterestContent>(
-    // TODO: remove descriptions of the poster from the description
     prompt = """
         Your task is to generate, based on a set of keywords used to
         generate a poster image, a title, description, and alt text for
-        a social media post. The title should be minimum 60-80 characters
-        long, it should contain the word poster, and it should contain a
-        description of the style. The description should be less than
-        250 characters. The description should not describe anything
-        happening in the poster. The alt text should describe the
-        poster's content in maximum 100 characters.
+        a social media post.
+
+        The title should be less than $MAX_TITLE_LENGTH characters long.
+        The title should end with "- Tomorrow's Prints".
+        The title should include important keywords of the prompt.
+        The title should be in headline case.
+
+        The description should be less than $MAX_DESCRIPTION_LENGTH characters.
+        The description should not describe anything happening in the poster.
+        The description should include relevant keywords near the beginning of the description.
+        The description should have the brand "Tomorrow's Prints" in the first line of the description.
+        The description should follow a natural sentence structure.
+        The description should never contain an artist.
+
+        The alt text should be less than $MAX_ALT_TEXT_LENGTH characters.
+        The alt text should only describe the style of the poster.
     """.trimIndent(),
     examples = listOf(
         Example(
             "a red and white cloth with geometric shapes, in the style of organic shapes and curved lines, dark orange and beige, chiaroscuro woodcuts, playful lines, tupinipunk, spontaneous mark-making, mind-bending patterns",
-            "Title: Organic Shapes and Mind-Bending Patterns - A Bold and Vibrant Poster\nDescription: This poster boasts a unique mix of organic shapes and curved lines, combined with playful lines and mind-bending patterns. The dark orange and beige colors add depth to the chiaroscuro woodcut style, making it a visually stunning piece.\nAlt text: Vibrant poster with a mix of organic shapes and mind-bending patterns in shades of orange and beige"
+            "Title: Organically Geometric Print - Tomorrow's Prints\nTomorrow's Prints brings you a vibrant red and white cloth with geometric shapes and playful lines. Experience the dynamic mix of organic and curved lines, chiaroscuro woodcuts, and mind-bending patterns with a touch of tupinipunk.\nAlt text: Red and white cloth with geometric shapes and playful lines inspired by woodcuts, tupinipunk and spontaneous mark-making"
         ),
         Example(
             "a white painting with green shapes on it, in the style of bold stencil, dark beige and white, bloomcore, organic shapes, letras y figuras, bold curves, bold color blobs",
-            "Title: Bold Stencil and Organic Shapes - A Dynamic and Minimalist Poster\nDescription: This minimalist poster features bold stencil-style designs and organic shapes, enhanced by bold curves and color blobs. The dark beige and white color palette adds a touch of sophistication and bloomcore aesthetic to the overall design.\nAlt text: Dynamic and minimalist poster with bold stencil designs, organic shapes, and pops of beige and white"
+            "Title: Bold and Green - Tomorrow's Prints\nDescription: Tomorrow's Prints showcases a striking white painting adorned with bold green shapes and curves, inspired by stencil and letras y figuras. Embrace the unique blend of bloomcore and organic shapes with bold color blobs.\nAlt text: White painting with bold green shapes and organic curves in stencil and letras y figuras style."
+        ),
+        Example(
+            "an image resembling a vintage-style poster for the song 'Colors,' using minimalist lines and incorporating elements of carpetpunk, chalk art, dramatic diagonals, and rainbowcore",
+            "Title: Bringing Colors to Life\nDescription: Tomorrow's Prints presents a vintage-inspired poster featuring carpetpunk and chalk art. The dramatic diagonals and vibrant rainbowcore make it a must-have for any art lover.\nAlt text: Vintage-style poster with carpetpunk, chalk art, diagonals, and rainbowcore elements."
+        ),
+        Example(
+            "geometric posters by jack edouard, in the style of dark white and orange, mid-century modern design, grid, jessie arms botke, rounded shapes, balance, dark orange and black",
+            "Title: Form and Function - Tomorrow's Prints\nDescription: Discover Tomorrow's Prints' collection of geometric posters with influences from mid-century modern design. Featuring a balance of rounded shapes and a grid structure in dark orange and black.\n"
         )
     )
 ) {
@@ -72,12 +92,13 @@ class PinterestPromptHandler : AbstractPromptHandler<PinterestContent>(
             Alt text: (.*)
         """.trimIndent()).find(output)
 
+        // TODO: this still occasionally fails
         require(result != null) { "Generated Pinterest content should follow the correct structure" }
 
         val (_, title, descriptionWithoutHashtags, altText) = result.groupValues
         val description = hashtags.asSequence().shuffled()
-            .fold("$descriptionWithoutHashtags\n\n") { current, hashtag ->
-                if ("$current #$hashtag".length > MAXIMUM_DESCRIPTION_LENGTH) current else "$current #$hashtag"
+            .fold(descriptionWithoutHashtags) { current, hashtag ->
+                if ("$current #$hashtag".length > PINTEREST_DESCRIPTION_LENGTH) current else "$current #$hashtag"
             }
 
         return PinterestContent(title, description, altText)
