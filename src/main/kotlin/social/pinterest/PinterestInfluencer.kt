@@ -8,7 +8,6 @@ import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
 import social.*
 import java.nio.file.Path
-import java.time.Duration
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"

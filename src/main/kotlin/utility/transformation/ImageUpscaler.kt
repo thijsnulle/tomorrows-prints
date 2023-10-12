@@ -3,7 +3,6 @@ package utility.transformation
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import java.nio.file.Path
-import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
 const val MAX_PIXELS_PER_SIDE_POSTER = 10800
