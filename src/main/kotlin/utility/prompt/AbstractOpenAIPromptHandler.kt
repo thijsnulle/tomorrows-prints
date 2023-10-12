@@ -7,6 +7,9 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import io.github.cdimascio.dotenv.dotenv
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.runBlocking
 
 data class Example(val input: String, val output: String)
@@ -28,7 +31,9 @@ abstract class AbstractPromptHandler<Response>(
             maxTokens = 128,
         )
 
-        process(openAI.completion(request).choices.map { it.text }.first())
+        flow {
+            emit(process(openAI.completion(request).choices.map { it.text }.first()))
+        }.retry(3).first()
     }
 
     private fun formatPrompt(input: String): String {

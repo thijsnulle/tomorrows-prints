@@ -92,8 +92,7 @@ class PinterestPromptHandler : AbstractPromptHandler<PinterestContent>(
             Alt text: (.*)
         """.trimIndent()).find(output)
 
-        // TODO: this still occasionally fails
-        require(result != null) { "Generated Pinterest content should follow the correct structure" }
+        require (result != null) { "Generated Pinterest content should follow the correct structure:\n\n$output" }
 
         val (_, title, descriptionWithoutHashtags, altText) = result.groupValues
         val description = hashtags.asSequence().shuffled()
