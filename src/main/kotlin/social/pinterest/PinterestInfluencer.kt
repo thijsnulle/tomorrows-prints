@@ -21,7 +21,7 @@ class PinterestInfluencer: Influencer {
     override fun post(poster: Poster) {
         login()
 
-        val promptHandler = PinterestPromptHandler()
+        val promptHandler = PinterestPrompter()
         poster.previews.forEach { preview ->
             val pinContent = promptHandler.ask(poster.prompt)
             val ideaPinContent = promptHandler.ask(poster.prompt)

@@ -1,7 +1,7 @@
 package social.pinterest
 
-import utility.prompt.AbstractPromptHandler
 import utility.prompt.Example
+import utility.prompt.OpenAIPrompter
 
 data class PinterestContent(
     val title: String,
@@ -14,7 +14,7 @@ const val MAX_DESCRIPTION_LENGTH = 250
 const val MAX_ALT_TEXT_LENGTH = 100
 const val PINTEREST_DESCRIPTION_LENGTH: Int = 500
 
-class PinterestPromptHandler : AbstractPromptHandler<PinterestContent>(
+class PinterestPrompter: OpenAIPrompter<PinterestContent>(
     prompt = """
         Your task is to generate, based on a set of keywords used to
         generate a poster image, a title, description, and alt text for
