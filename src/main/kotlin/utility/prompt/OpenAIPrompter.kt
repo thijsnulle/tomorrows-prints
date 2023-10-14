@@ -14,10 +14,10 @@ import kotlinx.coroutines.runBlocking
 
 data class Example(val input: String, val output: String)
 
-abstract class AbstractPromptHandler<Response>(
+abstract class OpenAIPrompter<Response>(
     val prompt: String,
     val examples: List<Example>
-): PromptHandler<Response> {
+): Prompter<Response> {
     private val openAI = OpenAI(
         token = dotenv().get("OPENAI_KEY"),
         logging = LoggingConfig(logLevel = LogLevel.None)

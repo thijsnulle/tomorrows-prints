@@ -25,7 +25,7 @@ data class PinContent(
 class PinterestInfluencer: Influencer {
 
     private val driver = ChromeDriver(ChromeOptions().addArguments("--log-level=3"))
-    private val prompter = PinterestContentPromptHandler()
+    private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
 
     override fun post(posters: List<Poster>) {
