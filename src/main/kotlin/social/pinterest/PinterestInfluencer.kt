@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
 import social.*
+import theme.Theme
 import java.nio.file.Path
 
 const val HOME_PAGE = "https://www.pinterest.com"
@@ -17,7 +18,8 @@ const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 data class PinContent(
     val prompt: String,
     val preview: Path,
-    val carouselImage: Path? = null
+    val carouselImage: Path? = null,
+    val theme: Theme,
 )
 
 class PinterestInfluencer: Influencer {
@@ -30,19 +32,19 @@ class PinterestInfluencer: Influencer {
         login()
 
         val posts: List<PinContent> = posters.map { poster ->
-            val pins = poster.previews.map { PinContent(poster.prompt, it, poster.path) }
-            val ideaPins = poster.previews.map { PinContent(poster.prompt, it) }
+            val pins = poster.previews.map { PinContent(poster.prompt, it, poster.path, poster.theme) }
+            val ideaPins = poster.previews.map { PinContent(poster.prompt, it, theme=poster.theme) }
 
-            pins + ideaPins + PinContent(poster.prompt, poster.path)
+            pins + ideaPins + PinContent(poster.prompt, poster.path, theme=poster.theme)
         }.flatten().shuffled()
 
         posts.forEach { post ->
             val content = prompter.ask(post.prompt)
 
             if (post.carouselImage != null) {
-                createPin(content, "", post.preview, post.carouselImage)
+                createPin(content, "", post.preview, post.carouselImage, post.theme)
             } else {
-                createIdeaPin(content, "", post.preview)
+                createIdeaPin(content, "", post.preview, post.theme)
             }
 
             runBlocking { delay(2000) }
@@ -69,7 +71,7 @@ class PinterestInfluencer: Influencer {
         url: String,
         preview: Path,
         image: Path,
-        theme: PinterestTheme,
+        theme: Theme,
     ) {
         driver.get(CREATE_PIN_PAGE)
 
@@ -102,7 +104,7 @@ class PinterestInfluencer: Influencer {
         content: PinterestContent,
         url: String,
         preview: Path,
-        theme: PinterestTheme,
+        theme: Theme,
     ) {
         driver.get(CREATE_IDEA_PIN_PAGE)
 

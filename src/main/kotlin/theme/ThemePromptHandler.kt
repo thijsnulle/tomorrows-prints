@@ -1,20 +1,21 @@
-package social.pinterest
+package theme
 
 import utility.prompt.AbstractPromptHandler
 import utility.prompt.Example
 
-enum class PinterestTheme(val value: String) {
+enum class Theme(val value: String) {
+    DEFAULT(""),
     ABSTRACT("Abstract"),
     MINIMALIST("Minimalist"),
     VINTAGE("Vintage"),
 }
 
-class PinterestThemePromptHandler: AbstractPromptHandler<PinterestTheme>(
+class ThemePromptHandler: AbstractPromptHandler<Theme>(
     prompt = """
         Your task is to determine, based on a set of keywords used to 
         generate a poster image, the theme that is best associated
         with the keywords from a list of pre-determined themes. The available
-        themes are: ${PinterestTheme.entries.joinToString(", ") { it.name.lowercase() }}.
+        themes are: ${Theme.entries.joinToString(", ") { it.value }}.
         Only return the theme that fits the description of the image the best.
     """.trimIndent(),
 
@@ -24,5 +25,5 @@ class PinterestThemePromptHandler: AbstractPromptHandler<PinterestTheme>(
         Example("eight retro style cassette tapes in different colors, in the style of dark beige and violet, Alena Aenami, mechanical designs, creative commons attribution, Frank Quitely, industrial forms, neo-mosaic", "Vintage")
     )
 ) {
-    override fun process(output: String): PinterestTheme = PinterestTheme.valueOf(output.trim().uppercase())
+    override fun process(output: String): Theme = Theme.valueOf(output.trim().uppercase())
 }
