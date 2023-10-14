@@ -185,3 +185,4 @@ gradle-app.setting
 gradle/
 
 src/main/resources/images/previews/**
+src/main/resources/images/thumbnails/**
