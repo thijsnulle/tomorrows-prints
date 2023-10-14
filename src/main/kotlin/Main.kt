@@ -1,8 +1,5 @@
 import pipeline.PipelineStep
-import pipeline.steps.PreviewGenerationStep
-import pipeline.steps.SocialMediaStep
-import pipeline.steps.ThemeAllocationStep
-import pipeline.steps.ThumbnailGenerationStep
+import pipeline.steps.*
 import preview.Poster
 
 fun main() {
@@ -17,6 +14,7 @@ fun main() {
         ThemeAllocationStep(),
         PreviewGenerationStep(),
         ThumbnailGenerationStep(),
+        PrintFileCreationStep(),
         SocialMediaStep(),
     )
 
