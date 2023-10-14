@@ -1,11 +1,13 @@
 package preview
 
+import theme.Theme
 import java.nio.file.Path
 import java.nio.file.Paths
 
 data class Poster(
     val path: Path,
     val prompt: String,
+    val theme: Theme = Theme.DEFAULT,
     val previews: List<Path> = emptyList(),
 ) {
     constructor(fileName: String, prompt: String): this(

@@ -1,6 +1,7 @@
 import pipeline.PipelineStep
 import pipeline.steps.PreviewStep
 import pipeline.steps.SocialMediaStep
+import pipeline.steps.ThemeAllocationStep
 import preview.Poster
 
 fun main() {
@@ -12,6 +13,7 @@ fun main() {
     )
 
     val pipeline: List<PipelineStep> = listOf(
+        ThemeAllocationStep(),
         PreviewStep(),
         SocialMediaStep(),
     )
