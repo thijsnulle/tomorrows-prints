@@ -3,5 +3,5 @@ package social
 import preview.Poster
 
 interface Influencer {
-    fun post(poster: Poster)
+    fun post(posters: List<Poster>)
 }
