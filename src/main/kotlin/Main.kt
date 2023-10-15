@@ -18,5 +18,5 @@ fun main() {
         SocialMediaStep(),
     )
 
-    pipeline.fold(posters) { current, step -> step.process(current) }
+    pipeline.fold(posters) { current, step -> step.start(current) }
 }
