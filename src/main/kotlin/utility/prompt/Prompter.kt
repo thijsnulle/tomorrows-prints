@@ -1,5 +1,5 @@
 package utility.prompt
 
-fun interface PromptHandler<Response> {
+fun interface Prompter<Response> {
     fun ask(input: String): Response
 }
