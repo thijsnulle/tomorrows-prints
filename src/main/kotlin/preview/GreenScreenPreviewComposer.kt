@@ -3,6 +3,7 @@ package preview
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import com.sksamuel.scrimage.pixels.Pixel
+import io.github.oshai.kotlinlogging.KotlinLogging
 import utility.transformation.ImageUpscaler
 import utility.transformation.MAX_PIXELS_PER_SIDE_PREVIEW
 import utility.transformation.upscaleWithRealESRGAN
@@ -16,14 +17,18 @@ const val NUMBER_OF_TEMPLATES = 5
 
 class GreenScreenPreviewComposer : PreviewComposer {
 
+    private val logger = KotlinLogging.logger {}
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
 
     override fun compose(poster: Poster): Poster {
         val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
+        val previewDirectory = "${directory.parent.name}/${directory.name}"
+        logger.info { "Generating previews for $previewDirectory" }
 
         if (directory.exists()) {
-            println("$directory already exists.")
+            logger.info { "Previews for $previewDirectory already exist, returning existing previews." }
+
             return poster.copy(previews=directory.listDirectoryEntries("*.png"))
         } else {
             directory.createDirectory()

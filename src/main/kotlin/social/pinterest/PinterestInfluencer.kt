@@ -4,7 +4,6 @@ import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
 import social.*
 import theme.Theme
@@ -24,7 +23,7 @@ data class PinContent(
 
 class PinterestInfluencer: Influencer {
 
-    private val driver = ChromeDriver(ChromeOptions().addArguments("--log-level=3"))
+    private val driver = ChromeDriver()
     private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
 
