@@ -1,6 +1,6 @@
 package theme
 
-import utility.prompt.AbstractPromptHandler
+import utility.prompt.OpenAIPrompter
 import utility.prompt.Example
 
 enum class Theme(val value: String) {
@@ -10,7 +10,7 @@ enum class Theme(val value: String) {
     VINTAGE("Vintage"),
 }
 
-class ThemePromptHandler: AbstractPromptHandler<Theme>(
+class ThemePrompter: OpenAIPrompter<Theme>(
     prompt = """
         Your task is to determine, based on a set of keywords used to 
         generate a poster image, the theme that is best associated

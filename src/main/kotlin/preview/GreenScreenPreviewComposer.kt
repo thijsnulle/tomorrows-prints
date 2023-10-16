@@ -66,12 +66,10 @@ class GreenScreenPreviewComposer : PreviewComposer {
         val previewPath = outputPath.resolve("preview-${System.currentTimeMillis()}.png")
         val shadow = imageLoader.fromPath(images.resolve("shadow.png"))
 
-        template
+        return template
             .overlay(poster.cover(w, h), x, y)
             .overlay(shadow.flipX().scaleTo(w, h), x, y)
             .output(PngWriter(), previewPath)
-
-        return previewPath
     }
 
     private fun locateFrameIn(image: ImmutableImage): GreenScreen {
