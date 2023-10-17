@@ -9,6 +9,7 @@ import utility.transformation.MAX_PIXELS_PER_SIDE_PREVIEW
 import utility.transformation.upscaleWithRealESRGAN
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.UUID
 import kotlin.io.path.*
 
 data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
@@ -63,7 +64,7 @@ class GreenScreenPreviewComposer : PreviewComposer {
         outputPath: Path
     ): Path {
         val (x, y, w, h) = locateFrameIn(template)
-        val previewPath = outputPath.resolve("preview-${System.currentTimeMillis()}.png")
+        val previewPath = outputPath.resolve("${UUID.randomUUID()}.png")
         val shadow = imageLoader.fromPath(images.resolve("shadow.png"))
 
         return template
