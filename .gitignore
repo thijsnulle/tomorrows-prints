@@ -182,7 +182,5 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-gradle/
-
 src/main/resources/images/previews/**
 src/main/resources/images/thumbnails/**
