@@ -6,7 +6,6 @@ import java.nio.file.Path
 import kotlin.io.path.nameWithoutExtension
 
 const val MAX_PIXELS_PER_SIDE_POSTER = 10800
-const val MAX_PIXELS_PER_SIDE_PREVIEW = 1920
 
 class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
     fun upscale(input: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER, deleteInput: Boolean = false): Path {
