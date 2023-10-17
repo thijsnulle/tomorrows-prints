@@ -8,6 +8,10 @@ import preview.Poster
 import social.*
 import theme.Theme
 import java.nio.file.Path
+import java.time.Duration
+import kotlin.math.max
+import kotlin.time.measureTime
+import kotlin.time.toKotlinDuration
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
@@ -20,6 +24,8 @@ data class PinContent(
     val carouselImage: Path? = null,
     val theme: Theme,
 )
+
+val DURATION = Duration.ofMinutes(3).toKotlinDuration()
 
 class PinterestInfluencer: Influencer {
 
@@ -38,15 +44,18 @@ class PinterestInfluencer: Influencer {
         }.flatten().shuffled()
 
         posts.forEach { post ->
-            val content = prompter.ask(post.prompt)
+            val timeItTookToPost = measureTime {
+                val content = prompter.ask(post.prompt)
 
-            if (post.carouselImage != null) {
-                createPin(content, "", post.preview, post.carouselImage, post.theme)
-            } else {
-                createIdeaPin(content, "", post.preview, post.theme)
+                if (post.carouselImage != null) {
+                    createPin(content, "", post.preview, post.carouselImage, post.theme)
+                } else {
+                    createIdeaPin(content, "", post.preview, post.theme)
+                }
             }
 
-            runBlocking { delay(2000) }
+            val delayDuration = max(0, DURATION.minus(timeItTookToPost).inWholeMilliseconds)
+            runBlocking { delay(delayDuration) }
         }
     }
 
