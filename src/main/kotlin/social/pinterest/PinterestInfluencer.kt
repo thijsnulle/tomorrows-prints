@@ -25,7 +25,7 @@ data class PinContent(
     val theme: Theme,
 )
 
-val DURATION = Duration.ofMinutes(3).toKotlinDuration()
+val TIME_BETWEEN_POSTS = Duration.ofMinutes(3).toKotlinDuration()
 
 class PinterestInfluencer: Influencer {
 
@@ -54,7 +54,7 @@ class PinterestInfluencer: Influencer {
                 }
             }
 
-            val delayDuration = max(0, DURATION.minus(timeItTookToPost).inWholeMilliseconds)
+            val delayDuration = max(0, TIME_BETWEEN_POSTS.minus(timeItTookToPost).inWholeMilliseconds)
             runBlocking { delay(delayDuration) }
         }
     }
