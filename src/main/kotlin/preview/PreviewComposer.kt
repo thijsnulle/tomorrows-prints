@@ -10,6 +10,7 @@ data class Poster(
     val theme: Theme = Theme.DEFAULT,
     val previews: List<Path> = emptyList(),
     val thumbnail: Path = Paths.get(""),
+    val printFileUrl: String = ""
 ) {
     constructor(fileName: String, prompt: String): this(
         Paths.get("src/main/resources/images/posters").toAbsolutePath().resolve(fileName),
