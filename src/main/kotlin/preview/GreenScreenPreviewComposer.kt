@@ -4,9 +4,6 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import com.sksamuel.scrimage.pixels.Pixel
 import io.github.oshai.kotlinlogging.KotlinLogging
-import utility.transformation.ImageUpscaler
-import utility.transformation.MAX_PIXELS_PER_SIDE_PREVIEW
-import utility.transformation.upscaleWithRealESRGAN
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.UUID
