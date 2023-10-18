@@ -36,11 +36,9 @@ class GreenScreenPreviewComposer : PreviewComposer {
         }
 
         val image = imageLoader.fromPath(poster.path)
-        val upscaler = ImageUpscaler(upscaleWithRealESRGAN)
         val previews = fetchTemplatePaths(image)
             .map { path -> imageLoader.fromPath(path) }
             .map { template -> composePreview(template, image, directory) }
-            .map { preview -> upscaler.upscale(preview, MAX_PIXELS_PER_SIDE_PREVIEW, true) }
 
         return poster.copy(previews=previews)
     }
