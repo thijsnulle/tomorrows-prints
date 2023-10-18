@@ -21,11 +21,10 @@ class GreenScreenPreviewComposer : PreviewComposer {
 
     override fun compose(poster: Poster): Poster {
         val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
-        val previewDirectory = "${directory.parent.name}/${directory.name}"
-        logger.info { "Generating previews for $previewDirectory" }
+        logger.info { "Generating previews for ${poster.path.fileName}" }
 
         if (directory.exists()) {
-            logger.info { "Previews for $previewDirectory already exist, returning existing previews." }
+            logger.info { "Previews for ${poster.path.fileName} already exist, returning existing previews." }
 
             return poster.copy(previews=directory.listDirectoryEntries("*.png"))
         } else {

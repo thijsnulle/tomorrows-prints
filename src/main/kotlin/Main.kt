@@ -26,8 +26,8 @@ fun main() {
 
     val pipeline: List<PipelineStep> = listOf(
         ThemeAllocationStep(),
-        PreviewGenerationStep(),
         ThumbnailGenerationStep(),
+        PreviewGenerationStep(),
         PrintFileCreationStep(),
         SocialMediaStep(),
     )

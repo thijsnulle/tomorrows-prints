@@ -5,7 +5,6 @@ import pipeline.PipelineStep
 import preview.Poster
 import social.Influencer
 import social.pinterest.PinterestInfluencer
-import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 
 class SocialMediaStep: PipelineStep() {
