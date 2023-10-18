@@ -10,7 +10,7 @@ const val MAX_PIXELS_PER_SIDE_POSTER = 10800
 class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
     fun upscale(input: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER, deleteInput: Boolean = false): Path {
         val image = ImmutableImage.loader().fromPath(input)
-        val imageIsLargerThanTarget = image.width > maxPixelsPerSide || image.height > maxPixelsPerSide
+        val imageIsLargerThanTarget = image.width >= maxPixelsPerSide || image.height >= maxPixelsPerSide
 
         val output = when(deleteInput) {
             true -> input
