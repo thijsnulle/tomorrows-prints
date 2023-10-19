@@ -6,7 +6,7 @@ import utility.prompt.Example
 enum class Theme(val value: String) {
     DEFAULT(""),
     ABSTRACT("abstract"),
-    MINIMALIST("minimalism"),
+    MINIMALISM("minimalism"),
     VINTAGE("vintage"),
 }
 

@@ -15,14 +15,14 @@ class PrintFileCreator {
     private val bucket = StorageOptions.getDefaultInstance().service.get(BUCKET)
         ?: error("Bucket $BUCKET does not exist or you have not setup the correct credentials.")
 
-    fun create(posters: List<Poster>): List<Poster> = posters.map {
-        require(it.theme != Theme.DEFAULT) { "${it.path.name} should have a theme associated with it." }
+    fun create(poster: Poster): Poster {
+        require(poster.theme != Theme.DEFAULT) { "${poster.path.name} should have a theme associated with it." }
 
-        val upscaledPoster = upscaler.upscale(it.path)
-        val fileName = "${it.theme.value}/${it.path.fileName}"
+        val upscaledPoster = upscaler.upscale(poster.path)
+        val fileName = "${poster.theme.value}/${poster.path.fileName}"
 
         bucket.create(fileName, Files.readAllBytes(upscaledPoster))
 
-        it.copy(printFileUrl = "https://storage.googleapis.com/tomorrows-prints/$fileName")
+        return poster.copy(printFileUrl = "https://storage.googleapis.com/tomorrows-prints/$fileName")
     }
 }

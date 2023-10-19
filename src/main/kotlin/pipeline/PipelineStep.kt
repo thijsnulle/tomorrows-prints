@@ -42,7 +42,7 @@ abstract class PipelineStep {
             jsonObject
         })
 
-        val fileName = "${this::class.simpleName}-${System.currentTimeMillis()}.json"
+        val fileName = "${System.currentTimeMillis()}-${this::class.simpleName}.json"
 
         backupPath.resolve(fileName).toFile().bufferedWriter().use { it.write(content) }
     }

@@ -14,12 +14,13 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
     fun upscale(input: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER, deleteInput: Boolean = false): Path {
         val image = ImmutableImage.loader().fromPath(input)
         val output = if (deleteInput) input else input.parent.resolve("upscaled/${input.name}")
+        val imageIsLargerThanTarget = image.width >= maxPixelsPerSide || image.height >= maxPixelsPerSide
 
-        if (image.width >= maxPixelsPerSide || image.height >= maxPixelsPerSide) {
+        if (imageIsLargerThanTarget) {
             return downscale(image, output, maxPixelsPerSide)
         }
 
-        return when(output.exists()) {
+        return when(output.exists() && !deleteInput) {
             true -> upscale(output, maxPixelsPerSide, true)
             false -> upscale(upscaler.upscale(input, output), maxPixelsPerSide, true)
         }
