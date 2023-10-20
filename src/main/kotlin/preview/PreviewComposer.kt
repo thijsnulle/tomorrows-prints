@@ -5,6 +5,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.Path
 
+// TODO: Move `PosterJsonObject` and `Poster` data class to another file
+// TODO: Rename `Poster` to `Print`
 data class PosterJsonObject(
     val path: String,
     val prompt: String,

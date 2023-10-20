@@ -23,6 +23,7 @@ class PrintFileCreator {
 
         bucket.create(fileName, Files.readAllBytes(upscaledPoster))
 
+        // TODO: add Google Cloud Storage URL to .env file
         return poster.copy(printFileUrl = "https://storage.googleapis.com/tomorrows-prints/$fileName")
     }
 }
