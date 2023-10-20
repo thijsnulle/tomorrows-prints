@@ -8,18 +8,18 @@ import kotlin.io.path.Path
 data class PosterJsonObject(
     val path: String,
     val prompt: String,
-    val theme: String,
-    val previews: List<String>,
-    val thumbnail: String,
-    val printFileUrl: String
+    val theme: String?,
+    val previews: List<String>?,
+    val thumbnail: String?,
+    val printFileUrl: String?
 ) {
     fun toPoster(): Poster = Poster(
         Paths.get("src/main/resources/images/posters").toAbsolutePath().resolve(path),
         prompt,
-        Theme.valueOf(theme.uppercase()),
-        previews.map { preview -> Path(preview) },
-        Path(thumbnail),
-        printFileUrl
+        if (theme == null) Theme.DEFAULT else Theme.valueOf(theme.uppercase()),
+        previews?.map { preview -> Path(preview) } ?: emptyList(),
+        Path(thumbnail ?: ""),
+        printFileUrl ?: ""
     )
 }
 

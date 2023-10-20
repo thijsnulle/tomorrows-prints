@@ -7,7 +7,6 @@ import prints.PrintFileCreator
 class PrintFileCreationStep: PipelineStep() {
     private val printFileCreator = PrintFileCreator()
 
-    override fun process(posters: List<Poster>): List<Poster> = posters.map {
-        if (it.printFileUrl.isEmpty()) printFileCreator.create(it) else it
-    }
+    override fun process(poster: Poster): Poster = printFileCreator.create(poster)
+    override fun shouldSkip(poster: Poster): Boolean = poster.printFileUrl.isNotEmpty()
 }

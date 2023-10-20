@@ -8,7 +8,6 @@ import theme.ThemePrompter
 class ThemeAllocationStep: PipelineStep() {
     private val prompter = ThemePrompter()
 
-    override fun process(posters: List<Poster>): List<Poster> = posters.map {
-        if (it.theme == Theme.DEFAULT) it.copy(theme = prompter.ask(it.prompt)) else it
-    }
+    override fun process(poster: Poster): Poster = poster.copy(theme = prompter.ask(poster.prompt))
+    override fun shouldSkip(poster: Poster): Boolean = poster.theme != Theme.DEFAULT
 }

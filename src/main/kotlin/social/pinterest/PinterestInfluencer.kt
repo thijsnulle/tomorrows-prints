@@ -18,6 +18,7 @@ const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
 const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 
 // TODO: Add listing URL to this functionality
+// TODO: Split this into PinContent and IdeaPinContent to make code more readable
 data class PinContent(
     val prompt: String,
     val preview: Path,
