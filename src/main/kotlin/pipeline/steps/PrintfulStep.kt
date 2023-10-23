@@ -1,11 +1,10 @@
 package pipeline.steps
 
-import io.github.cdimascio.dotenv.dotenv
 import kotlinx.serialization.json.*
 import pipeline.PipelineStep
 import preview.Poster
-import utility.http.HttpHandler
 import utility.http.PrintfulHttpHandler
+import kotlin.io.path.nameWithoutExtension
 
 class PrintfulStep: PipelineStep() {
 
@@ -46,12 +45,7 @@ class PrintfulStep: PipelineStep() {
     }
 
     override fun process(poster: Poster): Poster {
-            val body = createJsonBody(
-                name        =   "Poster",
-                thumbnail   =   poster.printFileUrl,
-                preview     =   poster.printFileUrl,
-                printFile   =   poster.printFileUrl
-            )
+            val body = createJsonBody(poster.path.nameWithoutExtension, poster.printFileUrl, poster.printFileUrl, poster.printFileUrl)
 
             httpHandler.post("https://api.printful.com/store/products", body)
             return poster
