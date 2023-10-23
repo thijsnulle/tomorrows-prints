@@ -7,7 +7,7 @@ import preview.Poster
 import utility.http.HttpHandler
 import utility.http.PrintfulHttpHandler
 
-class PrintfulStep: PipelineStep {
+class PrintfulStep: PipelineStep() {
 
     private val httpHandler = PrintfulHttpHandler()
     private val variants = listOf(
@@ -45,19 +45,22 @@ class PrintfulStep: PipelineStep {
         }.toString()
     }
 
-    override fun process(posters: List<Poster>): List<Poster> {
-        return posters.map {
+    override fun process(poster: Poster): Poster {
             val body = createJsonBody(
-                "Poster",
-                "https://i.imgur.com/4ygNwWn.jpeg",
-                "https://i.imgur.com/4ygNwWn.jpeg",
-                "https://i.imgur.com/4ygNwWn.jpeg"
+                name        =   "Poster",
+                thumbnail   =   poster.printFileUrl,
+                preview     =   poster.printFileUrl,
+                printFile   =   poster.printFileUrl
             )
-            httpHandler.post(body)
-            it
-        }
-    }
 
+            httpHandler.post("https://api.printful.com/store/products", body)
+            return poster
+        }
+
+    // TODO: Add isInStore field to json for check
+    override fun shouldSkip(poster: Poster): Boolean {
+        TODO("Not yet implemented")
+    }
 }
 
 private data class PosterVariant(val id: Int, val price: Double)

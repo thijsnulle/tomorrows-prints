@@ -7,10 +7,10 @@ import kotlinx.coroutines.runBlocking
 
 class PrintfulHttpHandler: HttpHandler() {
 
-    override fun post(body: String) {
+    override fun post(url: String, body: String) {
         runBlocking {
             Fuel.post(
-                url = "https://api.printful.com/store/products",
+                url = url,
                 headers = mapOf("Authorization" to "Bearer ${dotenv().get("PRINTFUL_KEY")}"),
                 body = body
             )
