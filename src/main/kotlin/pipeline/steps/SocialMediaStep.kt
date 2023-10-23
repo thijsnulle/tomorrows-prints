@@ -13,9 +13,7 @@ class SocialMediaStep: PipelineStep {
     override fun process(posters: List<Poster>): List<Poster> {
         println("Posting ${posters.size} posters to Pinterest")
 
-        posters.forEach { poster -> influencers.forEach {
-            influencer -> influencer.post(poster)
-        }}
+        influencers.forEach { it.post(posters) }
 
         return posters
     }

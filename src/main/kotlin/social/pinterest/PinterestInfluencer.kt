@@ -7,31 +7,47 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
 import social.*
+import theme.Theme
 import java.nio.file.Path
-import java.time.Duration
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
 const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 
+// TODO: Add listing URL to this functionality
+data class PinContent(
+    val prompt: String,
+    val preview: Path,
+    val carouselImage: Path? = null,
+    val theme: Theme,
+)
+
 class PinterestInfluencer: Influencer {
 
     private val driver = ChromeDriver(ChromeOptions().addArguments("--log-level=3"))
+    private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
 
-    override fun post(poster: Poster) {
+    override fun post(posters: List<Poster>) {
         login()
 
-        val promptHandler = PinterestPromptHandler()
-        poster.previews.forEach { preview ->
-            val pinContent = promptHandler.ask(poster.prompt)
-            val ideaPinContent = promptHandler.ask(poster.prompt)
+        val posts: List<PinContent> = posters.map { poster ->
+            val pins = poster.previews.map { PinContent(poster.prompt, it, poster.path, poster.theme) }
+            val ideaPins = poster.previews.map { PinContent(poster.prompt, it, theme=poster.theme) }
 
-            createPin(pinContent.title, pinContent.description, pinContent.altText, "", preview, poster.path)
-            runBlocking { delay(1000) }
+            pins + ideaPins + PinContent(poster.prompt, poster.path, theme=poster.theme)
+        }.flatten().shuffled()
 
-            createIdeaPin(ideaPinContent.title, ideaPinContent.description, "", preview)
-            runBlocking { delay(1000) }
+        posts.forEach { post ->
+            val content = prompter.ask(post.prompt)
+
+            if (post.carouselImage != null) {
+                createPin(content, "", post.preview, post.carouselImage, post.theme)
+            } else {
+                createIdeaPin(content, "", post.preview, post.theme)
+            }
+
+            runBlocking { delay(2000) }
         }
     }
 
@@ -51,27 +67,29 @@ class PinterestInfluencer: Influencer {
     }
 
     private fun createPin(
-        title: String,
-        description: String,
-        altText: String,
+        content: PinterestContent,
         url: String,
-        previewUrl: Path,
-        posterUrl: Path
+        preview: Path,
+        image: Path,
+        theme: Theme,
     ) {
         driver.get(CREATE_PIN_PAGE)
 
-        driver.sendKeys(title, "//textarea[@placeholder='Add your title']")
+        driver.sendKeys(content.title, "//textarea[@placeholder='Add your title']")
         driver.sendKeys(url, "//textarea[@placeholder='Add a destination link']")
 
         driver.click("//div[@data-offset-key]")
-        driver.sendKeys(description, "//div[@data-offset-key]")
+        driver.sendKeys(content.description, "//div[@data-offset-key]")
 
         driver.click("//div[text()='Add alt text']")
-        driver.sendKeys(altText, "//textarea[@placeholder='Explain what people can see in the Pin']")
+        driver.sendKeys(content.altText, "//textarea[@placeholder='Explain what people can see in the Pin']")
 
-        driver.sendKeys(previewUrl, "//input[@type='file']")
+        driver.sendKeys(preview, "//input[@type='file']")
         driver.click("//div[text()='Create carousel']")
-        driver.sendKeys(posterUrl, "//input[@type='file']")
+        driver.sendKeys(image, "//input[@type='file']")
+
+        driver.click("//button[@data-test-id='board-dropdown-select-button']")
+        driver.click("//div[@data-test-id='board-row-${theme.value} Posters']")
 
         runBlocking { delay(1000) }
 
@@ -83,22 +101,23 @@ class PinterestInfluencer: Influencer {
     }
 
     private fun createIdeaPin(
-        title: String,
-        description: String,
+        content: PinterestContent,
         url: String,
-        previewUrl: Path,
+        preview: Path,
+        theme: Theme,
     ) {
         driver.get(CREATE_IDEA_PIN_PAGE)
 
-        driver.sendKeys(previewUrl, "//input[@aria-label='File Upload']")
-        driver.sendKeys(title, "//input[@placeholder='Add a title']")
+        driver.sendKeys(preview, "//input[@aria-label='File Upload']")
+        driver.sendKeys(content.title, "//input[@placeholder='Add a title']")
         driver.sendKeys(url, "//input[@placeholder='Add a link']")
 
         driver.click("//div[@data-offset-key]")
-        driver.sendKeys(description, "//div[@data-offset-key]")
+        driver.sendKeys(content.description, "//div[@data-offset-key]")
 
         driver.click("//button[@data-test-id='board-dropdown-select-button']")
-        driver.click("//div[@data-test-id='board-row-Posters']")
+        driver.click("//div[@data-test-id='board-row-${theme.value} Posters']")
+
         runBlocking { delay(1000) }
 
         driver.click("//div[text()='Publish']")
