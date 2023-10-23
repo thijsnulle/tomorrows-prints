@@ -2,22 +2,20 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import pipeline.PipelineStep
 import pipeline.steps.*
-import preview.Poster
+import preview.PosterJsonObject
+import social.pinterest.PinterestInfluencer
 import java.nio.file.Paths
 import kotlin.io.path.exists
 
-data class PosterInfo(val path: String, val prompt: String)
-
 fun main() {
-    print("Input JSON for the pipeline: ")
+    println("Input JSON for the pipeline (leave empty for test file):")
 
     val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json").toAbsolutePath()
     val posters = Gson()
-        .fromJson<List<PosterInfo>>(
+        .fromJson<List<PosterJsonObject>>(
             input.toFile().bufferedReader().use { it.readText() },
-            object : TypeToken<List<PosterInfo>>() {}.type
-        )
-        .map { Poster(it.path, it.prompt) }
+            object : TypeToken<List<PosterJsonObject>>() {}.type
+        ).map { it.toPoster() }
 
     require(posters.all { it.path.exists() }) {
         "\nThe following image files do not exist in the `posters` folder:\n -" +
@@ -26,11 +24,12 @@ fun main() {
 
     val pipeline: List<PipelineStep> = listOf(
         ThemeAllocationStep(),
-        PreviewGenerationStep(),
         ThumbnailGenerationStep(),
+        PreviewGenerationStep(),
         PrintFileCreationStep(),
-        SocialMediaStep(),
     )
 
-    pipeline.fold(posters) { current, step -> step.start(current) }
+    PinterestInfluencer().post(
+        pipeline.fold(posters) { current, step -> step.start(current) }
+    )
 }
