@@ -18,6 +18,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     implementation("org.seleniumhq.selenium:selenium-java:4.13.0")
+    implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
 
     runtimeOnly("io.ktor:ktor-client-java-jvm:2.3.4")
 

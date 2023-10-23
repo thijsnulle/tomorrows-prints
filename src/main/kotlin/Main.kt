@@ -1,3 +1,4 @@
+
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import pipeline.PipelineStep
@@ -27,6 +28,7 @@ fun main() {
         ThumbnailGenerationStep(),
         PreviewGenerationStep(),
         PrintFileCreationStep(),
+        PrintfulStep(),
     )
 
     PinterestInfluencer().post(
