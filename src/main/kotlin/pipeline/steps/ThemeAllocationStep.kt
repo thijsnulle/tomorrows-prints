@@ -2,12 +2,12 @@ package pipeline.steps
 
 import pipeline.PipelineStep
 import preview.Poster
-import theme.ThemePromptHandler
+import theme.Theme
+import theme.ThemePrompter
 
-class ThemeAllocationStep: PipelineStep {
-    private val prompter = ThemePromptHandler()
+class ThemeAllocationStep: PipelineStep() {
+    private val prompter = ThemePrompter()
 
-    override fun process(posters: List<Poster>): List<Poster> = posters.map {
-        it.copy(theme = prompter.ask(it.prompt))
-    }
+    override fun process(poster: Poster): Poster = poster.copy(theme = prompter.ask(poster.prompt))
+    override fun shouldSkip(poster: Poster): Boolean = poster.theme != Theme.DEFAULT
 }

@@ -3,38 +3,38 @@ package preview
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import com.sksamuel.scrimage.pixels.Pixel
-import utility.transformation.ImageUpscaler
-import utility.transformation.MAX_PIXELS_PER_SIDE_PREVIEW
-import utility.transformation.upscaleWithRealESRGAN
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.UUID
 import kotlin.io.path.*
 
 data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
 
-const val NUMBER_OF_TEMPLATES = 5
+const val NUMBER_OF_TEMPLATES = 25
 
 class GreenScreenPreviewComposer : PreviewComposer {
 
+    private val logger = KotlinLogging.logger {}
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
 
     override fun compose(poster: Poster): Poster {
         val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
+        logger.info { "Generating previews for ${poster.path.fileName}" }
 
         if (directory.exists()) {
-            println("$directory already exists.")
+            logger.info { "Previews for ${poster.path.fileName} already exist, returning existing previews." }
+
             return poster.copy(previews=directory.listDirectoryEntries("*.png"))
         } else {
             directory.createDirectory()
         }
 
         val image = imageLoader.fromPath(poster.path)
-        val upscaler = ImageUpscaler(upscaleWithRealESRGAN)
         val previews = fetchTemplatePaths(image)
             .map { path -> imageLoader.fromPath(path) }
             .map { template -> composePreview(template, image, directory) }
-            .map { preview -> upscaler.upscale(preview, MAX_PIXELS_PER_SIDE_PREVIEW, true) }
 
         return poster.copy(previews=previews)
     }
@@ -58,15 +58,13 @@ class GreenScreenPreviewComposer : PreviewComposer {
         outputPath: Path
     ): Path {
         val (x, y, w, h) = locateFrameIn(template)
-        val previewPath = outputPath.resolve("preview-${System.currentTimeMillis()}.png")
+        val previewPath = outputPath.resolve("${UUID.randomUUID()}.png")
         val shadow = imageLoader.fromPath(images.resolve("shadow.png"))
 
-        template
+        return template
             .overlay(poster.cover(w, h), x, y)
             .overlay(shadow.flipX().scaleTo(w, h), x, y)
             .output(PngWriter(), previewPath)
-
-        return previewPath
     }
 
     private fun locateFrameIn(image: ImmutableImage): GreenScreen {

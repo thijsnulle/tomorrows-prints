@@ -4,17 +4,21 @@ import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.chrome.ChromeOptions
 import preview.Poster
 import social.*
 import theme.Theme
 import java.nio.file.Path
+import java.time.Duration
+import kotlin.math.max
+import kotlin.time.measureTime
+import kotlin.time.toKotlinDuration
 
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-builder"
 const val CREATE_IDEA_PIN_PAGE = "https://www.pinterest.com/idea-pin-builder"
 
 // TODO: Add listing URL to this functionality
+// TODO: Split this into PinContent and IdeaPinContent to make code more readable
 data class PinContent(
     val prompt: String,
     val preview: Path,
@@ -22,9 +26,11 @@ data class PinContent(
     val theme: Theme,
 )
 
+val TIME_BETWEEN_POSTS = Duration.ofMinutes(3).toKotlinDuration()
+
 class PinterestInfluencer: Influencer {
 
-    private val driver = ChromeDriver(ChromeOptions().addArguments("--log-level=3"))
+    private val driver = ChromeDriver()
     private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
 
@@ -39,15 +45,18 @@ class PinterestInfluencer: Influencer {
         }.flatten().shuffled()
 
         posts.forEach { post ->
-            val content = prompter.ask(post.prompt)
+            val timeItTookToPost = measureTime {
+                val content = prompter.ask(post.prompt)
 
-            if (post.carouselImage != null) {
-                createPin(content, "", post.preview, post.carouselImage, post.theme)
-            } else {
-                createIdeaPin(content, "", post.preview, post.theme)
+                if (post.carouselImage != null) {
+                    createPin(content, "", post.preview, post.carouselImage, post.theme)
+                } else {
+                    createIdeaPin(content, "", post.preview, post.theme)
+                }
             }
 
-            runBlocking { delay(2000) }
+            val delayDuration = max(0, TIME_BETWEEN_POSTS.minus(timeItTookToPost).inWholeMilliseconds)
+            runBlocking { delay(delayDuration) }
         }
     }
 
