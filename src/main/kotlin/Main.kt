@@ -28,6 +28,7 @@ fun main() {
         ThumbnailGenerationStep(),
         PreviewGenerationStep(),
         PrintFileCreationStep(),
+        PrintfulStep(),
     )
 
     PinterestInfluencer().post(
