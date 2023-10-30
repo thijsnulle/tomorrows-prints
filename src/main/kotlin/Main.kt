@@ -1,7 +1,6 @@
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import pipeline.PipelineStep
 import pipeline.steps.*
 import preview.PosterJsonObject
 import social.pinterest.PinterestInfluencer
@@ -23,15 +22,13 @@ fun main() {
         posters.filterNot { it.path.exists() }.joinToString("\n -") { it.path.toString() }
     }
 
-    val pipeline: List<PipelineStep> = listOf(
+    val output = listOf(
         ThemeAllocationStep(),
         ThumbnailGenerationStep(),
         PreviewGenerationStep(),
         PrintFileCreationStep(),
         PrintfulStep(),
-    )
+    ).fold(posters) { current, step -> step.start(current) }
 
-    PinterestInfluencer().post(
-        pipeline.fold(posters) { current, step -> step.start(current) }
-    )
+    PinterestInfluencer().post(output)
 }

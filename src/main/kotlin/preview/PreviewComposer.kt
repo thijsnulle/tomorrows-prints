@@ -13,7 +13,8 @@ data class PosterJsonObject(
     val theme: String?,
     val previews: List<String>?,
     val thumbnail: String?,
-    val printFileUrl: String?
+    val printFileUrl: String?,
+    val listingUrl: String?,
 ) {
     fun toPoster(): Poster = Poster(
         Paths.get("src/main/resources/images/posters").toAbsolutePath().resolve(path),
@@ -21,7 +22,8 @@ data class PosterJsonObject(
         if (theme == null) Theme.DEFAULT else Theme.valueOf(theme.uppercase()),
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         Path(thumbnail ?: ""),
-        printFileUrl ?: ""
+        printFileUrl ?: "",
+        listingUrl ?: "",
     )
 }
 
@@ -31,7 +33,8 @@ data class Poster(
     val theme: Theme = Theme.DEFAULT,
     val previews: List<Path> = emptyList(),
     val thumbnail: Path = Paths.get(""),
-    val printFileUrl: String = ""
+    val printFileUrl: String = "",
+    val listingUrl: String = "",
 ) {
     constructor(fileName: String, prompt: String): this(
         Paths.get("src/main/resources/images/posters").toAbsolutePath().resolve(fileName),
