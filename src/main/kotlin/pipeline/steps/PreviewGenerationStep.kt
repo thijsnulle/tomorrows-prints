@@ -7,6 +7,6 @@ import preview.SimplePreviewComposer
 class PreviewGenerationStep: PipelineStep() {
     private val composer = SimplePreviewComposer()
 
-    override fun process(poster: Poster): Poster = composer.compose(poster)
+    override fun process(poster: Poster): Poster = composer.composePreviewsFor(poster)
     override fun shouldSkip(poster: Poster): Boolean = poster.previews.isNotEmpty()
 }
