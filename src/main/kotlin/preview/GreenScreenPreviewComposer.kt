@@ -13,25 +13,15 @@ data class GreenScreen(val x: Int, val y: Int, val w: Int, val h: Int)
 
 const val NUMBER_OF_TEMPLATES = 25
 
-class GreenScreenPreviewComposer : PreviewComposer {
+class GreenScreenPreviewComposer : PreviewComposer() {
 
     private val logger = KotlinLogging.logger {}
     private val imageLoader = ImmutableImage.loader()
     private val images = Paths.get("src/main/resources/images").toAbsolutePath()
 
     override fun compose(poster: Poster): Poster {
-        val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
-        logger.info { "Generating previews for ${poster.path.fileName}" }
-
-        if (directory.exists()) {
-            logger.info { "Previews for ${poster.path.fileName} already exist, returning existing previews." }
-
-            return poster.copy(previews=directory.listDirectoryEntries("*.png"))
-        } else {
-            directory.createDirectory()
-        }
-
         val image = imageLoader.fromPath(poster.path)
+        val directory = images.resolve("previews").resolve(poster.path.nameWithoutExtension)
         val previews = fetchTemplatePaths(image)
             .map { path -> imageLoader.fromPath(path) }
             .map { template -> composePreview(template, image, directory) }
