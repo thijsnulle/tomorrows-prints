@@ -52,9 +52,7 @@ class PrintfulStep: PipelineStep() {
         }
 
     // TODO: Add isInStore field to json for check
-    override fun shouldSkip(poster: Poster): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun shouldSkip(poster: Poster): Boolean = true
 }
 
 private data class PosterVariant(val id: Int, val price: Double)

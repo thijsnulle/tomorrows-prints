@@ -25,6 +25,7 @@ abstract class PipelineStep {
             posters.map { if (shouldSkip(it)) it else process(it) }
         }
 
+        // TODO: add check that if all posters were skipped, do not back up.
         backup(processedPosters)
 
         logger.info { "Pipeline ${this::class.simpleName} took ${duration.inWholeMilliseconds} ms" }
