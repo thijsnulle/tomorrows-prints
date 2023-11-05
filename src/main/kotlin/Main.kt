@@ -1,11 +1,12 @@
 
 import com.google.gson.Gson
-import com.google.gson.JsonArray
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import pipeline.steps.*
 import preview.Poster
 import preview.PosterJsonObject
+import social.pinterest.PinContent
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.bufferedWriter
@@ -34,24 +35,27 @@ fun main() {
         PrintfulStep(),
     ).fold(posters) { current, step -> step.start(current) }
 
-    backup(processedPosters, Paths.get("src/main/resources/social/test.json").toAbsolutePath())
+    createPinSchedule(processedPosters, Paths.get("src/main/resources/social/test.json").toAbsolutePath())
 }
 
-// TODO: move this method into a `PosterUtils` class
-private fun backup(posters: List<Poster>, output: Path) {
-    val content = Gson().toJson(posters.map {
+private fun createPinSchedule(posters: List<Poster>, output: Path) {
+    val pinContents = posters.map { poster ->
+        poster.previews.map { preview ->
+            PinContent(poster.prompt, poster.listingUrl, poster.theme.value, preview.toString())
+        }.shuffled()
+    }
+
+    val flattenedPinContents = pinContents.first().indices.flatMap { index ->
+        pinContents.mapNotNull { it.getOrNull(index) }
+    }
+
+    val content = GsonBuilder().setPrettyPrinting().create().toJson(flattenedPinContents.map {
         val jsonObject = JsonObject()
 
-        jsonObject.addProperty("path", it.path.name)
         jsonObject.addProperty("prompt", it.prompt)
-        jsonObject.addProperty("theme", it.theme.value)
-
-        val previews = JsonArray()
-        it.previews.forEach { preview -> previews.add(preview.toString()) }
-        jsonObject.add("previews", previews)
-
-        jsonObject.addProperty("thumbnail", it.thumbnail.toString())
-        jsonObject.addProperty("printFileUrl", it.printFileUrl)
+        jsonObject.addProperty("listing", it.listing)
+        jsonObject.addProperty("theme", it.theme)
+        jsonObject.addProperty("preview", it.preview)
 
         jsonObject
     })
