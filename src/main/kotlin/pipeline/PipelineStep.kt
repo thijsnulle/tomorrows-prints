@@ -19,13 +19,17 @@ abstract class PipelineStep {
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
 
     fun start(posters: List<Poster>): List<Poster> {
+        if (posters.all { shouldSkip(it) }) {
+            logger.info { "Skipping ${this::class.simpleName}" }
+            return posters
+        }
+
         logger.info { "Starting ${this::class.simpleName}" }
 
         val (processedPosters: List<Poster>, duration: Duration) = measureTimedValue {
             posters.map { if (shouldSkip(it)) it else process(it) }
         }
 
-        // TODO: add check that if all posters were skipped, do not back up.
         backup(processedPosters)
 
         logger.info { "Pipeline ${this::class.simpleName} took ${duration.inWholeMilliseconds} ms" }
