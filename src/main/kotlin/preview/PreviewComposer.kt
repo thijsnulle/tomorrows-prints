@@ -43,6 +43,9 @@ data class Poster(
         prompt
     )
 }
+
+data class BatchPoster(val url: String, val prompt: String)
+
 abstract class PreviewComposer {
 
     private val logger = KotlinLogging.logger {}

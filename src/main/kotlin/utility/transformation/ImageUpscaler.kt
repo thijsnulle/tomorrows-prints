@@ -26,10 +26,12 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
             return upscale(downscaledImage, maxPixelsPerSide, true)
         }
 
-        // TODO: figure out if the `&& !deleteInput` is necessary
-        return when(output.exists() && !deleteInput) {
+        return when(output.exists()) {
             true -> upscale(output, maxPixelsPerSide, true)
-            false -> upscale(upscaler.upscale(input, output), maxPixelsPerSide, true)
+            false -> {
+                val upscaledImage = upscaler.upscale(input, output)
+                upscale(upscaledImage, maxPixelsPerSide, true)
+            }
         }
     }
 

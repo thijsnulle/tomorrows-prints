@@ -20,7 +20,7 @@ class ThemePrompter: OpenAIPrompter<Theme>(
     """.trimIndent(),
 
     examples = listOf(
-        Example("a poster with two people walking from one side of a platform on an orange background, in the style of minimalistic surrealism, dark red and light aquamarine, contrast of scale, art that plays with scale, long lens, high horizon lines, raw versus finished", "Minimalist"),
+        Example("a poster with two people walking from one side of a platform on an orange background, in the style of minimalistic surrealism, dark red and light aquamarine, contrast of scale, art that plays with scale, long lens, high horizon lines, raw versus finished", "Minimalism"),
         Example("an abstract painting of green and white animallike patterns, in the style of gary hume, organic simplicity, dark white and dark green, shaped canvases, leaf patterns, henri matisse, dappled", "Abstract"),
         Example("eight retro style cassette tapes in different colors, in the style of dark beige and violet, Alena Aenami, mechanical designs, creative commons attribution, Frank Quitely, industrial forms, neo-mosaic", "Vintage")
     )
