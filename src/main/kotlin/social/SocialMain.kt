@@ -2,22 +2,23 @@ package social
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import preview.Poster
 import preview.PosterJsonObject
+import social.pinterest.PinContent
 import social.pinterest.PinterestInfluencer
 import java.nio.file.Paths
+import java.util.Collections
+import kotlin.io.path.nameWithoutExtension
 
-fun socialMain() {
+fun main() {
     println("Input JSON for posting on socials:")
 
-    // TODO: move to `PosterUtils` class or add to `Poster` data class
-    val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json").toAbsolutePath()
-    val posters = Gson()
-        .fromJson<List<PosterJsonObject>>(
+    val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/social/schedule.json").toAbsolutePath()
+    val pinContents = Gson()
+        .fromJson<List<PinContent>>(
             input.toFile().bufferedReader().use { it.readText() },
-            object : TypeToken<List<PosterJsonObject>>() {}.type
-        ).map { it.toPoster() }
+            object : TypeToken<List<PinContent>>() {}.type
+        ).map { it }
 
-    val socialMediaInput: [
-
-    val influencer = PinterestInfluencer()
+    PinterestInfluencer().post(pinContents)
 }

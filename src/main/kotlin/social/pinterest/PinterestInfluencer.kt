@@ -1,10 +1,13 @@
 package social.pinterest
 
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
 import social.*
+import java.nio.file.Paths
 import java.time.Duration
 import kotlin.math.max
 import kotlin.time.measureTime
@@ -15,7 +18,7 @@ const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-creation-tool/"
 
 data class PinContent(val prompt: String, val listing: String, val theme: String, val preview: String)
 
-val TIME_BETWEEN_POSTS = Duration.ofMinutes(3).toKotlinDuration()
+val TIME_BETWEEN_POSTS = Duration.ofMinutes(1).toKotlinDuration()
 
 class PinterestInfluencer {
 
@@ -23,16 +26,36 @@ class PinterestInfluencer {
     private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
 
+    private val taggedTopics = listOf(
+        "art deco interior",
+        "bedroom",
+        "bedroom interior",
+        "diy gifts",
+        "diy wall art",
+        "graphic poster",
+        "living room",
+        "minimalist poster",
+        "retro poster",
+        "wall art",
+    )
+
+    init {
+        require(taggedTopics.size <= 10) { "Can only select up to 10 tagged topics." }
+    }
+
     fun post(posts: List<PinContent>) {
         login()
 
-        posts.forEach { post ->
+        posts.forEachIndexed { i, post ->
             val timeItTookToPost = measureTime {
                 // TODO: replace [link] in `content.description` with actual link to shop.
                 val content = prompter.ask(post.prompt)
 
                 createPin(content, post)
             }
+
+            saveCurrentPostSchedule(posts, i)
+            if (i == posts.lastIndex) return
 
             val delayDuration = max(0, TIME_BETWEEN_POSTS.minus(timeItTookToPost).inWholeMilliseconds)
             runBlocking { delay(delayDuration) }
@@ -60,20 +83,46 @@ class PinterestInfluencer {
 
         driver.get(CREATE_PIN_PAGE)
 
-        driver.sendKeys(preview, "//input[@aria-label='File Upload']")
+        driver.sendKeys(preview, "//input[@aria-label='File upload']")
         driver.sendKeys(title, "//input[@placeholder='Add a title']")
         driver.sendKeys(listing, "//input[@placeholder='Add a link']")
 
         driver.click("//div[@data-offset-key]")
         driver.sendKeys(description, "//div[@data-offset-key]")
 
+        // TODO: add theme selection
         driver.click("//button[@data-test-id='board-dropdown-select-button']")
-        driver.click("//div[@data-test-id='board-row-${theme} Posters']")
+        driver.click("//div[@data-test-id='board-row-All Posters']")
+
+        taggedTopics.forEach {
+            driver.sendKeys(it, "//input[@placeholder='Search for a tag']", withDelay = true)
+
+            driver.click("//div[text() = '$it']/..")
+            runBlocking { delay(500) }
+        }
 
         runBlocking { delay(1000) }
 
         driver.click("//div[text()='Publish']")
 
         driver.url("pinterest.com/pin")
+    }
+
+    private fun saveCurrentPostSchedule(pinContents: List<PinContent>, currentIndex: Int) {
+        val pinContentsToSave = pinContents.drop(currentIndex + 1)
+
+        val content = GsonBuilder().setPrettyPrinting().create().toJson(pinContentsToSave.map {
+            val jsonObject = JsonObject()
+
+            jsonObject.addProperty("prompt", it.prompt)
+            jsonObject.addProperty("listing", it.listing)
+            jsonObject.addProperty("theme", it.theme)
+            jsonObject.addProperty("preview", it.preview)
+
+            jsonObject
+        })
+
+        val output = Paths.get("src/main/resources/social/schedule.json")
+        output.toFile().bufferedWriter().use { it.write(content) }
     }
 }

@@ -1,5 +1,7 @@
 package social
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.By.ByXPath
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
@@ -35,5 +37,12 @@ fun WebDriver.click(xpath: String) {
 
 fun WebDriver.url(url: String): Boolean = WebDriverWait(this, timeout).until(urlMatches(url))
 
-fun WebDriver.sendKeys(keys: String, xpath: String) = this.find(xpath).sendKeys(keys)
-fun WebDriver.sendKeys(path: Path, xpath: String) = this.sendKeys(path.toString(), xpath)
+fun WebDriver.sendKeys(keys: String, xpath: String, withDelay: Boolean = false) {
+        if (!withDelay) return this.find(xpath).sendKeys(keys)
+
+        val element = this.find(xpath)
+        keys.forEach {
+            element.sendKeys("$it")
+            runBlocking { delay(100) }
+        }
+}
