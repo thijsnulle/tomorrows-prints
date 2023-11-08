@@ -3,6 +3,7 @@ package social
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.By.ByXPath
+import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.Actions
@@ -15,12 +16,17 @@ val timeout: Duration = Duration.ofSeconds(60)
 val interval: Duration = Duration.ofMillis(100)
 
 fun WebDriver.find(xpath: String): WebElement {
-        val element = WebDriverWait(this, timeout, interval)
-                .until(presenceOfElementLocated(ByXPath(xpath)))
+    val element = try {
+        WebDriverWait(this, timeout, interval)
+            .until(presenceOfElementLocated(ByXPath(xpath)))
+    } catch (_: Exception) {
+        WebDriverWait(this, timeout, interval)
+            .until(presenceOfElementLocated(ByXPath(xpath)))
+    }
 
-        Actions(this).moveToElement(element).perform()
+    Actions(this).moveToElement(element).perform()
 
-        return element
+    return element
 }
 
 fun WebDriver.invisible(xpath: String): Boolean = WebDriverWait(this, timeout, interval)
@@ -32,17 +38,21 @@ fun WebDriver.click(xpath: String) {
 
         Actions(this).moveToElement(element).perform()
 
-        return element.click()
+        try {
+            element.click()
+        } catch (_: Exception) {
+            this.click(xpath)
+        }
 }
 
 fun WebDriver.url(url: String): Boolean = WebDriverWait(this, timeout).until(urlMatches(url))
 
 fun WebDriver.sendKeys(keys: String, xpath: String, withDelay: Boolean = false) {
-        if (!withDelay) return this.find(xpath).sendKeys(keys)
+    if (!withDelay) return this.find(xpath).sendKeys(keys)
 
-        val element = this.find(xpath)
-        keys.forEach {
-            element.sendKeys("$it")
-            runBlocking { delay(100) }
-        }
+    val element = this.find(xpath)
+    keys.forEach {
+        element.sendKeys("$it")
+        runBlocking { delay(100) }
+    }
 }

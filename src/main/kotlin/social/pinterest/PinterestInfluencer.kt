@@ -43,6 +43,7 @@ class PinterestInfluencer {
         require(taggedTopics.size <= 10) { "Can only select up to 10 tagged topics." }
     }
 
+    // TODO: add support for multiple different schedule files.
     fun post(posts: List<PinContent>) {
         login()
 
