@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import social.*
 import utility.files.Files
 import utility.files.JsonMappable
+import java.nio.file.Path
 import java.time.Duration
 import kotlin.math.max
 import kotlin.time.measureTime
@@ -55,8 +56,9 @@ class PinterestInfluencer {
         require(taggedTopics.size <= 10) { "Can only select up to 10 tagged topics." }
     }
 
-    // TODO: add support for multiple different schedule files.
-    fun post(posts: List<PinContent>) {
+    fun post(scheduleJson: Path) {
+        val posts = Files.loadFromJson<PinContent>(scheduleJson)
+
         login()
 
         posts.forEachIndexed { i, post ->
@@ -67,7 +69,7 @@ class PinterestInfluencer {
                 createPin(content, post)
             }
 
-            saveCurrentPostSchedule(posts, i)
+            saveCurrentPostSchedule(scheduleJson, posts, i)
             if (i == posts.lastIndex) return
 
             val delayDuration = max(0, TIME_BETWEEN_POSTS.minus(timeItTookToPost).inWholeMilliseconds)
@@ -121,7 +123,7 @@ class PinterestInfluencer {
         driver.url("pinterest.com/pin")
     }
 
-    private fun saveCurrentPostSchedule(pinContents: List<PinContent>, currentIndex: Int) {
+    private fun saveCurrentPostSchedule(scheduleJson: Path, pinContents: List<PinContent>, currentIndex: Int) {
         val pinContentsToSave = pinContents.drop(currentIndex + 1)
 
         val content = GsonBuilder().setPrettyPrinting().create().toJson(pinContentsToSave.map {
@@ -135,7 +137,6 @@ class PinterestInfluencer {
             jsonObject
         })
 
-        val output = Files.social.resolve("schedule.json")
-        output.toFile().bufferedWriter().use { it.write(content) }
+        scheduleJson.toFile().bufferedWriter().use { it.write(content) }
     }
 }
