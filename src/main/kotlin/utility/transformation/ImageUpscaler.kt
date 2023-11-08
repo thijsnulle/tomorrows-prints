@@ -8,12 +8,12 @@ import kotlin.io.path.exists
 import kotlin.io.path.name
 import kotlin.math.max
 
-const val MAX_PIXELS_PER_SIDE_POSTER = 10800
+const val MAX_PIXELS_PER_SIDE_PRINT = 10800
 const val SCALE_FACTOR = 4
 
 class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
 
-    fun upscale(input: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER, deleteInput: Boolean = false): Path {
+    fun upscale(input: Path, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_PRINT, deleteInput: Boolean = false): Path {
         val image = ImmutableImage.loader().fromPath(input)
         val output = if (deleteInput) input else input.parent.resolve("upscaled/${input.name}")
 
@@ -25,7 +25,7 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
             return upscale(downscaledImage, maxPixelsPerSide, true)
         }
 
-        return when(output.exists()) {
+        return when(output.exists() && !deleteInput) {
             true -> upscale(output, maxPixelsPerSide, true)
             false -> {
                 val upscaledImage = upscaler.upscale(input, output)

@@ -12,26 +12,26 @@ import kotlin.io.path.*
 fun main() {
     print("""
         Please select what you want to do:
-          [1] Load posters from backup file.
-          [2] Load posters from batch file.
+          [1] Load prints from backup file.
+          [2] Load prints from batch file.
         
         Selected choice: 
     """.trimIndent())
 
     val choice = readln().ifEmpty { null } ?: "1"
 
-    println("Input file, empty for test file: ")
+    println("\nInput file, empty for test file: ")
     val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json").toAbsolutePath()
 
     val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
             Files.loadFromJson<BatchPrint>(input).map { it.toPrint() }
 
     require(prints.all { it.path.exists() }) {
-        "\nThe following image files do not exist in the `posters` folder:\n -" +
+        "\nThe following image files do not exist in the `prints` folder:\n -" +
         prints.filterNot { it.path.exists() }.joinToString("\n -") { it.path.toString() }
     }
 
-    val processedPosters: List<Print> = listOf(
+    val processedPrints: List<Print> = listOf(
         ThemeAllocationStep(),
         ThumbnailGenerationStep(),
         PreviewGenerationStep(),
@@ -39,7 +39,7 @@ fun main() {
         PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
-    createPinSchedule(processedPosters, Files.social.resolve("schedule.json").toAbsolutePath())
+    createPinSchedule(processedPrints, Files.social.resolve("schedule.json").toAbsolutePath())
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {

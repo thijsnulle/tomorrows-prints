@@ -10,10 +10,10 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
 const val SIZE = 2048
-const val POSTER_WIDTH = 768
-const val POSTER_HEIGHT = 1152
-const val POSTER_X = (SIZE - POSTER_WIDTH) / 2
-const val POSTER_Y = (SIZE - POSTER_HEIGHT) / 2
+const val PRINT_WIDTH = 768
+const val PRINT_HEIGHT = 1152
+const val PRINT_X = (SIZE - PRINT_WIDTH) / 2
+const val PRINT_Y = (SIZE - PRINT_HEIGHT) / 2
 
 // TODO: add support for horizontal posters
 class SimplePreviewComposer : PreviewComposer() {
@@ -30,12 +30,12 @@ class SimplePreviewComposer : PreviewComposer() {
         .listDirectoryEntries("*.png").map { loader.fromPath(it) }
 
     override fun compose(print: Print): Print {
-        val posterImage = loader.fromPath(print.path).cover(POSTER_WIDTH, POSTER_HEIGHT)
+        val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
         val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension).toAbsolutePath()
 
         val previews = backgrounds.flatMap { background ->
             frames.map { frame -> background
-                .overlay(posterImage, POSTER_X, POSTER_Y)
+                .overlay(printImage, PRINT_X, PRINT_Y)
                 .overlay(frame)
                 .output(PngWriter(), outputFolder.resolve("${UUID.randomUUID()}.png"))
             }

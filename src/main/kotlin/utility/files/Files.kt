@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -25,7 +26,7 @@ class Files {
 
         val social: Path = resources.resolve("social")
 
-        fun <T> loadFromJson(json: Path): List<T> = Gson()
+        inline fun <reified T> loadFromJson(json: Path): List<T> = Gson()
             .fromJson(json.toFile().bufferedReader().use { it.readText() }, object : TypeToken<List<T>>() {}.type)
 
         fun <T> storeAsJson(objects: List<T>, output: Path) where T : JsonMappable {

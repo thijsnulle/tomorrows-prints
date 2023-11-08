@@ -1,7 +1,7 @@
 package utility.transformation
 
 import com.sksamuel.scrimage.nio.ImmutableImageLoader
-import preview.Poster
+import model.Print
 import java.awt.Color
 import java.nio.file.Paths
 import kotlin.test.Test
@@ -14,12 +14,12 @@ class ThumbnailGeneratorTest {
 
     @Test
     fun testGenerateSimpleThumbnail() {
-        val poster = Poster(
+        val print = Print(
             Paths.get("src/test/resources/images/posters/poster.png").toAbsolutePath(),
             ""
         )
 
-        val thumbnailPath = generator.generateThumbnail(poster)
+        val thumbnailPath = generator.generateThumbnail(print)
         val thumbnailImage = loader.fromPath(thumbnailPath)
 
         val cornerPixels = listOf(

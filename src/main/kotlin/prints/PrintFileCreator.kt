@@ -18,10 +18,10 @@ class PrintFileCreator {
     fun create(print: Print): Print {
         require(print.theme != Theme.DEFAULT) { "${print.path.name} should have a theme associated with it." }
 
-        val upscaledPoster = upscaler.upscale(print.path)
+        val upscaledPrint = upscaler.upscale(print.path)
         val fileName = "${print.theme.value}/${print.path.fileName}"
 
-        bucket.create(fileName, Files.readAllBytes(upscaledPoster))
+        bucket.create(fileName, Files.readAllBytes(upscaledPrint))
 
         // TODO: add Google Cloud Storage URL to .env file
         return print.copy(printFileUrl = "https://storage.googleapis.com/tomorrows-prints/$fileName")
