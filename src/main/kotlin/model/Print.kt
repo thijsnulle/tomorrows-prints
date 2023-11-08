@@ -20,6 +20,7 @@ data class Print(
     val theme: Theme = Theme.DEFAULT,
     val previews: List<Path> = emptyList(),
     val thumbnail: Path = Paths.get(""),
+    val printFile: Path = Paths.get(""),
     val printFileUrl: String = "",
     val listingUrl: String = "",
 ) : JsonMappable {
@@ -40,6 +41,7 @@ data class Print(
         jsonObject.add("previews", previews)
 
         jsonObject.addProperty("thumbnail", thumbnail.toString())
+        jsonObject.addProperty("printFile", printFile.toString())
         jsonObject.addProperty("printFileUrl", printFileUrl)
 
         return jsonObject
@@ -52,6 +54,7 @@ data class JsonPrint(
     val theme: String?,
     val previews: List<String>?,
     val thumbnail: String?,
+    val printFile: String?,
     val printFileUrl: String?,
     val listingUrl: String?,
 ) {
@@ -61,6 +64,7 @@ data class JsonPrint(
         if (theme == null) Theme.DEFAULT else Theme.valueOf(theme.uppercase()),
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         Path(thumbnail ?: ""),
+        Path(printFile ?: ""),
         printFileUrl ?: "",
         listingUrl ?: "",
     )

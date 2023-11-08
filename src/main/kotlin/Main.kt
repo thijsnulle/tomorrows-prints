@@ -20,7 +20,7 @@ fun main() {
 
     val choice = readln().ifEmpty { null } ?: "1"
 
-    println("\nInput file, empty for test file: ")
+    println("\nInput file, leave empty to use default.json: ")
     val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json").toAbsolutePath()
 
     val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
@@ -36,6 +36,7 @@ fun main() {
         ThumbnailGenerationStep(),
         PreviewGenerationStep(),
         PrintFileCreationStep(),
+        PrintFileUploadStep(),
         PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 

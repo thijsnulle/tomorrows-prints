@@ -1,6 +1,12 @@
 package pipeline
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import model.Print
 import utility.files.Files
 import java.time.ZonedDateTime
@@ -8,7 +14,8 @@ import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
-abstract class PipelineStep {
+abstract class PipelineStep(private val maximumThreads: Int = 10) {
+
     private val logger = KotlinLogging.logger {}
     private val backupPath = Files.backups.toAbsolutePath()
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
@@ -21,8 +28,18 @@ abstract class PipelineStep {
 
         logger.info { "Starting ${this::class.simpleName}" }
 
+        val semaphore = Semaphore(maximumThreads)
+
         val (processedPrints: List<Print>, duration: Duration) = measureTimedValue {
-            prints.map { if (shouldSkip(it)) it else process(it) }
+            runBlocking {
+                prints.map {
+                    async(Dispatchers.Default) {
+                        semaphore.withPermit {
+                            if (shouldSkip(it)) it else process(it)
+                        }
+                    }
+                }.awaitAll()
+            }
         }
 
         backup(processedPrints)
