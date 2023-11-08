@@ -3,7 +3,7 @@ package utility.transformation
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.ImmutableImageLoader
 import com.sksamuel.scrimage.nio.PngWriter
-import preview.Poster
+import model.Print
 import java.awt.Color
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -18,11 +18,11 @@ class ThumbnailGenerator {
 
     private val backgroundColor = Color.decode("#A7C7E7")
 
-    fun generateThumbnail(poster: Poster): Path {
-        val print = ImmutableImageLoader().fromPath(poster.path)
+    fun generateThumbnail(print: Print): Path {
+        val image = ImmutableImageLoader().fromPath(print.path)
 
-        val width = if (print.width > print.height) SIZE else SIZE * print.width / print.height
-        val height = if (print.height > print.width) SIZE else SIZE * print.height / print.width
+        val width = if (image.width > image.height) SIZE else SIZE * image.width / image.height
+        val height = if (image.height > image.width) SIZE else SIZE * image.height / image.width
 
         val x = (SIZE - width) / 2 + TOTAL_MARGIN
         val y = (SIZE - height) / 2 + TOTAL_MARGIN
@@ -32,10 +32,10 @@ class ThumbnailGenerator {
 
         return background
             .overlay(border, x - INNER_MARGIN, y - INNER_MARGIN)
-            .overlay(print.cover(width, height), x, y)
+            .overlay(image.cover(width, height), x, y)
             .output(
                 PngWriter(),
-                Paths.get("src/main/resources/images/thumbnails/${poster.path.name}").toAbsolutePath()
+                Paths.get("src/main/resources/images/thumbnails/${print.path.name}").toAbsolutePath()
             )
     }
 }

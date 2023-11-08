@@ -4,7 +4,6 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
-import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.name
 import kotlin.math.max
@@ -34,8 +33,6 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
             }
         }
     }
-
-    fun upscale(input: String, maxPixelsPerSide: Int = MAX_PIXELS_PER_SIDE_POSTER, deleteInput: Boolean = false): Path = upscale(Path(input), maxPixelsPerSide, deleteInput)
 
     private fun downscale(image: ImmutableImage, output: Path, maxPixelsPerSide: Int): Path {
         KotlinLogging.logger {}.info { "Downscaling ${output.fileName} to $maxPixelsPerSide pixels" }

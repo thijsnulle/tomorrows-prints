@@ -1,12 +1,12 @@
 package pipeline.steps
 
+import model.Print
 import pipeline.PipelineStep
-import preview.Poster
 import preview.SimplePreviewComposer
 
 class PreviewGenerationStep: PipelineStep() {
     private val composer = SimplePreviewComposer()
 
-    override fun process(poster: Poster): Poster = composer.composePreviewsFor(poster)
-    override fun shouldSkip(poster: Poster): Boolean = poster.previews.isNotEmpty()
+    override fun process(print: Print): Print = composer.composePreviewsFor(print)
+    override fun shouldSkip(print: Print): Boolean = print.previews.isNotEmpty()
 }

@@ -2,8 +2,9 @@ package preview
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
+import model.Print
+import utility.files.Files
 import java.awt.Color
-import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
@@ -25,12 +26,12 @@ class SimplePreviewComposer : PreviewComposer() {
         Color(240, 240, 255),
     ).map { ImmutableImage.filled(SIZE, SIZE, it) }
 
-    private val frames = Paths.get("src/main/resources/images/frames").toAbsolutePath()
+    private val frames = Files.frames.toAbsolutePath()
         .listDirectoryEntries("*.png").map { loader.fromPath(it) }
 
-    override fun compose(poster: Poster): Poster {
-        val posterImage = loader.fromPath(poster.path).cover(POSTER_WIDTH, POSTER_HEIGHT)
-        val outputFolder = Paths.get("src/main/resources/images/previews/${poster.path.nameWithoutExtension}").toAbsolutePath()
+    override fun compose(print: Print): Print {
+        val posterImage = loader.fromPath(print.path).cover(POSTER_WIDTH, POSTER_HEIGHT)
+        val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension).toAbsolutePath()
 
         val previews = backgrounds.flatMap { background ->
             frames.map { frame -> background
@@ -40,7 +41,7 @@ class SimplePreviewComposer : PreviewComposer() {
             }
         }
 
-        return poster.copy(previews = previews)
+        return print.copy(previews = previews)
     }
 }
 

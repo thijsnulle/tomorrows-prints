@@ -7,7 +7,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
 import social.*
-import java.nio.file.Paths
+import utility.files.Files
+import utility.files.JsonMappable
 import java.time.Duration
 import kotlin.math.max
 import kotlin.time.measureTime
@@ -16,7 +17,18 @@ import kotlin.time.toKotlinDuration
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-creation-tool/"
 
-data class PinContent(val prompt: String, val listing: String, val theme: String, val preview: String)
+data class PinContent(val prompt: String, val listing: String, val theme: String, val preview: String) : JsonMappable {
+    override fun toJson(): JsonObject {
+        val jsonObject = JsonObject()
+
+        jsonObject.addProperty("prompt", prompt)
+        jsonObject.addProperty("listing", listing)
+        jsonObject.addProperty("theme", theme)
+        jsonObject.addProperty("preview", preview)
+
+        return jsonObject
+    }
+}
 
 val TIME_BETWEEN_POSTS = Duration.ofMinutes(1).toKotlinDuration()
 
@@ -123,7 +135,7 @@ class PinterestInfluencer {
             jsonObject
         })
 
-        val output = Paths.get("src/main/resources/social/schedule.json")
+        val output = Files.social.resolve("schedule.json")
         output.toFile().bufferedWriter().use { it.write(content) }
     }
 }

@@ -2,13 +2,9 @@ package social
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import preview.Poster
-import preview.PosterJsonObject
 import social.pinterest.PinContent
 import social.pinterest.PinterestInfluencer
 import java.nio.file.Paths
-import java.util.Collections
-import kotlin.io.path.nameWithoutExtension
 
 fun main() {
     println("Input JSON for posting on socials:")

@@ -1,8 +1,8 @@
 package pipeline.steps
 
 import kotlinx.serialization.json.*
+import model.Print
 import pipeline.PipelineStep
-import preview.Poster
 import utility.http.PrintfulHttpHandler
 import kotlin.io.path.nameWithoutExtension
 
@@ -10,11 +10,11 @@ class PrintfulStep: PipelineStep() {
 
     private val httpHandler = PrintfulHttpHandler()
     private val variants = listOf(
-        PosterVariant(1349, 10.95),
-        PosterVariant(3876, 10.95),
-        PosterVariant(1, 12.50),
-        PosterVariant(16365, 14.25),
-        PosterVariant(1, 17.50)
+        PrintVariant(1349, 10.95),
+        PrintVariant(3876, 10.95),
+        PrintVariant(1, 12.50),
+        PrintVariant(16365, 14.25),
+        PrintVariant(1, 17.50)
     )
 
     private fun createJsonBody(name: String, thumbnail: String, printFile: String, preview: String): String {
@@ -44,15 +44,15 @@ class PrintfulStep: PipelineStep() {
         }.toString()
     }
 
-    override fun process(poster: Poster): Poster {
-            val body = createJsonBody(poster.path.nameWithoutExtension, poster.printFileUrl, poster.printFileUrl, poster.printFileUrl)
+    override fun process(print: Print): Print {
+            val body = createJsonBody(print.path.nameWithoutExtension, print.printFileUrl, print.printFileUrl, print.printFileUrl)
 
             httpHandler.post("https://api.printful.com/store/products", body)
-            return poster
+            return print
         }
 
     // TODO: Add isInStore field to json for check
-    override fun shouldSkip(poster: Poster): Boolean = true
+    override fun shouldSkip(print: Print): Boolean = true
 }
 
-private data class PosterVariant(val id: Int, val price: Double)
+private data class PrintVariant(val id: Int, val price: Double)
