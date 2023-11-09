@@ -2,9 +2,11 @@ package preview
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
+import kotlinx.coroutines.*
 import model.Print
 import utility.files.Files
 import java.awt.Color
+import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
@@ -28,20 +30,27 @@ class SimplePreviewComposer : PreviewComposer() {
 
     private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
 
-    override fun compose(print: Print): Print {
+    override fun compose(print: Print): Print = runBlocking {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
         val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension)
 
-        // TODO: investigate co-routines for the for-loop
         val previews = backgrounds.flatMap { background ->
-            frames.map { frame -> background
-                .overlay(printImage, PRINT_X, PRINT_Y)
-                .overlay(frame)
-                .output(PngWriter(), outputFolder.resolve("${UUID.randomUUID()}.png"))
+            frames.map { frame ->
+                async(Dispatchers.Default) {
+                    processImage(background, frame, printImage, outputFolder)
+                }
             }
-        }
+        }.awaitAll()
 
-        return print.copy(previews = previews)
+        print.copy(previews = previews)
+    }
+
+    private fun processImage(background: ImmutableImage, frame: ImmutableImage, print: ImmutableImage, outputFolder: Path): Path {
+        return background
+            .overlay(print, PRINT_X, PRINT_Y)
+            .overlay(frame)
+            .output(PngWriter(), outputFolder.resolve("${UUID.randomUUID()}.png"))
     }
 }
+
 
