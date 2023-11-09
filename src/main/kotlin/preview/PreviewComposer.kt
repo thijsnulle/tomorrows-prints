@@ -12,8 +12,7 @@ abstract class PreviewComposer {
     fun composePreviewsFor(print: Print): Print {
         logger.info { "Generating previews for ${print.path.fileName}" }
 
-        val directory = Files.previews.resolve(print.path.nameWithoutExtension).toAbsolutePath()
-
+        val directory = Files.previews.resolve(print.path.nameWithoutExtension)
         if (directory.exists()) {
             logger.info { "Previews for ${print.path.fileName} already exist, returning existing previews." }
 

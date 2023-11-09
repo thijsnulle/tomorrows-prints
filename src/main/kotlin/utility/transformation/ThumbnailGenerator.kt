@@ -4,9 +4,9 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.ImmutableImageLoader
 import com.sksamuel.scrimage.nio.PngWriter
 import model.Print
+import utility.files.Files
 import java.awt.Color
 import java.nio.file.Path
-import java.nio.file.Paths
 import kotlin.io.path.name
 
 const val SIZE: Int = 900
@@ -33,9 +33,6 @@ class ThumbnailGenerator {
         return background
             .overlay(border, x - INNER_MARGIN, y - INNER_MARGIN)
             .overlay(image.cover(width, height), x, y)
-            .output(
-                PngWriter(),
-                Paths.get("src/main/resources/images/thumbnails/${print.path.name}").toAbsolutePath()
-            )
+            .output(PngWriter(), Files.thumbnails.resolve(print.path.name))
     }
 }

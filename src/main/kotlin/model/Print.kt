@@ -24,10 +24,7 @@ data class Print(
     val printFileUrl: String = "",
     val listingUrl: String = "",
 ) : JsonMappable {
-    constructor(fileName: String, prompt: String): this(
-        Files.prints.resolve(fileName).toAbsolutePath(),
-        prompt
-    )
+    constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
 
     override fun toJson(): JsonObject {
         val jsonObject = JsonObject()
@@ -59,7 +56,7 @@ data class JsonPrint(
     val listingUrl: String?,
 ) {
     fun toPrint() = Print(
-        Files.prints.resolve(path).toAbsolutePath(),
+        Files.prints.resolve(path),
         prompt,
         if (theme == null) Theme.DEFAULT else Theme.valueOf(theme.uppercase()),
         previews?.map { preview -> Path(preview) } ?: emptyList(),

@@ -26,13 +26,13 @@ class SimplePreviewComposer : PreviewComposer() {
         Color(240, 240, 255),
     ).map { ImmutableImage.filled(SIZE, SIZE, it) }
 
-    private val frames = Files.frames.toAbsolutePath()
-        .listDirectoryEntries("*.png").map { loader.fromPath(it) }
+    private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
 
     override fun compose(print: Print): Print {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
-        val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension).toAbsolutePath()
+        val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension)
 
+        // TODO: investigate co-routines for the for-loop
         val previews = backgrounds.flatMap { background ->
             frames.map { frame -> background
                 .overlay(printImage, PRINT_X, PRINT_Y)
