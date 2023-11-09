@@ -7,5 +7,5 @@ import utility.transformation.upscaleWithRealESRGAN
 class PrintFileCreator {
     private val upscaler = ImageUpscaler(upscaleWithRealESRGAN)
 
-    fun create(print: Print): Print = print.copy(printFile = upscaler.upscale(print.path, 4000))
+    fun create(print: Print): Print = print.copy(printFile = upscaler.upscale(print.path))
 }
