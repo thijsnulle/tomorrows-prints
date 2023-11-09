@@ -7,7 +7,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.chrome.ChromeDriver
 import social.*
-import java.nio.file.Paths
+import utility.files.Files
+import utility.files.JsonMappable
+import java.nio.file.Path
 import java.time.Duration
 import kotlin.math.max
 import kotlin.time.measureTime
@@ -16,7 +18,18 @@ import kotlin.time.toKotlinDuration
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-creation-tool/"
 
-data class PinContent(val prompt: String, val listing: String, val theme: String, val preview: String)
+data class PinContent(val prompt: String, val listing: String, val theme: String, val preview: String) : JsonMappable {
+    override fun toJson(): JsonObject {
+        val jsonObject = JsonObject()
+
+        jsonObject.addProperty("prompt", prompt)
+        jsonObject.addProperty("listing", listing)
+        jsonObject.addProperty("theme", theme)
+        jsonObject.addProperty("preview", preview)
+
+        return jsonObject
+    }
+}
 
 val TIME_BETWEEN_POSTS = Duration.ofMinutes(1).toKotlinDuration()
 
@@ -25,6 +38,7 @@ class PinterestInfluencer {
     private val driver = ChromeDriver()
     private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
+    private val gson = GsonBuilder().setPrettyPrinting().create()
 
     private val taggedTopics = listOf(
         "art deco interior",
@@ -43,8 +57,9 @@ class PinterestInfluencer {
         require(taggedTopics.size <= 10) { "Can only select up to 10 tagged topics." }
     }
 
-    // TODO: add support for multiple different schedule files.
-    fun post(posts: List<PinContent>) {
+    fun post(scheduleJson: Path) {
+        val posts = Files.loadFromJson<PinContent>(scheduleJson)
+
         login()
 
         posts.forEachIndexed { i, post ->
@@ -55,7 +70,7 @@ class PinterestInfluencer {
                 createPin(content, post)
             }
 
-            saveCurrentPostSchedule(posts, i)
+            saveCurrentPostSchedule(scheduleJson, posts, i)
             if (i == posts.lastIndex) return
 
             val delayDuration = max(0, TIME_BETWEEN_POSTS.minus(timeItTookToPost).inWholeMilliseconds)
@@ -109,21 +124,10 @@ class PinterestInfluencer {
         driver.url("pinterest.com/pin")
     }
 
-    private fun saveCurrentPostSchedule(pinContents: List<PinContent>, currentIndex: Int) {
-        val pinContentsToSave = pinContents.drop(currentIndex + 1)
+    private fun saveCurrentPostSchedule(scheduleJson: Path, pinContents: List<PinContent>, currentIndex: Int) {
+        val pinContentsToSave = pinContents.drop(currentIndex + 1).map { it.toJson() }
+        val content = gson.toJson(pinContentsToSave)
 
-        val content = GsonBuilder().setPrettyPrinting().create().toJson(pinContentsToSave.map {
-            val jsonObject = JsonObject()
-
-            jsonObject.addProperty("prompt", it.prompt)
-            jsonObject.addProperty("listing", it.listing)
-            jsonObject.addProperty("theme", it.theme)
-            jsonObject.addProperty("preview", it.preview)
-
-            jsonObject
-        })
-
-        val output = Paths.get("src/main/resources/social/schedule.json")
-        output.toFile().bufferedWriter().use { it.write(content) }
+        scheduleJson.toFile().bufferedWriter().use { it.write(content) }
     }
 }

@@ -2,17 +2,18 @@ package preview
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
+import model.Print
+import utility.files.Files
 import java.awt.Color
-import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
 const val SIZE = 2048
-const val POSTER_WIDTH = 768
-const val POSTER_HEIGHT = 1152
-const val POSTER_X = (SIZE - POSTER_WIDTH) / 2
-const val POSTER_Y = (SIZE - POSTER_HEIGHT) / 2
+const val PRINT_WIDTH = 768
+const val PRINT_HEIGHT = 1152
+const val PRINT_X = (SIZE - PRINT_WIDTH) / 2
+const val PRINT_Y = (SIZE - PRINT_HEIGHT) / 2
 
 // TODO: add support for horizontal posters
 class SimplePreviewComposer : PreviewComposer() {
@@ -25,22 +26,22 @@ class SimplePreviewComposer : PreviewComposer() {
         Color(240, 240, 255),
     ).map { ImmutableImage.filled(SIZE, SIZE, it) }
 
-    private val frames = Paths.get("src/main/resources/images/frames").toAbsolutePath()
+    private val frames = Files.frames.toAbsolutePath()
         .listDirectoryEntries("*.png").map { loader.fromPath(it) }
 
-    override fun compose(poster: Poster): Poster {
-        val posterImage = loader.fromPath(poster.path).cover(POSTER_WIDTH, POSTER_HEIGHT)
-        val outputFolder = Paths.get("src/main/resources/images/previews/${poster.path.nameWithoutExtension}").toAbsolutePath()
+    override fun compose(print: Print): Print {
+        val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
+        val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension).toAbsolutePath()
 
         val previews = backgrounds.flatMap { background ->
             frames.map { frame -> background
-                .overlay(posterImage, POSTER_X, POSTER_Y)
+                .overlay(printImage, PRINT_X, PRINT_Y)
                 .overlay(frame)
                 .output(PngWriter(), outputFolder.resolve("${UUID.randomUUID()}.png"))
             }
         }
 
-        return poster.copy(previews = previews)
+        return print.copy(previews = previews)
     }
 }
 

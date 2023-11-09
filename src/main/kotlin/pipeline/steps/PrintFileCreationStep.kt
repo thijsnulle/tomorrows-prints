@@ -1,12 +1,12 @@
 package pipeline.steps
 
+import model.Print
 import pipeline.PipelineStep
-import preview.Poster
 import prints.PrintFileCreator
 
-class PrintFileCreationStep: PipelineStep() {
+class PrintFileCreationStep: PipelineStep(maximumThreads = 6) {
     private val printFileCreator = PrintFileCreator()
 
-    override fun process(poster: Poster): Poster = printFileCreator.create(poster)
-    override fun shouldSkip(poster: Poster): Boolean = poster.printFileUrl.isNotEmpty()
+    override fun process(print: Print): Print = printFileCreator.create(print)
+    override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isNotEmpty()
 }
