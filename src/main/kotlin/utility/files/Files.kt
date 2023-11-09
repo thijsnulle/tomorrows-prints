@@ -14,6 +14,7 @@ interface JsonMappable {
 class Files {
     companion object {
         private val resources = Paths.get("src/main/resources")
+        private val gson = GsonBuilder().setPrettyPrinting().create()
 
         val backups: Path = resources.resolve("backups")
 
@@ -29,7 +30,7 @@ class Files {
             .fromJson(json.toFile().bufferedReader().use { it.readText() }, object : TypeToken<List<T>>() {}.type)
 
         fun <T> storeAsJson(objects: List<T>, output: Path) where T : JsonMappable {
-            val jsonContent = GsonBuilder().setPrettyPrinting().create().toJson(objects.map { it.toJson() })
+            val jsonContent = gson.toJson(objects.map { it.toJson() })
             output.toFile().bufferedWriter().use { it.write(jsonContent) }
         }
     }

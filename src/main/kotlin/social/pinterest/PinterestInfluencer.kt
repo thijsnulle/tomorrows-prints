@@ -38,6 +38,7 @@ class PinterestInfluencer {
     private val driver = ChromeDriver()
     private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
+    private val gson = GsonBuilder().setPrettyPrinting().create()
 
     private val taggedTopics = listOf(
         "art deco interior",
@@ -124,18 +125,8 @@ class PinterestInfluencer {
     }
 
     private fun saveCurrentPostSchedule(scheduleJson: Path, pinContents: List<PinContent>, currentIndex: Int) {
-        val pinContentsToSave = pinContents.drop(currentIndex + 1)
-
-        val content = GsonBuilder().setPrettyPrinting().create().toJson(pinContentsToSave.map {
-            val jsonObject = JsonObject()
-
-            jsonObject.addProperty("prompt", it.prompt)
-            jsonObject.addProperty("listing", it.listing)
-            jsonObject.addProperty("theme", it.theme)
-            jsonObject.addProperty("preview", it.preview)
-
-            jsonObject
-        })
+        val pinContentsToSave = pinContents.drop(currentIndex + 1).map { it.toJson() }
+        val content = gson.toJson(pinContentsToSave)
 
         scheduleJson.toFile().bufferedWriter().use { it.write(content) }
     }
