@@ -21,7 +21,7 @@ fun main() {
     val choice = readln().ifEmpty { null } ?: "1"
 
     println("\nInput file, leave empty to use default.json: ")
-    val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json").toAbsolutePath()
+    val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json")
 
     val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
             Files.loadFromJson<BatchPrint>(input).map { it.toPrint() }
@@ -40,7 +40,7 @@ fun main() {
         PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
-    createPinSchedule(processedPrints, Files.social.resolve("schedule.json").toAbsolutePath())
+    createPinSchedule(processedPrints, Files.social.resolve("schedule.json"))
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {

@@ -17,7 +17,6 @@ import kotlin.time.measureTimedValue
 abstract class PipelineStep(private val maximumThreads: Int = 10) {
 
     private val logger = KotlinLogging.logger {}
-    private val backupPath = Files.backups.toAbsolutePath()
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
 
     fun start(prints: List<Print>): List<Print> {
@@ -55,6 +54,6 @@ abstract class PipelineStep(private val maximumThreads: Int = 10) {
     private fun backup(prints: List<Print>) {
         val fileName = "${dateFormatter.format(ZonedDateTime.now())}-${this::class.simpleName}.json"
 
-        Files.storeAsJson(prints, backupPath.resolve(fileName).toAbsolutePath())
+        Files.storeAsJson(prints, Files.backups.resolve(fileName))
     }
 }
