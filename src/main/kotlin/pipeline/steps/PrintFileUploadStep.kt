@@ -6,6 +6,7 @@ import model.Print
 import pipeline.PipelineStep
 import theme.Theme
 import java.nio.file.Files
+import kotlin.io.path.Path
 import kotlin.io.path.name
 
 class PrintFileUploadStep: PipelineStep(maximumThreads = 1) {
@@ -19,7 +20,8 @@ class PrintFileUploadStep: PipelineStep(maximumThreads = 1) {
 
         val fileName = "${print.theme.value}/${print.path.fileName}"
 
-        bucket.create(fileName, Files.readAllBytes(print.printFile))
+        val printFilePath = Path(print.printFile)
+        bucket.create(fileName, Files.readAllBytes(printFilePath))
 
         return print.copy(printFileUrl = "https://storage.googleapis.com/$bucketId/$fileName")
     }
