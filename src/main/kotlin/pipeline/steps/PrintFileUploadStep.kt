@@ -21,7 +21,7 @@ class PrintFileUploadStep: PipelineStep(maximumThreads = 1) {
         val fileName = "${print.theme.value}/${print.path.fileName}"
 
         val printFilePath = Path(print.printFile)
-        bucket.create(fileName, Files.readAllBytes(printFilePath))
+        bucket.create(fileName, Files.readAllBytes(printFilePath), "image/png")
 
         return print.copy(printFileUrl = "https://storage.googleapis.com/$bucketId/$fileName")
     }
