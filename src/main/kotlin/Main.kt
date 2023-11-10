@@ -35,6 +35,7 @@ fun main() {
     val processedPrints: List<Print> = listOf(
         ThemeAllocationStep(),
         ThumbnailGenerationStep(),
+        SizeGuideGenerationStep(),
         PreviewGenerationStep(),
         PrintFileCreationStep(),
         PrintFileUploadStep(),

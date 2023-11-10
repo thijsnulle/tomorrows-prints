@@ -21,11 +21,11 @@ class SizeGuideGenerator {
     )
 
     private val sizes = listOf(
-        Size(0, 0, 18, 24),
-        Size(0, 26, 20, 30),
-        Size(34, 0, 12, 18),
-        Size(20, 0, 12, 16),
-        Size(22, 20, 24, 36),
+        Size(0, 0, 24, 36),
+        Size(0, 40, 12, 16),
+        Size(14, 38, 12, 18),
+        Size(26, 0, 20, 30),
+        Size(28, 32, 18, 24),
     )
 
     private val maxUnitsVertical = sizes.maxOf { it.y + it.h }
