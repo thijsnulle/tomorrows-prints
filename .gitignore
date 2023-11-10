@@ -183,7 +183,5 @@ gradle-app.setting
 .classpath
 
 src/main/resources/backups/**
-src/main/resources/images/prints/upscaled/**
-src/main/resources/images/previews/**
-src/main/resources/images/thumbnails/**
+src/main/resources/images/*/**
 src/main/resources/social/**
