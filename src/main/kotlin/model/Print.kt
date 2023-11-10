@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
+import io.github.oshai.kotlinlogging.KotlinLogging
 import theme.Theme
 import utility.files.Files
 import utility.files.JsonMappable
@@ -11,7 +12,10 @@ import java.net.URI
 import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 import kotlin.io.path.name
+import kotlin.time.Duration
+import kotlin.time.measureTimedValue
 
 data class Print(
     val path: Path,
@@ -68,9 +72,24 @@ data class JsonPrint(
 
 data class BatchPrint(val url: String, val prompt: String) {
     fun toPrint(): Print {
-        val imageBytes = URI(url).toURL().readBytes()
-        val image = ImmutableImage.loader().fromBytes(imageBytes)
-        val path = image.output(PngWriter(), Files.prints.resolve("${UUID.randomUUID()}.png"))
+        val logger = KotlinLogging.logger {}
+        val output = Files.prints.resolve("${UUID.nameUUIDFromBytes(url.toByteArray())}.png")
+
+        if (output.exists()) {
+            logger.info { "${output.fileName} was already downloaded." }
+            return Print(output, prompt)
+        }
+
+        logger.info { "Downloading $url" }
+
+        val (path: Path, duration: Duration) = measureTimedValue {
+            val imageBytes = URI(url).toURL().readBytes()
+            val image = ImmutableImage.loader().fromBytes(imageBytes)
+
+            image.output(PngWriter(), output)
+        }
+
+        logger.info { "Downloading took ${duration.inWholeMilliseconds} ms" }
 
         return Print(path, prompt)
     }

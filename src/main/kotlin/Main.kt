@@ -19,9 +19,10 @@ fun main() {
     """.trimIndent())
 
     val choice = readln().ifEmpty { null } ?: "1"
+    val fileChoice = if (choice == "1") "default" else "batch"
 
-    println("\nInput file, leave empty to use default.json: ")
-    val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/default.json")
+    println("\nInput file, leave empty to use $fileChoice.json: ")
+    val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/$fileChoice.json")
 
     val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
             Files.loadFromJson<BatchPrint>(input).map { it.toPrint() }
