@@ -23,6 +23,7 @@ data class Print(
     val theme: Theme = Theme.DEFAULT,
     val previews: List<Path> = emptyList(),
     val thumbnail: String = "",
+    val sizeGuide: String = "",
     val printFile: String = "",
     val printFileUrl: String = "",
     val listingUrl: String = "",
@@ -41,6 +42,7 @@ data class Print(
         jsonObject.add("previews", previews)
 
         jsonObject.addProperty("thumbnail", thumbnail)
+        jsonObject.addProperty("sizeGuide", sizeGuide)
         jsonObject.addProperty("printFile", printFile)
         jsonObject.addProperty("printFileUrl", printFileUrl)
 
@@ -54,6 +56,7 @@ data class JsonPrint(
     val theme: String?,
     val previews: List<String>?,
     val thumbnail: String?,
+    val sizeGuide: String?,
     val printFile: String?,
     val printFileUrl: String?,
     val listingUrl: String?,
@@ -64,6 +67,7 @@ data class JsonPrint(
         Theme.valueOf((theme ?: "Default").uppercase()),
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         thumbnail ?: "",
+        sizeGuide ?: "",
         printFile ?: "",
         printFileUrl ?: "",
         listingUrl ?: "",

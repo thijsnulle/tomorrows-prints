@@ -23,6 +23,7 @@ class Files {
         val previews: Path = images.resolve("previews")
         val prints: Path = images.resolve("prints")
         val thumbnails: Path = images.resolve("thumbnails")
+        val sizeGuides: Path = images.resolve("sizeGuides")
 
         val social: Path = resources.resolve("social")
 
