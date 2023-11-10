@@ -7,6 +7,7 @@ import model.Print
 import utility.files.Files
 import java.awt.Color
 import java.nio.file.Path
+import kotlin.io.path.exists
 import kotlin.io.path.name
 
 const val SIZE: Int = 900
@@ -19,6 +20,10 @@ class ThumbnailGenerator {
     private val backgroundColor = Color.decode("#A7C7E7")
 
     fun generateThumbnail(print: Print): Path {
+        val output = Files.thumbnails.resolve(print.path.name)
+
+        if (output.exists()) return output
+
         val image = ImmutableImageLoader().fromPath(print.path)
 
         val width = if (image.width > image.height) SIZE else SIZE * image.width / image.height
@@ -33,6 +38,6 @@ class ThumbnailGenerator {
         return background
             .overlay(border, x - INNER_MARGIN, y - INNER_MARGIN)
             .overlay(image.cover(width, height), x, y)
-            .output(PngWriter(), Files.thumbnails.resolve(print.path.name))
+            .output(PngWriter(), output)
     }
 }
