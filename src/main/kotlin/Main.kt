@@ -46,7 +46,7 @@ fun main() {
 private fun createPinSchedule(prints: List<Print>, output: Path) {
     val pinContents = prints.map { print ->
         print.previews.map { preview ->
-            PinContent(print.prompt, print.listingUrl, print.theme.value, preview.toString())
+            PinContent(print.prompt, print.listingUrl, print.theme.value, preview.toAbsolutePath().toString())
         }.shuffled()
     }
 
