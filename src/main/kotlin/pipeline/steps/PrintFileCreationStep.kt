@@ -4,7 +4,7 @@ import model.Print
 import pipeline.PipelineStep
 import prints.PrintFileCreator
 
-class PrintFileCreationStep: PipelineStep(maximumThreads = 6) {
+class PrintFileCreationStep: PipelineStep(maximumThreads = 4) {
     private val printFileCreator = PrintFileCreator()
 
     override fun process(print: Print): Print = printFileCreator.create(print)
