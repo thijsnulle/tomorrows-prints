@@ -4,7 +4,7 @@ import social.pinterest.PinterestInfluencer
 import java.nio.file.Paths
 
 fun main() {
-    println("Input JSON for posting on socials:")
+    println("Input file, leave empty to use schedule.json: ")
 
     val schedule = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/social/schedule.json")
 
