@@ -16,21 +16,21 @@ import kotlin.io.path.*
 fun main() {
     print("""
         Please select what you want to do:
-          [1] Load prints from backup file.
-          [2] Load prints from batch file.
+          [1] Load prints from batch file.
+          [2] Load prints from backup file.
         
         Selected choice: 
     """.trimIndent())
 
     val choice = readln().ifEmpty { null } ?: "1"
-    val fileChoice = if (choice == "1") "default" else "batch"
+    val fileChoice = if (choice == "1") "batch" else "backup"
 
     println("\nInput file, leave empty to use $fileChoice.json: ")
     val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/$fileChoice.json")
     val batch = input.nameWithoutExtension
 
-    val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
-            Files.loadFromJson<BatchPrint>(input).map { it.toPrint(batch) }
+    val prints = if (choice == "1") Files.loadFromJson<BatchPrint>(input).map { it.toPrint(batch) } else
+        Files.loadFromJson<JsonPrint>(input).map { it.toPrint() }
 
     require(prints.all { it.path.exists() }) {
         "\nThe following image files do not exist in the `prints` folder:\n -" +
@@ -40,13 +40,13 @@ fun main() {
     enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-//        ThemeAllocationStep(),
+        ThemeAllocationStep(),
         ThumbnailGenerationStep(),
         SizeGuideGenerationStep(),
         PreviewGenerationStep(),
         PrintFileCreationStep(),
-//        PrintFileUploadStep(),
-//        PrintfulStep(),
+        PrintFileUploadStep(),
+        PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
     createPinSchedule(processedPrints, Files.social.resolve("$batch.json"))
