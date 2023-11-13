@@ -1,6 +1,7 @@
 package preview
 
 import com.sksamuel.scrimage.ImmutableImage
+import com.sksamuel.scrimage.canvas.painters.LinearGradient
 import com.sksamuel.scrimage.nio.PngWriter
 import kotlinx.coroutines.*
 import model.Print
@@ -26,7 +27,10 @@ class SimplePreviewComposer : PreviewComposer() {
         Color(255, 255, 255),
         Color(255, 240, 240),
         Color(240, 240, 255),
-    ).map { ImmutableImage.filled(SIZE, SIZE, it) }
+    ).map { from ->
+        val to = Color((from.red * 0.9).toInt(), (from.green * 0.9).toInt(), (from.blue * 0.9).toInt())
+        ImmutableImage.create(SIZE, SIZE).fill(LinearGradient.horizontal(from, to))
+    }
 
     private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
 
