@@ -33,12 +33,14 @@ data class Print(
     override fun toJson(): JsonObject {
         val jsonObject = JsonObject()
 
-        jsonObject.addProperty("path", path.name)
+        jsonObject.addProperty("path", "${path.parent.name}/${path.name}")
         jsonObject.addProperty("prompt", prompt)
         jsonObject.addProperty("theme", theme.value)
 
         val previews = JsonArray()
-        previews.forEach { preview -> previews.add(preview.toString()) }
+        this.previews.forEach {
+            preview -> previews.add(preview.toString())
+        }
         jsonObject.add("previews", previews)
 
         jsonObject.addProperty("thumbnail", thumbnail)
