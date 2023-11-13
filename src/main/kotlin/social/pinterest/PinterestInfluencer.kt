@@ -18,20 +18,20 @@ import kotlin.time.toKotlinDuration
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-creation-tool/"
 
-data class PinContent(val prompt: String, val listing: String, val theme: String, val preview: String) : JsonMappable {
+data class PinContent(val prompt: String, val listing: String, val board: String, val preview: String) : JsonMappable {
     override fun toJson(): JsonObject {
         val jsonObject = JsonObject()
 
         jsonObject.addProperty("prompt", prompt)
         jsonObject.addProperty("listing", listing)
-        jsonObject.addProperty("theme", theme)
+        jsonObject.addProperty("board", board)
         jsonObject.addProperty("preview", preview)
 
         return jsonObject
     }
 }
 
-val TIME_BETWEEN_POSTS = Duration.ofMinutes(1).toKotlinDuration()
+val TIME_BETWEEN_POSTS = Duration.ofMinutes(3).toKotlinDuration()
 
 class PinterestInfluencer {
 
@@ -95,7 +95,7 @@ class PinterestInfluencer {
 
     private fun createPin(postContent: PinterestContent, pinContent: PinContent) {
         val (title, description, _) = postContent
-        val (_, listing, theme, preview) = pinContent
+        val (_, listing, board, preview) = pinContent
 
         driver.get(CREATE_PIN_PAGE)
 
@@ -106,9 +106,8 @@ class PinterestInfluencer {
         driver.click("//div[@data-offset-key]")
         driver.sendKeys(description, "//div[@data-offset-key]")
 
-        // TODO: add theme selection
         driver.click("//button[@data-test-id='board-dropdown-select-button']")
-        driver.click("//div[@data-test-id='board-row-All Posters']")
+        driver.click("//div[@data-test-id='board-row-$board']")
 
         taggedTopics.forEach {
             driver.sendKeys(it, "//input[@placeholder='Search for a tag']", withDelay = true)

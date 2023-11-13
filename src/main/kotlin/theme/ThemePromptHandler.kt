@@ -5,9 +5,17 @@ import utility.prompt.Example
 
 enum class Theme(val value: String) {
     DEFAULT(""),
-    ABSTRACT("abstract"),
-    MINIMALISM("minimalism"),
-    VINTAGE("vintage"),
+    ABSTRACT("Abstract"),
+    COLOR_FIELD("Color Field"),
+    CUBISM("Cubism"),
+    EXPRESSIONISM("Expressionism"),
+    IMPRESSIONISM("Impressionism"),
+    MINIMALISM("Minimalism"),
+    POP_ART("Pop Art"),
+    POST_IMPRESSIONISM("Post-Impressionism"),
+    ROMANTICISM("Romanticism"),
+    SURREALISM("Surrealism"),
+    VINTAGE("Vintage"),
 }
 
 class ThemePrompter: OpenAIPrompter<Theme>(
