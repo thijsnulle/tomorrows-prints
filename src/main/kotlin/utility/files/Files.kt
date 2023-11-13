@@ -17,6 +17,7 @@ class Files {
         private val gson = GsonBuilder().setPrettyPrinting().create()
 
         val backups: Path = resources.resolve("backups")
+        val logs: Path = resources.resolve("logs")
 
         val images: Path = resources.resolve("images")
         val frames: Path = images.resolve("frames")

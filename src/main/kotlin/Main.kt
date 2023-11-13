@@ -5,8 +5,12 @@ import model.Print
 import pipeline.steps.*
 import social.pinterest.PinContent
 import utility.files.Files
+import utility.logging.TeeOutputStream
+import java.io.FileOutputStream
+import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.LocalDateTime
 import kotlin.io.path.*
 
 fun main() {
@@ -32,6 +36,8 @@ fun main() {
         prints.filterNot { it.path.exists() }.joinToString("\n -") { it.path.toString() }
     }
 
+    enableLoggingToFile()
+
     val processedPrints: List<Print> = listOf(
         ThemeAllocationStep(),
         ThumbnailGenerationStep(),
@@ -43,6 +49,21 @@ fun main() {
     ).fold(prints) { current, step -> step.start(current) }
 
     createPinSchedule(processedPrints, Files.social.resolve("schedule.json"))
+}
+
+private fun enableLoggingToFile() {
+    val logFile = Files.logs.resolve("${LocalDateTime.now()}.log").toFile()
+    val logFilePrintStream = FileOutputStream(logFile)
+
+    val teeOutputStream = TeeOutputStream(System.out, logFilePrintStream)
+    val printStream = PrintStream(teeOutputStream)
+
+    System.setOut(printStream)
+    System.setErr(printStream)
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        logFilePrintStream.close()
+    })
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
