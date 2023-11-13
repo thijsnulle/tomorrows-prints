@@ -16,20 +16,21 @@ import kotlin.io.path.*
 fun main() {
     print("""
         Please select what you want to do:
-          [1] Load prints from backup file.
-          [2] Load prints from batch file.
+          [1] Load prints from batch file.
+          [2] Load prints from backup file.
         
         Selected choice: 
     """.trimIndent())
 
     val choice = readln().ifEmpty { null } ?: "1"
-    val fileChoice = if (choice == "1") "default" else "batch"
+    val fileChoice = if (choice == "1") "batch" else "backup"
 
     println("\nInput file, leave empty to use $fileChoice.json: ")
     val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/$fileChoice.json")
+    val batch = input.nameWithoutExtension
 
-    val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
-            Files.loadFromJson<BatchPrint>(input).map { it.toPrint(batch = input.nameWithoutExtension) }
+    val prints = if (choice == "1") Files.loadFromJson<BatchPrint>(input).map { it.toPrint(batch) } else
+        Files.loadFromJson<JsonPrint>(input).map { it.toPrint() }
 
     require(prints.all { it.path.exists() }) {
         "\nThe following image files do not exist in the `prints` folder:\n -" +
@@ -48,7 +49,7 @@ fun main() {
         PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
-    createPinSchedule(processedPrints, Files.social.resolve("schedule.json"))
+    createPinSchedule(processedPrints, Files.social.resolve("$batch.json"))
 }
 
 private fun enableLoggingToFile() {
@@ -67,15 +68,22 @@ private fun enableLoggingToFile() {
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
+    val defaultPinContents = prints.map { PinContent(
+        it.prompt,
+        it.listingUrl,
+        "All Posters",
+        it.path.toAbsolutePath().toString()
+    )}
+
     val pinContents = prints.map { print ->
         print.previews.map { preview ->
             PinContent(print.prompt, print.listingUrl, print.theme.value, preview.toAbsolutePath().toString())
         }.shuffled()
     }
 
-    val flattenedPinContents = pinContents.first().indices.flatMap { index ->
+    val allPinContents = defaultPinContents + pinContents.first().indices.flatMap { index ->
         pinContents.mapNotNull { it.getOrNull(index) }
     }
 
-    Files.storeAsJson(flattenedPinContents, output)
+    Files.storeAsJson(allPinContents, output)
 }
