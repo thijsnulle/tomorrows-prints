@@ -75,9 +75,11 @@ data class JsonPrint(
 }
 
 data class BatchPrint(val url: String, val prompt: String) {
-    fun toPrint(): Print {
+    fun toPrint(batch: String): Print {
         val logger = KotlinLogging.logger {}
-        val output = Files.prints.resolve("${UUID.nameUUIDFromBytes(url.toByteArray())}.png")
+
+        val output = Files.prints.resolve(batch).resolve("${UUID.nameUUIDFromBytes(url.toByteArray())}.png").toAbsolutePath()
+        java.nio.file.Files.createDirectories(output.parent)
 
         if (output.exists()) {
             logger.info { "${output.fileName} was already downloaded." }
