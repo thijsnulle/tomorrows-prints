@@ -29,7 +29,7 @@ fun main() {
     val input = Paths.get(readln().ifEmpty { null } ?: "src/main/resources/$fileChoice.json")
 
     val prints = if (choice == "1") Files.loadFromJson<JsonPrint>(input).map { it.toPrint() } else
-            Files.loadFromJson<BatchPrint>(input).map { it.toPrint() }
+            Files.loadFromJson<BatchPrint>(input).map { it.toPrint(batch = input.nameWithoutExtension) }
 
     require(prints.all { it.path.exists() }) {
         "\nThe following image files do not exist in the `prints` folder:\n -" +

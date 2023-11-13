@@ -4,9 +4,10 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import model.Print
 import utility.files.Files
+import utility.files.Files.Companion.batchFolder
 import java.awt.Color
 import java.nio.file.Path
-import java.util.UUID
+import kotlin.io.path.exists
 
 const val SIZE_GUIDE_SIZE = 1024
 const val SIZE_GUIDE_HEIGHT = 896
@@ -32,6 +33,10 @@ class SizeGuideGenerator {
     private val maxUnitsHorizontal = sizes.maxOf { it.x + it.w }
 
     fun generateSizeGuide(print: Print): Path {
+        val output = Files.sizeGuides.batchFolder(print)
+
+        if (output.exists()) return output
+
         val printImage = ImmutableImage.loader().fromPath(print.path)
         val offsetX = (SIZE_GUIDE_SIZE - SIZE_GUIDE_WIDTH) / 2
         val offsetY = (SIZE_GUIDE_SIZE - SIZE_GUIDE_HEIGHT) / 2
@@ -45,7 +50,7 @@ class SizeGuideGenerator {
             guide.overlay(printImage.cover(w, h), x, y)
         }
 
-        sizeGuide.output(PngWriter(), Files.sizeGuides.resolve("${UUID.randomUUID()}.png"))
+        sizeGuide.output(PngWriter(), output)
 
         return Files.images.resolve("test.png")
     }

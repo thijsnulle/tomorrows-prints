@@ -3,6 +3,7 @@ package utility.transformation
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.name
@@ -17,6 +18,8 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
         val image = ImmutableImage.loader().fromPath(input)
         val output = if (deleteInput) input else input.parent.resolve("upscaled/${input.name}")
 
+        Files.createDirectories(output.parent)
+
         if (max(image.width, image.height) == maxPixelsPerSide) return input
         if (max(image.width, image.height) > maxPixelsPerSide) return downscale(image, output, maxPixelsPerSide)
 
@@ -27,10 +30,7 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
 
         return when(output.exists() && !deleteInput) {
             true -> upscale(output, maxPixelsPerSide, true)
-            false -> {
-                val upscaledImage = upscaler.upscale(input, output)
-                upscale(upscaledImage, maxPixelsPerSide, true)
-            }
+            false -> upscale(upscaler.upscale(input, output), maxPixelsPerSide, true)
         }
     }
 

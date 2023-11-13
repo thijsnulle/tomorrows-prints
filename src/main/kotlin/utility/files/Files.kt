@@ -4,8 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import model.Print
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
 
 interface JsonMappable {
     fun toJson(): JsonObject
@@ -34,6 +38,22 @@ class Files {
         fun <T> storeAsJson(objects: List<T>, output: Path) where T : JsonMappable {
             val jsonContent = gson.toJson(objects.map { it.toJson() })
             output.toFile().bufferedWriter().use { it.write(jsonContent) }
+        }
+
+        fun Path.batchFolder(print: Print): Path {
+            val folder = this.resolve(print.path.parent.nameWithoutExtension)
+
+            Files.createDirectories(folder)
+
+            return folder.resolve(print.path.name)
+        }
+
+        fun Path.batchFolderWithoutExtension(print: Print): Path {
+            val folder = this.resolve(print.path.parent.nameWithoutExtension)
+
+            Files.createDirectories(folder)
+
+            return folder.resolve(print.path.nameWithoutExtension)
         }
     }
 }

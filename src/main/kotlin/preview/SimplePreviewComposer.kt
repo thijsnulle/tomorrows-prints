@@ -6,11 +6,11 @@ import com.sksamuel.scrimage.nio.PngWriter
 import kotlinx.coroutines.*
 import model.Print
 import utility.files.Files
+import utility.files.Files.Companion.batchFolderWithoutExtension
 import java.awt.Color
 import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.nameWithoutExtension
 
 const val SIZE = 2048
 const val PRINT_WIDTH = 768
@@ -36,7 +36,7 @@ class SimplePreviewComposer : PreviewComposer() {
 
     override fun compose(print: Print): Print = runBlocking {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
-        val outputFolder = Files.previews.resolve(print.path.nameWithoutExtension)
+        val outputFolder = Files.previews.batchFolderWithoutExtension(print)
 
         val previews = backgrounds.flatMap { background ->
             frames.map { frame ->

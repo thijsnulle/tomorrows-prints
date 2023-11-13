@@ -5,10 +5,10 @@ import com.sksamuel.scrimage.nio.ImmutableImageLoader
 import com.sksamuel.scrimage.nio.PngWriter
 import model.Print
 import utility.files.Files
+import utility.files.Files.Companion.batchFolder
 import java.awt.Color
 import java.nio.file.Path
 import kotlin.io.path.exists
-import kotlin.io.path.name
 
 const val SIZE: Int = 900
 const val INNER_MARGIN: Int = 5
@@ -20,7 +20,7 @@ class ThumbnailGenerator {
     private val backgroundColor = Color.decode("#A7C7E7")
 
     fun generateThumbnail(print: Print): Path {
-        val output = Files.thumbnails.resolve(print.path.name)
+        val output = Files.thumbnails.batchFolder(print)
 
         if (output.exists()) return output
 
