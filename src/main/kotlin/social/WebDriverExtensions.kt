@@ -48,6 +48,6 @@ fun WebDriver.sendKeys(keys: String, xpath: String, withDelay: Boolean = false) 
     val element = this.find(xpath)
     keys.forEach {
         element.sendKeys("$it")
-        runBlocking { delay(100) }
+        runBlocking { delay(25) }
     }
 }

@@ -41,21 +41,27 @@ class PinterestInfluencer {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     private val taggedTopics = listOf(
+        "architecture poster",
         "art deco interior",
         "bedroom",
         "bedroom interior",
         "diy gifts",
         "diy wall art",
+        "fashion poster",
         "graphic poster",
+        "graphic design poster",
+        "home interior design",
+        "interior design tips",
         "living room",
+        "luxury interior design",
         "minimalist poster",
+        "modern interior",
+        "music poster",
+        "poster print",
+        "print design",
         "retro poster",
         "wall art",
     )
-
-    init {
-        require(taggedTopics.size <= 10) { "Can only select up to 10 tagged topics." }
-    }
 
     fun post(scheduleJson: Path) {
         val posts = Files.loadFromJson<PinContent>(scheduleJson)
@@ -109,12 +115,15 @@ class PinterestInfluencer {
         driver.click("//button[@data-test-id='board-dropdown-select-button']")
         driver.click("//div[@data-test-id='board-row-$board']")
 
-        taggedTopics.forEach {
-            driver.sendKeys(it, "//input[@placeholder='Search for a tag']", withDelay = true)
+        taggedTopics
+            .shuffled()
+            .take(10)
+            .forEach {
+                driver.sendKeys(it, "//input[@placeholder='Search for a tag']", withDelay = true)
 
-            driver.click("//div[text() = '$it']/..")
-            runBlocking { delay(500) }
-        }
+                driver.click("//div[text() = '$it']/..")
+                runBlocking { delay(500) }
+            }
 
         runBlocking { delay(1000) }
 
