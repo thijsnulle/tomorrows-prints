@@ -2,6 +2,7 @@ package preview
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.canvas.painters.LinearGradient
+import com.sksamuel.scrimage.nio.JpegWriter
 import com.sksamuel.scrimage.nio.PngWriter
 import kotlinx.coroutines.*
 import model.Print
@@ -22,6 +23,8 @@ const val PRINT_Y = (SIZE - PRINT_HEIGHT) / 2
 class SimplePreviewComposer : PreviewComposer() {
 
     private val loader = ImmutableImage.loader()
+    private val writer = JpegWriter.compression(85).withProgressive(true)
+
     private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
     private val gradient = LinearGradient.horizontal(Color.WHITE, Color.decode("#f2f2f2"))
     private val background = ImmutableImage.create(SIZE, SIZE).fill(gradient)
@@ -43,7 +46,7 @@ class SimplePreviewComposer : PreviewComposer() {
         return background
             .overlay(print, PRINT_X, PRINT_Y)
             .overlay(frame)
-            .output(PngWriter(), outputFolder.resolve("${UUID.randomUUID()}.png"))
+            .output(writer, outputFolder.resolve("${UUID.randomUUID()}.jpeg"))
     }
 }
 
