@@ -27,16 +27,15 @@ fun WebDriver.find(xpath: String): WebElement {
     return element
 }
 
-fun WebDriver.click(xpath: String) {
-        val element = WebDriverWait(this, timeout, interval)
+fun WebDriver.click(xpath: String, retry: Boolean = true) {
+        try {
+            val element = WebDriverWait(this, timeout, interval)
                 .until(elementToBeClickable(ByXPath(xpath)))
 
-        Actions(this).moveToElement(element).perform()
-
-        try {
+            Actions(this).moveToElement(element).perform()
             element.click()
         } catch (_: Exception) {
-            this.click(xpath)
+            if (!retry) this.click(xpath, false)
         }
 }
 
@@ -48,6 +47,6 @@ fun WebDriver.sendKeys(keys: String, xpath: String, withDelay: Boolean = false) 
     val element = this.find(xpath)
     keys.forEach {
         element.sendKeys("$it")
-        runBlocking { delay(100) }
+        runBlocking { delay(50) }
     }
 }
