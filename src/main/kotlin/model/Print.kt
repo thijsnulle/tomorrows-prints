@@ -66,7 +66,7 @@ data class JsonPrint(
     fun toPrint() = Print(
         Files.prints.resolve(path).toAbsolutePath(),
         prompt,
-        Theme.valueOf((theme ?: "Default").uppercase()),
+        Theme.valueOf((theme ?: "Default").replace(' ', '_').uppercase()),
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         thumbnail ?: "",
         sizeGuide ?: "",
