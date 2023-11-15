@@ -5,6 +5,8 @@ import com.google.gson.JsonObject
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.openqa.selenium.By
+import org.openqa.selenium.Keys
 import org.openqa.selenium.chrome.ChromeDriver
 import social.*
 import utility.files.Files
@@ -119,7 +121,17 @@ class PinterestInfluencer {
             .shuffled()
             .take(10)
             .forEach {
+                val element = driver.find("//input[@placeholder='Search for a tag']")
+                element.sendKeys(Keys.COMMAND, "a")
+                element.sendKeys(Keys.DELETE)
+
                 driver.sendKeys(it, "//input[@placeholder='Search for a tag']", withDelay = true)
+
+                try {
+                    driver.findElement(By.xpath("//div[text() = '$it']/.."))
+                } catch (_: Exception) {
+                    return@forEach
+                }
 
                 driver.click("//div[text() = '$it']/..")
                 runBlocking { delay(500) }
