@@ -6,11 +6,11 @@ import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolderWithoutExtension
 import kotlin.io.path.*
 
-abstract class PreviewComposer {
+abstract class PreviewGenerator {
 
     private val logger = KotlinLogging.logger {}
 
-    fun composePreviewsFor(print: Print): Print {
+    fun generatePreviewsFor(print: Print): Print {
         logger.info { "Generating previews for ${print.path.fileName}" }
 
         val directory = Files.previews.batchFolderWithoutExtension(print)
@@ -22,8 +22,8 @@ abstract class PreviewComposer {
 
         directory.createDirectory()
 
-        return compose(print)
+        return generate(print)
     }
 
-    abstract fun compose(print: Print): Print
+    abstract fun generate(print: Print): Print
 }
