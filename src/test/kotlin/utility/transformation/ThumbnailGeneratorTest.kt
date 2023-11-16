@@ -1,7 +1,8 @@
 package utility.transformation
 
 import com.sksamuel.scrimage.nio.ImmutableImageLoader
-import model.Print
+import tmrw.model.Print
+import tmrw.pipeline.thumbnail_generation.ThumbnailGenerator
 import java.awt.Color
 import java.nio.file.Paths
 import kotlin.test.Test
