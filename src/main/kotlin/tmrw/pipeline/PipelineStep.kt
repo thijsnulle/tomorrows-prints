@@ -27,21 +27,28 @@ abstract class PipelineStep(private val maximumThreads: Int = 8) {
 
         logger.info { "Starting ${this::class.simpleName}" }
 
-        val semaphore = Semaphore(maximumThreads)
+        val printsWithErrors = mutableListOf<Print>()
 
+        val semaphore = Semaphore(maximumThreads)
         val (processedPrints: List<Print>, duration: Duration) = measureTimedValue {
             runBlocking {
                 prints.map {
                     async(Dispatchers.Default) {
                         semaphore.withPermit {
-                            if (shouldSkip(it)) it else process(it)
+                            try {
+                                if (shouldSkip(it)) it else process(it)
+                            } catch (_: Exception) {
+                                printsWithErrors.add(it)
+                                null
+                            }
                         }
                     }
-                }.awaitAll()
+                }.awaitAll().filterNotNull()
             }
         }
 
         backup(processedPrints)
+        if (printsWithErrors.isNotEmpty()) backup(printsWithErrors, withErrors = true)
 
         logger.info { "Pipeline ${this::class.simpleName} took ${duration.inWholeMilliseconds} ms" }
 
@@ -51,9 +58,9 @@ abstract class PipelineStep(private val maximumThreads: Int = 8) {
     abstract fun process(print: Print): Print
     abstract fun shouldSkip(print: Print): Boolean
 
-    private fun backup(prints: List<Print>) {
+    private fun backup(prints: List<Print>, withErrors: Boolean = false) {
         val fileName = "${dateFormatter.format(ZonedDateTime.now())}-${this::class.simpleName}.json"
 
-        Files.storeAsJson(prints, Files.backups.resolve(fileName))
+        Files.storeAsJson(prints, if (withErrors) Files.errors.resolve(fileName) else Files.backups.resolve(fileName))
     }
 }
