@@ -21,6 +21,7 @@ data class Print(
     val path: Path,
     val prompt: String,
     val theme: Theme = Theme.DEFAULT,
+    val title: String = "",
     val previews: List<Path> = emptyList(),
     val thumbnail: String = "",
     val sizeGuide: String = "",
@@ -30,12 +31,14 @@ data class Print(
 ) : JsonMappable {
     constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
 
+    // TODO: add test for this method
     override fun toJson(): JsonObject {
         val jsonObject = JsonObject()
 
         jsonObject.addProperty("path", "${path.parent.name}/${path.name}")
         jsonObject.addProperty("prompt", prompt)
         jsonObject.addProperty("theme", theme.value)
+        jsonObject.addProperty("title", title)
 
         val previews = JsonArray()
         this.previews.forEach {
@@ -56,6 +59,7 @@ data class JsonPrint(
     val path: String,
     val prompt: String,
     val theme: String?,
+    val title: String?,
     val previews: List<String>?,
     val thumbnail: String?,
     val sizeGuide: String?,
@@ -67,6 +71,7 @@ data class JsonPrint(
         Files.prints.resolve(path).toAbsolutePath(),
         prompt,
         Theme.valueOf((theme ?: "Default").replace(' ', '_').uppercase()),
+        title ?: "",
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         thumbnail ?: "",
         sizeGuide ?: "",

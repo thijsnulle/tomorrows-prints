@@ -23,11 +23,18 @@ import kotlin.time.toKotlinDuration
 const val HOME_PAGE = "https://www.pinterest.com"
 const val CREATE_PIN_PAGE = "https://www.pinterest.com/pin-creation-tool/"
 
-data class PinContent(val prompt: String, val listing: String, val board: String, val preview: String) : JsonMappable {
+data class PinContent(
+    val prompt: String,
+    val title: String,
+    val listing: String,
+    val board: String,
+    val preview: String
+) : JsonMappable {
     override fun toJson(): JsonObject {
         val jsonObject = JsonObject()
 
         jsonObject.addProperty("prompt", prompt)
+        jsonObject.addProperty("title", title)
         jsonObject.addProperty("listing", listing)
         jsonObject.addProperty("board", board)
         jsonObject.addProperty("preview", preview)
@@ -76,9 +83,9 @@ class PinterestInfluencer {
         posts.forEachIndexed { i, post ->
             val timeItTookToPost = measureTime {
                 // TODO: replace [link] in `content.description` with actual link to shop.
-                val content = prompter.ask(post.prompt)
+                val description = prompter.ask(post.prompt)
 
-                createPin(content, post)
+                createPin(description, post)
             }
 
             saveCurrentPostSchedule(scheduleJson, posts, i)
@@ -104,9 +111,8 @@ class PinterestInfluencer {
         isLoggedIn = true
     }
 
-    private fun createPin(postContent: PinterestContent, pinContent: PinContent) {
-        val (title, description, _) = postContent
-        val (_, listing, board, preview) = pinContent
+    private fun createPin(description: String, pinContent: PinContent) {
+        val (_, title, listing, board, preview) = pinContent
 
         driver.get(CREATE_PIN_PAGE)
 
