@@ -5,7 +5,7 @@ import tmrw.model.JsonPrint
 import tmrw.model.Print
 import tmrw.social.pinterest.PinContent
 import tmrw.pipeline.preview_generation.PreviewGenerationStep
-import tmrw.pipeline.print_file_creation.PrintFileCreationStep
+import tmrw.pipeline.print_file_creation.PrintFileGenerationStep
 import tmrw.pipeline.print_file_upload.PrintFileUploadStep
 import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
 import tmrw.pipeline.theme_allocation.ThemeAllocationStep
@@ -52,7 +52,7 @@ fun main() {
         ThumbnailGenerationStep(),
         SizeGuideGenerationStep(),
         PreviewGenerationStep(),
-        PrintFileCreationStep(),
+        PrintFileGenerationStep(),
         PrintFileUploadStep(),
         PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
