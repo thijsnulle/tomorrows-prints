@@ -10,6 +10,7 @@ import tmrw.pipeline.print_file_upload.PrintFileUploadStep
 import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
 import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
+import tmrw.pipeline.title_allocation.TitleAllocationStep
 import tmrw.utils.Files
 import tmrw.utils.TeeOutputStream
 import java.io.FileOutputStream
@@ -46,6 +47,7 @@ fun main() {
     enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
+        TitleAllocationStep(),
         ThemeAllocationStep(),
         ThumbnailGenerationStep(),
         SizeGuideGenerationStep(),
@@ -74,17 +76,13 @@ private fun enableLoggingToFile() {
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
-    val defaultPinContents = prints.map { PinContent(
-        it.prompt,
-        it.listingUrl,
-        "All Posters",
-        it.path.toAbsolutePath().toString()
-    )
+    val defaultPinContents = prints.map {
+        PinContent(it.prompt, it.title, it.listingUrl, "All Posters", it.path.toAbsolutePath().toString())
     }
 
     val pinContents = prints.map { print ->
         print.previews.map { preview ->
-            PinContent(print.prompt, print.listingUrl, print.theme.value, preview.toAbsolutePath().toString())
+            PinContent(print.prompt, print.title, print.listingUrl, print.theme.value, preview.toAbsolutePath().toString())
         }.shuffled()
     }
 
