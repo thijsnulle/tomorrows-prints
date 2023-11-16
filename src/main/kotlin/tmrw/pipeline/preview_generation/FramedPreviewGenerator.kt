@@ -19,7 +19,7 @@ const val PRINT_X = (SIZE - PRINT_WIDTH) / 2
 const val PRINT_Y = (SIZE - PRINT_HEIGHT) / 2
 
 // TODO: add support for horizontal posters
-class SimplePreviewComposer : PreviewComposer() {
+class FramedPreviewGenerator : PreviewGenerator() {
 
     private val loader = ImmutableImage.loader()
     private val writer = JpegWriter.compression(85).withProgressive(true)
@@ -28,7 +28,7 @@ class SimplePreviewComposer : PreviewComposer() {
     private val gradient = LinearGradient.horizontal(Color.WHITE, Color.decode("#f2f2f2"))
     private val background = ImmutableImage.create(SIZE, SIZE).fill(gradient)
 
-    override fun compose(print: Print): Print = runBlocking {
+    override fun generate(print: Print): Print = runBlocking {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
         val outputFolder = Files.previews.batchFolderWithoutExtension(print)
 
