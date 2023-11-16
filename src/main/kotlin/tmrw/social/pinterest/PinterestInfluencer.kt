@@ -5,15 +5,10 @@ import com.google.gson.JsonObject
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.openqa.selenium.By
 import org.openqa.selenium.Keys
+import org.openqa.selenium.NotFoundException
 import org.openqa.selenium.chrome.ChromeDriver
-import tmrw.utils.Files
-import tmrw.utils.JsonMappable
-import tmrw.utils.click
-import tmrw.utils.find
-import tmrw.utils.sendKeys
-import tmrw.utils.url
+import tmrw.utils.*
 import java.nio.file.Path
 import java.time.Duration
 import kotlin.math.max
@@ -134,16 +129,20 @@ class PinterestInfluencer {
                 element.sendKeys(Keys.COMMAND, "a")
                 element.sendKeys(Keys.DELETE)
 
-                driver.sendKeys(it, "//input[@placeholder='Search for a tag']", withDelay = true)
+                it.forEach keysForEach@ { key ->
+                    driver.sendKey(key, "//input[@placeholder='Search for a tag']")
 
-                try {
-                    driver.findElement(By.xpath("//div[text() = '$it']/.."))
-                } catch (_: Exception) {
+                    try {
+                        driver.findQuick("//div[text() = '$it']/..")
+                    } catch (_: NotFoundException) {
+                        return@keysForEach
+                    }
+
+                    driver.click("//div[text() = '$it']/..")
+                    runBlocking { delay(500) }
+
                     return@forEach
                 }
-
-                driver.click("//div[text() = '$it']/..")
-                runBlocking { delay(500) }
             }
 
         runBlocking { delay(1000) }
