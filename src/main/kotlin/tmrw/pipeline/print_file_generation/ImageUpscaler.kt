@@ -1,4 +1,4 @@
-package tmrw.pipeline.print_file_creation
+package tmrw.pipeline.print_file_generation
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
