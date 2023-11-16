@@ -1,4 +1,4 @@
-package tmrw.pipeline.print_file_creation
+package tmrw.pipeline.print_file_generation
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
