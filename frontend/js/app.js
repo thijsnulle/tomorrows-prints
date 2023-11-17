@@ -107,6 +107,16 @@ $.getJSON(IMAGES_TO_SELECT_JSON_FILE, (images) => {
     const notSelectedImageURLs = notSelectedImages.map((img) => img['url']);
     const processedImageURLs = new Set(selectedImageURLs.concat(notSelectedImageURLs));
 
+    selectedImageURLs.reverse();
+    selectedImageURLs.forEach((url) => {
+        addImageToSelectedContainer({ 'url': url }, 'Enter');
+    });
+
+    notSelectedImageURLs.reverse();
+    notSelectedImageURLs.forEach((url) => {
+        addImageToSelectedContainer({ 'url': url }, 'Escape');
+    });
+
     const imagesToProcess = images.filter((image) => !processedImageURLs.has(image['url']));
     startSelection(imagesToProcess);
 });
