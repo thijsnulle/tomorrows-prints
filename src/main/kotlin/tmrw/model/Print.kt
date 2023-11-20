@@ -23,6 +23,7 @@ data class Print(
     val prompt: String,
     val theme: Theme = Theme.DEFAULT,
     val title: String = "",
+    val description: String = "",
     val previews: List<Path> = emptyList(),
     val previewUrls: List<String> = emptyList(),
     val thumbnail: String = "",
@@ -41,6 +42,7 @@ data class Print(
         jsonObject.addProperty("prompt", prompt)
         jsonObject.addProperty("theme", theme.value)
         jsonObject.addProperty("title", title)
+        jsonObject.addProperty("description", description)
 
         val previews = JsonArray()
         this.previews.forEach {
@@ -74,6 +76,7 @@ data class JsonPrint(
     val prompt: String,
     val theme: String?,
     val title: String?,
+    val description: String?,
     val previews: List<String>?,
     val previewUrls: List<String>?,
     val thumbnail: String?,
@@ -87,6 +90,7 @@ data class JsonPrint(
         prompt,
         Theme.valueOf((theme ?: "Default").replace(' ', '_').uppercase()),
         title ?: "",
+        description ?: "",
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         previewUrls ?: emptyList(),
         thumbnail ?: "",

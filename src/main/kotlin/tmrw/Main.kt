@@ -3,6 +3,7 @@ import deprecated.PrintfulStep
 import tmrw.model.BatchPrint
 import tmrw.model.JsonPrint
 import tmrw.model.Print
+import tmrw.pipeline.description_allocation.DescriptionAllocationStep
 import tmrw.social.pinterest.PinContent
 import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
@@ -49,6 +50,7 @@ fun main() {
 
     val processedPrints: List<Print> = listOf(
         TitleAllocationStep(),
+        DescriptionAllocationStep(),
         ThemeAllocationStep(),
 //        ThumbnailGenerationStep(),
 //        SizeGuideGenerationStep(),

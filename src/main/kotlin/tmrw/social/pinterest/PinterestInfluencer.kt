@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.Keys
 import org.openqa.selenium.NotFoundException
 import org.openqa.selenium.chrome.ChromeDriver
+import tmrw.pipeline.description_allocation.PinterestContentPrompter
 import tmrw.utils.*
 import java.nio.file.Path
 import java.time.Duration
@@ -43,7 +44,6 @@ val TIME_BETWEEN_POSTS = Duration.ofMinutes(3).toKotlinDuration()
 class PinterestInfluencer {
 
     private val driver = ChromeDriver()
-    private val prompter = PinterestContentPrompter()
     private var isLoggedIn = false
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
@@ -78,9 +78,7 @@ class PinterestInfluencer {
         posts.forEachIndexed { i, post ->
             val timeItTookToPost = measureTime {
                 // TODO: replace [link] in `content.description` with actual link to shop.
-                val description = prompter.ask(post.prompt)
-
-                createPin(description, post)
+//                createPin(description, post)
             }
 
             saveCurrentPostSchedule(scheduleJson, posts, i)

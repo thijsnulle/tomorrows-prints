@@ -1,4 +1,4 @@
-package tmrw.social.pinterest
+package tmrw.pipeline.description_allocation
 
 import tmrw.utils.Example
 import tmrw.utils.Prompter
