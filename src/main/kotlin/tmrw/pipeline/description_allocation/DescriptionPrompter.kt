@@ -107,6 +107,7 @@ class DescriptionPrompter: Prompter<String>(
 
         val (_, description) = result.groupValues
 
+        // TODO: move this to a poster-individual level, not inside the description generation.
         val hashtags = hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" "){ "#$it" }
         val callToAction = callToActions.shuffled().first()
 

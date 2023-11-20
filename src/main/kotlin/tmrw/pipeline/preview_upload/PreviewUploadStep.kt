@@ -7,6 +7,7 @@ import tmrw.pipeline.PipelineStep
 import tmrw.pipeline.theme_allocation.Theme
 import java.nio.file.Files
 import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
 
 class PreviewUploadStep: PipelineStep(maximumThreads = 1) {
 
@@ -18,7 +19,7 @@ class PreviewUploadStep: PipelineStep(maximumThreads = 1) {
         require(print.previews.isNotEmpty()) { "${print.path.name} should have a previews associated with it." }
         require(print.theme != Theme.DEFAULT) { "${print.path.name} should have a theme associated with it." }
 
-        val folderName = "${print.theme.value}/${print.path.fileName}"
+        val folderName = "${print.theme.value}/${print.path.nameWithoutExtension}"
         val previewUrls = print.previews.map { preview ->
             val fileName = "$folderName/${preview.fileName}"
             bucket.create(fileName, Files.readAllBytes(preview), "image/png")

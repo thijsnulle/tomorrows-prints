@@ -8,7 +8,6 @@ import kotlinx.coroutines.runBlocking
 import org.openqa.selenium.Keys
 import org.openqa.selenium.NotFoundException
 import org.openqa.selenium.chrome.ChromeDriver
-import tmrw.pipeline.description_allocation.PinterestContentPrompter
 import tmrw.utils.*
 import java.nio.file.Path
 import java.time.Duration
