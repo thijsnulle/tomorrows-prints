@@ -4,7 +4,6 @@ import tmrw.model.BatchPrint
 import tmrw.model.JsonPrint
 import tmrw.model.Print
 import tmrw.pipeline.description_allocation.DescriptionAllocationStep
-import tmrw.social.pinterest.PinContent
 import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
 import tmrw.pipeline.print_file_generation.PrintFileGenerationStep
@@ -84,5 +83,6 @@ private fun createPinSchedule(prints: List<Print>, output: Path) {
     val csvHeaders = prints.first().toCsvHeaders()
     val csvRows = prints.map { it.toCsvRows() }.flatten().joinToString("\n")
 
+    // TODO: split this into blocks of maximum 200 pins
     output.toFile().bufferedWriter().use { it.write("$csvHeaders\n$csvRows") }
 }
