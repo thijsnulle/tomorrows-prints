@@ -15,18 +15,16 @@ import kotlin.io.path.listDirectoryEntries
 const val SIZE = 2048
 const val PRINT_WIDTH = 768
 const val PRINT_HEIGHT = 1152
-const val PRINT_X = (SIZE - PRINT_WIDTH) / 2
-const val PRINT_Y = (SIZE - PRINT_HEIGHT) / 2
 
 // TODO: add support for horizontal posters
 class FramedPreviewGenerator : PreviewGenerator() {
 
     private val loader = ImmutableImage.loader()
     private val writer = JpegWriter.compression(85).withProgressive(true)
+    private val random = Random()
 
     private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
     private val gradient = LinearGradient.horizontal(Color.WHITE, Color.decode("#f2f2f2"))
-    private val background = ImmutableImage.create(SIZE, SIZE).fill(gradient)
 
     override fun generate(print: Print): Print = runBlocking {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
@@ -34,6 +32,11 @@ class FramedPreviewGenerator : PreviewGenerator() {
 
         val previews = frames.map { frame ->
             async(Dispatchers.Default) {
+                val background = ImmutableImage.create(
+                    SIZE,
+                    SIZE + random.nextInt(SIZE / 2)
+                ).fill(gradient)
+
                 processImage(background, frame, printImage, outputFolder)
             }
         }.awaitAll()
@@ -42,9 +45,12 @@ class FramedPreviewGenerator : PreviewGenerator() {
     }
 
     private fun processImage(background: ImmutableImage, frame: ImmutableImage, print: ImmutableImage, outputFolder: Path): Path {
+        val x = (background.width - PRINT_WIDTH) / 2
+        val y = (background.height - PRINT_HEIGHT) / 2
+
         return background
-            .overlay(print, PRINT_X, PRINT_Y)
-            .overlay(frame)
+            .overlay(print, x, y)
+            .overlay(frame, 0, (background.height - frame.height) / 2)
             .output(writer, outputFolder.resolve("${UUID.randomUUID()}.jpeg"))
     }
 }
