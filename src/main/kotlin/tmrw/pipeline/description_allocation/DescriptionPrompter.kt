@@ -4,7 +4,6 @@ import tmrw.utils.Example
 import tmrw.utils.Prompter
 
 const val MAX_DESCRIPTION_LENGTH = 100
-const val MAX_NUMBER_OF_HASHTAGS = 3
 
 class DescriptionPrompter: Prompter<String>(
     prompt = """
@@ -41,76 +40,13 @@ class DescriptionPrompter: Prompter<String>(
         )
     )
 ) {
-    companion object {
-        private val hashtags = listOf(
-            "aesthetic",
-            "art",
-            "artinspiration",
-            "artist",
-            "artwork",
-            "decor",
-            "decoratingideas",
-            "design",
-            "designideas",
-            "gift",
-            "gifts",
-            "giftsforher",
-            "giftsforhim",
-            "giftideas",
-            "homeinspiration",
-            "interiordesign",
-            "interiordesire",
-            "interiorlovers",
-            "interiors",
-            "interiorstylist",
-            "lifestyle",
-            "modernhome",
-            "pinterestart",
-            "pinterestideas",
-            "pinterestinspired",
-            "walldecor",
-        )
 
-        private val callToActions = listOf(
-            "See more: [link]",
-            "Shop here: [link]",
-            "Find yours: [link]",
-            "Explore now: [link]",
-            "Get it today: [link]",
-            "Click to buy: [link]",
-            "Get yours now: [link]",
-            "Grab yours here: [link]",
-            "Upgrade your walls: [link]",
-            "Click and discover: [link]",
-            "Shop the collection: [link]",
-            "Click here to get yours now: [link]",
-            "Redefine your home aesthetic: [link]",
-            "Explore our exclusive posters: [link]",
-            "Explore our poster collection: [link]",
-            "Shop the poster collection now: [link]",
-            "Dive into the collection  here: [link]",
-            "Shop now for the perfect poster: [link]",
-            "Unleash creativity on your walls: [link]",
-            "Transform your space with a click: [link]",
-            "Click to bring art into your space: [link]",
-            "Don't miss out – explore our posters: [link]",
-            "Your walls deserve an upgrade! Click here: [link]",
-            "Discover our latest poster collection here: [link]",
-            "Click the link to explore our poster gallery: [link]",
-        )
-    }
 
     override fun process(output: String): String {
         val result = Regex("""Description: (.+)""").find(output)
 
         require (result != null) { "Generated Pinterest content should follow the correct structure:\n\n$output" }
 
-        val (_, description) = result.groupValues
-
-        // TODO: move this to a poster-individual level, not inside the description generation.
-        val hashtags = hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" "){ "#$it" }
-        val callToAction = callToActions.shuffled().first()
-
-        return "$description $callToAction $hashtags"
+        return result.groupValues[1]
     }
 }

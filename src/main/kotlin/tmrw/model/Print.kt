@@ -18,6 +18,8 @@ import kotlin.io.path.name
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
+const val MAX_NUMBER_OF_HASHTAGS = 3
+
 data class Print(
     val path: Path,
     val prompt: String,
@@ -71,10 +73,77 @@ data class Print(
     override fun toCsvRows(): List<String> {
         val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,,\"interior,poster,renovation\""
         val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->
-            "\"$title [${index+1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"$description\",$listingUrl,,\"interior,poster,renovation\""
+            "\"$title [${index+1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,,\"interior,poster,renovation\""
         }
 
         return listOf(generalCsvRow) + previewCsvRows
+    }
+
+    companion object {
+        private val hashtags = listOf(
+            "aesthetic",
+            "art",
+            "artinspiration",
+            "artist",
+            "artwork",
+            "decor",
+            "decoratingideas",
+            "design",
+            "designideas",
+            "gift",
+            "gifts",
+            "giftsforher",
+            "giftsforhim",
+            "giftideas",
+            "homeinspiration",
+            "interiordesign",
+            "interiordesire",
+            "interiorlovers",
+            "interiors",
+            "interiorstylist",
+            "lifestyle",
+            "modernhome",
+            "pinterestart",
+            "pinterestideas",
+            "pinterestinspired",
+            "walldecor",
+        )
+
+        private val callToActions = listOf(
+            "See more: [link]",
+            "Shop here: [link]",
+            "Find yours: [link]",
+            "Explore now: [link]",
+            "Get it today: [link]",
+            "Click to buy: [link]",
+            "Get yours now: [link]",
+            "Grab yours here: [link]",
+            "Upgrade your walls: [link]",
+            "Click and discover: [link]",
+            "Shop the collection: [link]",
+            "Click here to get yours now: [link]",
+            "Redefine your home aesthetic: [link]",
+            "Explore our exclusive posters: [link]",
+            "Explore our poster collection: [link]",
+            "Shop the poster collection now: [link]",
+            "Dive into the collection  here: [link]",
+            "Shop now for the perfect poster: [link]",
+            "Unleash creativity on your walls: [link]",
+            "Transform your space with a click: [link]",
+            "Click to bring art into your space: [link]",
+            "Don't miss out – explore our posters: [link]",
+            "Your walls deserve an upgrade! Click here: [link]",
+            "Discover our latest poster collection here: [link]",
+            "Click the link to explore our poster gallery: [link]",
+        )
+    }
+
+    private fun decorateDescription(): String {
+        val hashtags = hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" "){ "#$it" }
+        val callToAction = callToActions.shuffled().first()
+
+        // TODO: replace [link] inside the $description
+        return "$description $callToAction $hashtags"
     }
 }
 
