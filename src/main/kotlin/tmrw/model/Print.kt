@@ -173,8 +173,7 @@ data class Print(
         val hashtags = hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" "){ "#$it" }
         val callToAction = callToActions.shuffled().first()
 
-        // TODO: replace [link] inside the $description
-        return "$description $callToAction $hashtags"
+        return "$description ${callToAction.replace("[link]", listingUrl)} $hashtags"
     }
 }
 
