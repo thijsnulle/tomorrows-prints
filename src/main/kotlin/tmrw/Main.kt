@@ -20,6 +20,8 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import kotlin.io.path.*
 
+const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
+
 fun main() {
     print("""
         Please select what you want to do:
@@ -78,9 +80,14 @@ private fun enableLoggingToFile() {
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
     // TODO: add ordering for the posts in the schedule
+    // TODO: add release time/date
     val csvHeaders = prints.first().toCsvHeaders()
-    val csvRows = prints.map { it.toCsvRows() }.flatten().joinToString("\n")
+    val csvRows = prints.map { it.toCsvRows() }.flatten()
 
-    // TODO: split this into blocks of maximum 200 pins
-    output.toFile().bufferedWriter().use { it.write("$csvHeaders\n$csvRows") }
+    csvRows
+        .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
+        .forEachIndexed { index, chunk ->
+            output.parent.resolve("${output.nameWithoutExtension}-$index.csv")
+                .toFile().bufferedWriter().use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
+        }
 }
