@@ -17,7 +17,7 @@ interface JsonMappable {
 
 interface CsvMappable {
     fun toCsvHeaders(): String
-    fun toCsvRow(): String
+    fun toCsvRows(): List<String>
 }
 
 class Files {
@@ -47,11 +47,11 @@ class Files {
         }
 
         fun <T> storeAsCsv(objects: List<T>, output: Path) where T : CsvMappable {
-            val csvHeaders = objects.first().toCsvHeaders()
-            val csvRows = objects.joinToString("\n", transform = CsvMappable::toCsvRow)
-            val csvContent = "$csvHeaders\n$csvRows"
-
-            output.toFile().bufferedWriter().use { it.write(csvContent) }
+//            val csvHeaders = objects.first().toCsvHeaders()
+//            val csvRows = objects.joinToString("\n", transform = CsvMappable::toCsvRows)
+//            val csvContent = "$csvHeaders\n$csvRows"
+//
+//            output.toFile().bufferedWriter().use { it.write(csvContent) }
         }
 
         fun Path.batchFolder(print: Print): Path {

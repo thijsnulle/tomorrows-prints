@@ -95,7 +95,7 @@ private fun createPinSchedule(prints: List<Print>, output: Path) {
     }
 
     val csvHeaders = prints.first().toCsvHeaders()
-    val csvRows = prints.joinToString("\n") { it.toCsvRow() }
+    val csvRows = prints.map { it.toCsvRows() }.flatten().joinToString("\n")
 
     val csvContent = "$csvHeaders\n$csvRows"
     val csv = output.parent.resolve("test.csv")

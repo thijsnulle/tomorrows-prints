@@ -21,6 +21,7 @@ import kotlin.time.measureTimedValue
 data class Print(
     val path: Path,
     val prompt: String,
+    val url: String = "",
     val theme: Theme = Theme.DEFAULT,
     val title: String = "",
     val description: String = "",
@@ -40,6 +41,7 @@ data class Print(
 
         jsonObject.addProperty("path", "${path.parent.name}/${path.name}")
         jsonObject.addProperty("prompt", prompt)
+        jsonObject.addProperty("url", url)
         jsonObject.addProperty("theme", theme.value)
         jsonObject.addProperty("title", title)
         jsonObject.addProperty("description", description)
@@ -66,14 +68,20 @@ data class Print(
 
     override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
 
-    override fun toCsvRow(): String = previewUrls.mapIndexed { index, previewUrl ->
-        "$title [${index+1}/${previewUrls.size}],${previewUrl},${theme.value},,#generateDescription,$listingUrl,,\"interior,poster,renovation\""
-    }.joinToString("\n")
+    override fun toCsvRows(): List<String> {
+        val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,,\"interior,poster,renovation\""
+        val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->
+            "\"$title [${index+1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"$description\",$listingUrl,,\"interior,poster,renovation\""
+        }
+
+        return listOf(generalCsvRow) + previewCsvRows
+    }
 }
 
 data class JsonPrint(
     val path: String,
     val prompt: String,
+    val url: String?,
     val theme: String?,
     val title: String?,
     val description: String?,
@@ -88,6 +96,7 @@ data class JsonPrint(
     fun toPrint() = Print(
         Files.prints.resolve(path).toAbsolutePath(),
         prompt,
+        url ?: "",
         Theme.valueOf((theme ?: "Default").replace(' ', '_').uppercase()),
         title ?: "",
         description ?: "",
@@ -110,7 +119,7 @@ data class BatchPrint(val url: String, val prompt: String) {
 
         if (output.exists()) {
             logger.info { "${output.fileName} was already downloaded." }
-            return Print(output, prompt)
+            return Print(output, prompt, url = url)
         }
 
         logger.info { "Downloading $url" }
@@ -124,6 +133,6 @@ data class BatchPrint(val url: String, val prompt: String) {
 
         logger.info { "Downloading took ${duration.inWholeMilliseconds} ms" }
 
-        return Print(path, prompt)
+        return Print(path, prompt, url = url)
     }
 }
