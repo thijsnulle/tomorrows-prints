@@ -194,7 +194,7 @@ data class JsonPrint(
         Files.prints.resolve(path).toAbsolutePath(),
         prompt,
         url ?: "",
-        Theme.valueOf((theme ?: "Default").replace(' ', '_').uppercase()),
+        Theme.valueOf((theme ?: "Default").uppercase().replace(' ', '_')),
         title ?: "",
         description ?: "",
         previews?.map { preview -> Path(preview) } ?: emptyList(),

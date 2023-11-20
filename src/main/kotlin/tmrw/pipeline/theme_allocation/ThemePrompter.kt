@@ -4,7 +4,7 @@ import tmrw.utils.Prompter
 import tmrw.utils.Example
 
 enum class Theme(val value: String) {
-    DEFAULT(""),
+    DEFAULT("Default"),
     ABSTRACT("Abstract"),
     COLOR_FIELD("Color Field"),
     CUBISM("Cubism"),
