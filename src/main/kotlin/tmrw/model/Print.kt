@@ -38,51 +38,6 @@ data class Print(
 ) : JsonMappable, CsvMappable {
     constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
 
-    // TODO: add test for this method
-    override fun toJson(): JsonObject {
-        val jsonObject = JsonObject()
-
-        jsonObject.addProperty("path", "${path.parent.name}/${path.name}")
-        jsonObject.addProperty("prompt", prompt)
-        jsonObject.addProperty("url", url)
-        jsonObject.addProperty("theme", theme.value)
-        jsonObject.addProperty("title", title)
-        jsonObject.addProperty("description", description)
-
-        val previews = JsonArray()
-        this.previews.forEach {
-            preview -> previews.add(preview.toString())
-        }
-        jsonObject.add("previews", previews)
-
-        val previewUrls = JsonArray()
-        this.previewUrls.forEach {
-                previewUrl -> previewUrls.add(previewUrl)
-        }
-        jsonObject.add("previewUrls", previewUrls)
-
-        jsonObject.addProperty("thumbnail", thumbnail)
-        jsonObject.addProperty("sizeGuide", sizeGuide)
-        jsonObject.addProperty("printFile", printFile)
-        jsonObject.addProperty("printFileUrl", printFileUrl)
-
-        return jsonObject
-    }
-
-    override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
-
-    override fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String> {
-        val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,$startDate,\"interior,poster,renovation\""
-
-        val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->
-            val publishDate = startDate.plusMinutes((index + 1) * intervalInMinutes)
-
-            "\"$title [${index+1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,$publishDate,\"interior,poster,renovation\""
-        }
-
-        return listOf(generalCsvRow) + previewCsvRows
-    }
-
     companion object {
         private val hashtags = listOf(
             "aesthetic",
@@ -140,6 +95,78 @@ data class Print(
             "Discover our latest poster collection here: [link]",
             "Click the link to explore our poster gallery: [link]",
         )
+
+        private val taggedTopics = listOf(
+            "architecture poster",
+            "art deco interior",
+            "bedroom",
+            "bedroom interior",
+            "diy gifts",
+            "diy wall art",
+            "fashion poster",
+            "graphic poster",
+            "graphic design poster",
+            "home interior design",
+            "interior design tips",
+            "living room",
+            "luxury interior design",
+            "minimalist poster",
+            "modern interior",
+            "music poster",
+            "poster print",
+            "print design",
+            "retro poster",
+            "wall art",
+        )
+    }
+
+    // TODO: add test for this method
+    override fun toJson(): JsonObject {
+        val jsonObject = JsonObject()
+
+        jsonObject.addProperty("path", "${path.parent.name}/${path.name}")
+        jsonObject.addProperty("prompt", prompt)
+        jsonObject.addProperty("url", url)
+        jsonObject.addProperty("theme", theme.value)
+        jsonObject.addProperty("title", title)
+        jsonObject.addProperty("description", description)
+
+        val previews = JsonArray()
+        this.previews.forEach {
+            preview -> previews.add(preview.toString())
+        }
+        jsonObject.add("previews", previews)
+
+        val previewUrls = JsonArray()
+        this.previewUrls.forEach {
+                previewUrl -> previewUrls.add(previewUrl)
+        }
+        jsonObject.add("previewUrls", previewUrls)
+
+        jsonObject.addProperty("thumbnail", thumbnail)
+        jsonObject.addProperty("sizeGuide", sizeGuide)
+        jsonObject.addProperty("printFile", printFile)
+        jsonObject.addProperty("printFileUrl", printFileUrl)
+
+        return jsonObject
+    }
+
+    override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
+
+    override fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String> {
+        val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,$startDate,\"${
+            taggedTopics.shuffled().take(10).joinToString(",")
+        }\""
+
+        val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->
+            val publishDate = startDate.plusMinutes((index + 1) * intervalInMinutes)
+
+            "\"$title [${index + 1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,$publishDate,\"${
+                taggedTopics.shuffled().take(10).joinToString(",")
+            }\""
+        }
+
+        return listOf(generalCsvRow) + previewCsvRows
     }
 
     private fun decorateDescription(): String {
