@@ -48,7 +48,7 @@ fun main() {
     enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-//        TitleAllocationStep(),
+        TitleAllocationStep(),
         ThemeAllocationStep(),
 //        ThumbnailGenerationStep(),
 //        SizeGuideGenerationStep(),
@@ -92,7 +92,12 @@ private fun createPinSchedule(prints: List<Print>, output: Path) {
         pinContents.mapNotNull { it.getOrNull(index) }
     }
 
-    val csvRows = prints.map { it.toCsvRow() }
+    val csvHeaders = prints.first().toCsvHeaders()
+    val csvRows = prints.joinToString("\n") { it.toCsvRow() }
 
-    Files.storeAsJson(allPinContents, output)
+    val csvContent = "$csvHeaders\n$csvRows"
+    val csv = output.parent.resolve("test.csv")
+    csv.toFile().bufferedWriter().use { it.write(csvContent) }
+
+//    Files.storeAsJson(allPinContents, output)
 }

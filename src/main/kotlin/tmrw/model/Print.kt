@@ -64,9 +64,9 @@ data class Print(
 
     override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
 
-    override fun toCsvRow(): String = previews.joinToString("\n") {
-        "$title,${it},${theme.value},,#generateDescription,$listingUrl,#generatePublishDate,#keywords"
-    }
+    override fun toCsvRow(): String = previewUrls.mapIndexed { index, previewUrl ->
+        "$title [${index+1}/${previewUrls.size}],${previewUrl},${theme.value},,#generateDescription,$listingUrl,,\"interior,poster,renovation\""
+    }.joinToString("\n")
 }
 
 data class JsonPrint(
