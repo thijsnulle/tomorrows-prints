@@ -15,6 +15,11 @@ interface JsonMappable {
     fun toJson(): JsonObject
 }
 
+interface CsvMappable {
+    fun toCsvHeaders(): String
+    fun toCsvRow(): String
+}
+
 class Files {
     companion object {
         private val resources = Paths.get("src/main/resources")
@@ -39,6 +44,14 @@ class Files {
         fun <T> storeAsJson(objects: List<T>, output: Path) where T : JsonMappable {
             val jsonContent = gson.toJson(objects.map { it.toJson() })
             output.toFile().bufferedWriter().use { it.write(jsonContent) }
+        }
+
+        fun <T> storeAsCsv(objects: List<T>, output: Path) where T : CsvMappable {
+            val csvHeaders = objects.first().toCsvHeaders()
+            val csvRows = objects.joinToString("\n", transform = CsvMappable::toCsvRow)
+            val csvContent = "$csvHeaders\n$csvRows"
+
+            output.toFile().bufferedWriter().use { it.write(csvContent) }
         }
 
         fun Path.batchFolder(print: Print): Path {

@@ -25,7 +25,7 @@ data class PinContent(
     val board: String,
     val preview: String
 ) : JsonMappable {
-    override fun toJson(): JsonObject {
+        override fun toJson(): JsonObject {
         val jsonObject = JsonObject()
 
         jsonObject.addProperty("prompt", prompt)

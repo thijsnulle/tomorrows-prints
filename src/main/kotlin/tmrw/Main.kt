@@ -47,14 +47,14 @@ fun main() {
     enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-        TitleAllocationStep(),
-        ThemeAllocationStep(),
+//        TitleAllocationStep(),
+//        ThemeAllocationStep(),
         ThumbnailGenerationStep(),
         SizeGuideGenerationStep(),
         PreviewGenerationStep(),
-        PrintFileGenerationStep(),
-        PrintFileUploadStep(),
-        PrintfulStep(),
+//        PrintFileGenerationStep(),
+//        PrintFileUploadStep(),
+//        PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
     createPinSchedule(processedPrints, Files.social.resolve("$batch.json"))
@@ -89,6 +89,8 @@ private fun createPinSchedule(prints: List<Print>, output: Path) {
     val allPinContents = defaultPinContents + pinContents.first().indices.flatMap { index ->
         pinContents.mapNotNull { it.getOrNull(index) }
     }
+
+    val csvRows = prints.map { it.toCsvRow() }
 
     Files.storeAsJson(allPinContents, output)
 }

@@ -6,6 +6,7 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import io.github.oshai.kotlinlogging.KotlinLogging
 import tmrw.pipeline.theme_allocation.Theme
+import tmrw.utils.CsvMappable
 import tmrw.utils.Files
 import tmrw.utils.JsonMappable
 import java.net.URI
@@ -28,7 +29,7 @@ data class Print(
     val printFile: String = "",
     val printFileUrl: String = "",
     val listingUrl: String = "",
-) : JsonMappable {
+) : JsonMappable, CsvMappable {
     constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
 
     // TODO: add test for this method
@@ -52,6 +53,12 @@ data class Print(
         jsonObject.addProperty("printFileUrl", printFileUrl)
 
         return jsonObject
+    }
+
+    override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
+
+    override fun toCsvRow(): String = previews.joinToString("\n") {
+        "$title,${it},${theme.value},,#generateDescription,$listingUrl,#generatePublishDate,#keywords"
     }
 }
 
