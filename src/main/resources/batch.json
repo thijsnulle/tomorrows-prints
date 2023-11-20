@@ -1,6 +1,34 @@
 [
   {
-    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1099808689998803098/thijsnulle_a_colorful_abstract_illustration_of_a_fluid_in_the_s_fa00f0ed-17f8-44fe-bb85-1de14961905d.png?ex=65514329&is=653ece29&hm=43c5349d592b39991fc5946f9d333c334fe022bc085682d6a809a0cb6f58fd36&",
-    "prompt": "a colorful abstract illustration of a fluid, in the style of pop art style graphics, marble, crimson, blue, orange, purple, colorful animation stills, psychedelic realism, colorful moebius --v 5 --ar 1:2"
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173637872323137607/thijsnulle_a_painting_of_purple_blue_and_orange_in_the_style_of_d60dca9c-2f4b-4307-80e2-66b0ea1ccc2b.png?ex=6564ae71&is=65523971&hm=b2e4476ece2ffd1ee7ed1b46b701f59e15bb34adcbe2c0cbed55beb8c27dc251&",
+    "prompt": "a painting of purple, blue, and orange, in the style of subtle color harmonies, light crimson and green, subtle tonal values, rectangular fields, free brushwork, strip painting, monochromatic scheme --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173637858465157231/thijsnulle_a_painting_of_purple_blue_and_orange_in_the_style_of_114b04f5-89ca-4f91-8912-abcae6dbd8ad.png?ex=6564ae6e&is=6552396e&hm=3865931c3a902eb448dbb069bef8a178411ef0b81e5e86b2e533b9e97de0baca&",
+    "prompt": "a painting of purple, blue, and orange, in the style of subtle color harmonies, light crimson and green, subtle tonal values, rectangular fields, free brushwork, strip painting, monochromatic scheme --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173637785450709013/thijsnulle_stanley_rubin_red_painting_in_the_style_of_mark_roth_542646db-71ed-48ab-ab96-33898041474a.png?ex=6564ae5d&is=6552395d&hm=e9af65d6637b8a53a4a0ddaded8d2d1331be3e4ac144bbd09c8a1d06bda88ff0&",
+    "prompt": "stanley rubin red painting, in the style of mark rothko, fleeting light contrasts, chiaroscuro contrast, georgia o'keeffe, quadratura, willard metcalf, solarization --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173637757881548912/thijsnulle_a_painting_featuring_a_blue_red_and_pink_square_shap_72fca057-06c1-48b3-a5e1-4a9f85210459.png?ex=6564ae56&is=65523956&hm=6b19b6e11f39367c0154c9c136b5769bd670f0822e9740d11c512f07e4e7947b&",
+    "prompt": "a painting featuring a blue, red and pink square shape, in the style of mark rothko, intense color-field painting, translucent color, rufino tamayo, tonalist genius, color zone painting, dark violet and sky-blue --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173637752626090086/thijsnulle_a_painting_featuring_a_blue_red_and_pink_square_shap_12398e4d-f300-4361-83ec-c889169596e3.png?ex=6564ae55&is=65523955&hm=05b5578358893079e8b5a9d20fedf42f9502467479646897152ddf3baa5f9d70&",
+    "prompt": "a painting featuring a blue, red and pink square shape, in the style of mark rothko, intense color-field painting, translucent color, rufino tamayo, tonalist genius, color zone painting, dark violet and sky-blue --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173637250924417034/thijsnulle_a_picture_of_a_painting_with_a_blue_and_orange_borde_ce05c265-c97b-46cd-8524-8c2131555e51.png?ex=6564addd&is=655238dd&hm=a832b4ee01f559c0469262c4b9f709963b0e2bd3adc821b99262a57c9536dc22&",
+    "prompt": "a picture of a painting with a blue and orange border, in the style of mark rothko, aboriginal art, dark orange and light brown, kitty lange kielland, monochromatic mastery, washington color school, elongated forms --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173351926700707950/thijsnulle_white_painting_of_a_bridge_over_water_lilies_by_clau_042aceca-9534-4dc9-b9a1-2940d7306001.png?ex=6563a423&is=65512f23&hm=4c9023e0af71536c6dd475505a9f41ea1fc38c4c7bd15df603d28745edd188c6&",
+    "prompt": "white painting of a bridge over water lilies by claude monet, in the style of light pink and light gray, light green and red, colorful gardens, large-scale brushstrokes, saturated pigment pools, meticulously detailed, les automatistes --ar 2:3"
+  },
+  {
+    "url": "https://cdn.discordapp.com/attachments/1087406908949942333/1173351812972159056/thijsnulle_claude_monet_painted_some_water_lilies_in_a_pond_in__72e51176-2c28-40a4-bd90-1cc3435ed32f.png?ex=6563a408&is=65512f08&hm=b0f29277a16cbbe1c1f05183a19abb3d9e3fd2e34f2088e34d8ec619c99904af&",
+    "prompt": "claude monet painted some water lilies in a pond, in the style of light emerald and magenta, large-scale canvas, hurufiyya, louis-léopold boily, light azure and crimson, plein-air, vergvoktre --ar 2:3"
   }
 ]

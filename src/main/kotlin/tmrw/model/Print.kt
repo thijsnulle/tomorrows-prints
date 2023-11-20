@@ -11,6 +11,7 @@ import tmrw.utils.Files
 import tmrw.utils.JsonMappable
 import java.net.URI
 import java.nio.file.Path
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.exists
@@ -70,10 +71,13 @@ data class Print(
 
     override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
 
-    override fun toCsvRows(): List<String> {
-        val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,,\"interior,poster,renovation\""
+    override fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String> {
+        val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,$startDate,\"interior,poster,renovation\""
+
         val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->
-            "\"$title [${index+1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,,\"interior,poster,renovation\""
+            val publishDate = startDate.plusMinutes((index + 1) * intervalInMinutes)
+
+            "\"$title [${index+1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,$publishDate,\"interior,poster,renovation\""
         }
 
         return listOf(generalCsvRow) + previewCsvRows

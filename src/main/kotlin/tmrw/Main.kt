@@ -17,10 +17,11 @@ import java.io.FileOutputStream
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.time.LocalDateTime
+import java.time.*
 import kotlin.io.path.*
 
 const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
+const val INTERVAL_BETWEEN_POST: Long = 30
 
 fun main() {
     print("""
@@ -79,15 +80,22 @@ private fun enableLoggingToFile() {
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
-    // TODO: add ordering for the posts in the schedule
-    // TODO: add release time/date
+    val initialDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(1)
+    val intervalInMinutes = INTERVAL_BETWEEN_POST * prints.size
+
     val csvHeaders = prints.first().toCsvHeaders()
-    val csvRows = prints.map { it.toCsvRows() }.flatten()
+    val csvRows = prints.mapIndexed { index, print ->
+        val startDateTime = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST)
+
+        print.toCsvRows(startDateTime, intervalInMinutes)
+    }.flatten()
 
     csvRows
         .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
         .forEachIndexed { index, chunk ->
             output.parent.resolve("${output.nameWithoutExtension}-$index.csv")
-                .toFile().bufferedWriter().use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
+                .toFile()
+                .bufferedWriter()
+                .use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
         }
 }
