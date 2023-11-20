@@ -52,16 +52,16 @@ fun main() {
         TitleAllocationStep(),
         DescriptionAllocationStep(),
         ThemeAllocationStep(),
-//        ThumbnailGenerationStep(),
-//        SizeGuideGenerationStep(),
+        ThumbnailGenerationStep(),
+        SizeGuideGenerationStep(),
         PreviewGenerationStep(),
         PreviewUploadStep(),
-//        PrintFileGenerationStep(),
-//        PrintFileUploadStep(),
-//        PrintfulStep(),
+        PrintFileGenerationStep(),
+        PrintFileUploadStep(),
+        PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
-    createPinSchedule(prints, Files.social.resolve("$batch.csv"))
+    createPinSchedule(processedPrints, Files.social.resolve("$batch.csv"))
 }
 
 private fun enableLoggingToFile() {
