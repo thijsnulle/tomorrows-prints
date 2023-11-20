@@ -1,5 +1,4 @@
 package tmrw
-import deprecated.PrintfulStep
 import tmrw.model.BatchPrint
 import tmrw.model.JsonPrint
 import tmrw.model.Print
@@ -57,7 +56,6 @@ fun main() {
         PreviewUploadStep(),
         PrintFileGenerationStep(),
         PrintFileUploadStep(),
-        PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
     createPinSchedule(processedPrints, Files.social.resolve("$batch.csv"))
