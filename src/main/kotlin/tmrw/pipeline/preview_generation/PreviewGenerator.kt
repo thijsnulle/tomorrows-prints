@@ -17,7 +17,7 @@ abstract class PreviewGenerator {
         if (directory.exists()) {
             logger.info { "Previews for ${print.path.fileName} already exist, returning existing previews." }
 
-            return print.copy(previews = directory.listDirectoryEntries("*.png"))
+            return print.copy(previews = directory.listDirectoryEntries("*"))
         }
 
         directory.createDirectory()
