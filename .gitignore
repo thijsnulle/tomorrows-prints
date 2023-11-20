@@ -183,4 +183,5 @@ gradle-app.setting
 .classpath
 
 src/main/resources/**/*
+frontend/csv/*
 frontend/json/*
