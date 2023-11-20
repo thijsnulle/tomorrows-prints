@@ -61,7 +61,7 @@ fun main() {
 //        PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
-    createPinSchedule(processedPrints, Files.social.resolve("$batch.json"))
+    createPinSchedule(prints, Files.social.resolve("$batch.csv"))
 }
 
 private fun enableLoggingToFile() {
@@ -80,26 +80,8 @@ private fun enableLoggingToFile() {
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
-    val defaultPinContents = prints.map {
-        PinContent(it.prompt, it.title, it.listingUrl, "All Posters", it.path.toAbsolutePath().toString())
-    }
-
-    val pinContents = prints.map { print ->
-        print.previews.map { preview ->
-            PinContent(print.prompt, print.title, print.listingUrl, print.theme.value, preview.toAbsolutePath().toString())
-        }.shuffled()
-    }
-
-    val allPinContents = defaultPinContents + pinContents.first().indices.flatMap { index ->
-        pinContents.mapNotNull { it.getOrNull(index) }
-    }
-
     val csvHeaders = prints.first().toCsvHeaders()
     val csvRows = prints.map { it.toCsvRows() }.flatten().joinToString("\n")
 
-    val csvContent = "$csvHeaders\n$csvRows"
-    val csv = output.parent.resolve("test.csv")
-    csv.toFile().bufferedWriter().use { it.write(csvContent) }
-
-//    Files.storeAsJson(allPinContents, output)
+    output.toFile().bufferedWriter().use { it.write("$csvHeaders\n$csvRows") }
 }

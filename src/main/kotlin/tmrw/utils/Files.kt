@@ -47,6 +47,8 @@ class Files {
         }
 
         fun <T> storeAsCsv(objects: List<T>, output: Path) where T : CsvMappable {
+
+
 //            val csvHeaders = objects.first().toCsvHeaders()
 //            val csvRows = objects.joinToString("\n", transform = CsvMappable::toCsvRows)
 //            val csvContent = "$csvHeaders\n$csvRows"
