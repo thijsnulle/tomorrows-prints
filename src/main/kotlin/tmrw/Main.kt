@@ -3,6 +3,7 @@ import tmrw.model.BatchPrint
 import tmrw.model.JsonPrint
 import tmrw.model.Print
 import tmrw.pipeline.description_allocation.DescriptionAllocationStep
+import tmrw.pipeline.preview_generation.FramedPreviewGenerator
 import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
 import tmrw.pipeline.print_file_generation.PrintFileGenerationStep
@@ -12,12 +13,14 @@ import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
 import tmrw.pipeline.title_allocation.TitleAllocationStep
 import tmrw.utils.Files
+import tmrw.utils.Files.Companion.batchFolder
 import tmrw.utils.TeeOutputStream
 import java.io.FileOutputStream
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.*
+import java.util.UUID
 import kotlin.io.path.*
 
 const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
@@ -61,7 +64,47 @@ fun main() {
         PrintFileUploadStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
+    createVideoPreviews(processedPrints)
     createPinSchedule(processedPrints, Files.social.resolve("$batch.csv"))
+}
+
+const val PRINTS_PER_VIDEO_PREVIEW = 18
+const val FRAME_RATE_VIDEO_PREVIEW = 6
+
+private fun createVideoPreviews(prints: List<Print>) {
+    val videoPreviewsFolder = Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
+    videoPreviewsFolder.createDirectories()
+
+    val temporaryDirectory = java.nio.file.Files.createTempDirectory("")
+    val previewGenerator = FramedPreviewGenerator(previewFolder = temporaryDirectory, createSquarePreviews = true)
+
+    val previewChunks = prints
+        .map(previewGenerator::generate)
+        .flatMap { it.previews }
+        .shuffled()
+        .chunked(PRINTS_PER_VIDEO_PREVIEW)
+
+    previewChunks.forEach { previews ->
+        if (previews.size != PRINTS_PER_VIDEO_PREVIEW) return@forEach
+
+        temporaryDirectory.listDirectoryEntries("*.jpeg").forEach { it.deleteIfExists() }
+        previews.forEach { java.nio.file.Files.copy(it, temporaryDirectory.resolve(it.fileName)) }
+
+        val commandsToGenerateCompleteVideoPreview = listOf(
+            "ffmpeg", "-y",
+            "-framerate", FRAME_RATE_VIDEO_PREVIEW.toString(),
+            "-pattern_type", "glob",
+            "-i", "*.jpeg",
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            "$videoPreviewsFolder/${UUID.randomUUID()}.mp4"
+        )
+
+        ProcessBuilder(commandsToGenerateCompleteVideoPreview)
+            .directory(temporaryDirectory.toFile())
+            .start()
+            .waitFor()
+    }
 }
 
 private fun enableLoggingToFile() {

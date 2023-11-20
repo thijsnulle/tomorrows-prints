@@ -10,6 +10,8 @@ import tmrw.utils.Files.Companion.batchFolderWithoutExtension
 import java.awt.Color
 import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
 
 const val SIZE = 2048
@@ -17,7 +19,10 @@ const val PRINT_WIDTH = 768
 const val PRINT_HEIGHT = 1152
 
 // TODO: add support for horizontal posters
-class FramedPreviewGenerator : PreviewGenerator() {
+class FramedPreviewGenerator(
+    private val previewFolder: Path = Files.previews,
+    private val createSquarePreviews: Boolean = false
+): PreviewGenerator() {
 
     private val loader = ImmutableImage.loader()
     private val writer = JpegWriter.compression(85).withProgressive(true)
@@ -28,13 +33,15 @@ class FramedPreviewGenerator : PreviewGenerator() {
 
     override fun generate(print: Print): Print = runBlocking {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
-        val outputFolder = Files.previews.batchFolderWithoutExtension(print)
+        val outputFolder = previewFolder.batchFolderWithoutExtension(print)
+
+        if (!outputFolder.exists()) outputFolder.createDirectories()
 
         val previews = frames.map { frame ->
             async(Dispatchers.Default) {
                 val background = ImmutableImage.create(
                     SIZE,
-                    SIZE + random.nextInt(SIZE / 2)
+                    if (createSquarePreviews) SIZE else SIZE + random.nextInt(SIZE / 2)
                 ).fill(gradient)
 
                 processImage(background, frame, printImage, outputFolder)
