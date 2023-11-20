@@ -37,8 +37,8 @@ abstract class PipelineStep(private val maximumThreads: Int = 8) {
                         semaphore.withPermit {
                             try {
                                 if (shouldSkip(it)) it else process(it)
-                            } catch (_: Exception) {
-                                printsWithErrors.add(it)
+                            } catch (e: Exception) {
+                                printsWithErrors.add(it.copy(error = "$e\n${e.stackTraceToString()}"))
                                 null
                             }
                         }

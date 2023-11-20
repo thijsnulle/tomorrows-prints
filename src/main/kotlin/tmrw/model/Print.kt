@@ -35,6 +35,7 @@ data class Print(
     val printFile: String = "",
     val printFileUrl: String = "",
     val listingUrl: String = "",
+    val error: String = "",
 ) : JsonMappable, CsvMappable {
     constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
 
@@ -147,6 +148,7 @@ data class Print(
         jsonObject.addProperty("sizeGuide", sizeGuide)
         jsonObject.addProperty("printFile", printFile)
         jsonObject.addProperty("printFileUrl", printFileUrl)
+        jsonObject.addProperty("error", error)
 
         return jsonObject
     }
@@ -189,6 +191,7 @@ data class JsonPrint(
     val printFile: String?,
     val printFileUrl: String?,
     val listingUrl: String?,
+    val error: String?,
 ) {
     fun toPrint() = Print(
         Files.prints.resolve(path).toAbsolutePath(),
@@ -204,6 +207,7 @@ data class JsonPrint(
         printFile ?: "",
         printFileUrl ?: "",
         listingUrl ?: "",
+        error ?: "",
     )
 }
 
