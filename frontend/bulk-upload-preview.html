@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .image-container img {
+            width: 200px;
+        }
+    </style>
+
+    <div class="image-container"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        const fetchContent = (url) => {
+            let json = "";
+            $.ajax({
+                'async': false,
+                'global': false,
+                'url': url,
+                'dataType': "text",
+                'success': function (data) {
+                    json = data;
+                },
+            });
+            return json;
+        };
+
+        const csvFile = "csv/selected-images-0.csv";
+
+        const urlRegex = RegExp(",(https[^,]+),")
+        const dateRegex = RegExp(",([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}),");
+
+        const csvRows = fetchContent(csvFile).split("\n").slice(1);
+        
+        const urls = csvRows.map(row => row.match(urlRegex)[1]);
+        const dates = csvRows.map(row => row.match(dateRegex)[1]);
+
+        // zip urls and dates
+        const images = urls.map((url, index) => ({ url, date: dates[index] }));
+        const sortedImages = images.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        const imageContainer = $(".image-container");
+        sortedImages.forEach(image => {
+            imageContainer.append(`<img src="${image.url}" />`);
+        });
+    </script>
+</body>
+</html>
