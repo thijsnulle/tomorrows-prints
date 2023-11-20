@@ -6,7 +6,7 @@ import tmrw.utils.Prompter
 const val MAX_DESCRIPTION_LENGTH = 100
 const val MAX_NUMBER_OF_HASHTAGS = 3
 
-class PinterestContentPrompter: Prompter<String>(
+class DescriptionPrompter: Prompter<String>(
     prompt = """
         Your task is to generate, based on a set of keywords used to
         generate an image, a description for a social media post.

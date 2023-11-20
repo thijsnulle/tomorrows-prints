@@ -5,7 +5,7 @@ import tmrw.utils.Prompter
 
 const val MAX_TITLE_LENGTH = 60
 
-class TitlePromptHandler: Prompter<String>(
+class TitlePrompter: Prompter<String>(
     prompt = """
         Your task is to generate, based on a set of keywords used to
         generate an image, a title for a listing of a poster.

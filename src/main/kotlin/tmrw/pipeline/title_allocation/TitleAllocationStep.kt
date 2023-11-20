@@ -4,7 +4,7 @@ import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 
 class TitleAllocationStep: PipelineStep() {
-    private val prompter = TitlePromptHandler()
+    private val prompter = TitlePrompter()
 
     override fun process(print: Print): Print = print.copy(title = prompter.ask(print.prompt))
 

@@ -80,6 +80,7 @@ private fun enableLoggingToFile() {
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
+    // TODO: add ordering for the posts in the schedule
     val csvHeaders = prints.first().toCsvHeaders()
     val csvRows = prints.map { it.toCsvRows() }.flatten().joinToString("\n")
 

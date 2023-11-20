@@ -4,7 +4,7 @@ import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 
 class DescriptionAllocationStep: PipelineStep() {
-    private val prompter = PinterestContentPrompter()
+    private val prompter = DescriptionPrompter()
 
     override fun process(print: Print): Print = print.copy(description = prompter.ask(print.prompt))
 
