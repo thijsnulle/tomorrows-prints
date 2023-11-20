@@ -46,16 +46,6 @@ class Files {
             output.toFile().bufferedWriter().use { it.write(jsonContent) }
         }
 
-        fun <T> storeAsCsv(objects: List<T>, output: Path) where T : CsvMappable {
-
-
-//            val csvHeaders = objects.first().toCsvHeaders()
-//            val csvRows = objects.joinToString("\n", transform = CsvMappable::toCsvRows)
-//            val csvContent = "$csvHeaders\n$csvRows"
-//
-//            output.toFile().bufferedWriter().use { it.write(csvContent) }
-        }
-
         fun Path.batchFolder(print: Print): Path {
             val folder = this.resolve(print.path.parent.nameWithoutExtension)
 
