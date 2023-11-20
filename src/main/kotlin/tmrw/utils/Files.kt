@@ -8,11 +8,17 @@ import tmrw.model.Print
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.LocalDateTime
 import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 
 interface JsonMappable {
     fun toJson(): JsonObject
+}
+
+interface CsvMappable {
+    fun toCsvHeaders(): String
+    fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String>
 }
 
 class Files {

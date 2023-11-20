@@ -1,10 +1,10 @@
 package tmrw
-import deprecated.PrintfulStep
 import tmrw.model.BatchPrint
 import tmrw.model.JsonPrint
 import tmrw.model.Print
-import tmrw.social.pinterest.PinContent
+import tmrw.pipeline.description_allocation.DescriptionAllocationStep
 import tmrw.pipeline.preview_generation.PreviewGenerationStep
+import tmrw.pipeline.preview_upload.PreviewUploadStep
 import tmrw.pipeline.print_file_generation.PrintFileGenerationStep
 import tmrw.pipeline.print_file_upload.PrintFileUploadStep
 import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
@@ -17,8 +17,11 @@ import java.io.FileOutputStream
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.time.LocalDateTime
+import java.time.*
 import kotlin.io.path.*
+
+const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
+const val INTERVAL_BETWEEN_POST: Long = 30
 
 fun main() {
     print("""
@@ -48,16 +51,17 @@ fun main() {
 
     val processedPrints: List<Print> = listOf(
         TitleAllocationStep(),
+        DescriptionAllocationStep(),
         ThemeAllocationStep(),
         ThumbnailGenerationStep(),
         SizeGuideGenerationStep(),
         PreviewGenerationStep(),
+        PreviewUploadStep(),
         PrintFileGenerationStep(),
         PrintFileUploadStep(),
-        PrintfulStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
-    createPinSchedule(processedPrints, Files.social.resolve("$batch.json"))
+    createPinSchedule(processedPrints, Files.social.resolve("$batch.csv"))
 }
 
 private fun enableLoggingToFile() {
@@ -76,19 +80,22 @@ private fun enableLoggingToFile() {
 }
 
 private fun createPinSchedule(prints: List<Print>, output: Path) {
-    val defaultPinContents = prints.map {
-        PinContent(it.prompt, it.title, it.listingUrl, "All Posters", it.path.toAbsolutePath().toString())
-    }
+    val initialDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(1)
+    val intervalInMinutes = INTERVAL_BETWEEN_POST * prints.size
 
-    val pinContents = prints.map { print ->
-        print.previews.map { preview ->
-            PinContent(print.prompt, print.title, print.listingUrl, print.theme.value, preview.toAbsolutePath().toString())
-        }.shuffled()
-    }
+    val csvHeaders = prints.first().toCsvHeaders()
+    val csvRows = prints.mapIndexed { index, print ->
+        val startDateTime = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST)
 
-    val allPinContents = defaultPinContents + pinContents.first().indices.flatMap { index ->
-        pinContents.mapNotNull { it.getOrNull(index) }
-    }
+        print.toCsvRows(startDateTime, intervalInMinutes)
+    }.flatten()
 
-    Files.storeAsJson(allPinContents, output)
+    csvRows
+        .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
+        .forEachIndexed { index, chunk ->
+            output.parent.resolve("${output.nameWithoutExtension}-$index.csv")
+                .toFile()
+                .bufferedWriter()
+                .use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
+        }
 }
