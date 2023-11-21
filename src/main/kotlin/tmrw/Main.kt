@@ -53,15 +53,15 @@ fun main() {
     enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-        TitleAllocationStep(),
-        DescriptionAllocationStep(),
-        ThemeAllocationStep(),
-        ThumbnailGenerationStep(),
-        SizeGuideGenerationStep(),
+//        TitleAllocationStep(),
+//        DescriptionAllocationStep(),
+//        ThemeAllocationStep(),
+//        ThumbnailGenerationStep(),
+//        SizeGuideGenerationStep(),
         PreviewGenerationStep(),
-        PreviewUploadStep(),
-        PrintFileGenerationStep(),
-        PrintFileUploadStep(),
+//        PreviewUploadStep(),
+//        PrintFileGenerationStep(),
+//        PrintFileUploadStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
     createVideoPreviews(processedPrints)
