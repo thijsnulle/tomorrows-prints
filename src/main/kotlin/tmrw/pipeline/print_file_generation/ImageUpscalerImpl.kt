@@ -10,8 +10,6 @@ fun interface ImageUpscalerImpl {
 }
 
 val upscaleWithRealESRGAN = ImageUpscalerImpl { input, output ->
-    KotlinLogging.logger {}.info { "Upscaling ${input.name}" }
-
     val executable = if (System.getProperty("os.name") == "Mac OS X") "./realesrgan-ncnn-vulkan"
                      else "src/main/resources/executables/realesrgan-ncnn-vulkan.exe"
 
