@@ -11,11 +11,14 @@ import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
 import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
 import tmrw.pipeline.title_allocation.TitleAllocationStep
+import tmrw.post_processing.PostProcessingAggregate
+import tmrw.post_processing.pinterest_scheduling.PinterestSchedulingStep
+import tmrw.post_processing.video_preview_generation.VideoPreviewGenerationStep
+import tmrw.post_processing.video_preview_upload.VideoPreviewUploadStep
 import tmrw.utils.Files
 import tmrw.utils.TeeOutputStream
 import java.io.FileOutputStream
 import java.io.PrintStream
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.*
 import kotlin.io.path.*
@@ -47,7 +50,7 @@ fun main() {
         prints.filterNot { it.path.exists() }.joinToString("\n -") { it.path.toString() }
     }
 
-    enableLoggingToFile()
+    Files.enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
         TitleAllocationStep(),
@@ -59,43 +62,11 @@ fun main() {
         PreviewUploadStep(),
         PrintFileGenerationStep(),
         PrintFileUploadStep(),
-    ).fold(prints) { current, step -> step.start(current) }
+    ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
-    createPinSchedule(processedPrints, Files.social.resolve("$batch.csv"))
-}
-
-private fun enableLoggingToFile() {
-    val logFile = Files.logs.resolve("${LocalDateTime.now()}.log").toFile()
-    val logFilePrintStream = FileOutputStream(logFile)
-
-    val teeOutputStream = TeeOutputStream(System.out, logFilePrintStream)
-    val printStream = PrintStream(teeOutputStream)
-
-    System.setOut(printStream)
-    System.setErr(printStream)
-
-    Runtime.getRuntime().addShutdownHook(Thread {
-        logFilePrintStream.close()
-    })
-}
-
-private fun createPinSchedule(prints: List<Print>, output: Path) {
-    val initialDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(1)
-    val intervalInMinutes = INTERVAL_BETWEEN_POST * prints.size
-
-    val csvHeaders = prints.first().toCsvHeaders()
-    val csvRows = prints.mapIndexed { index, print ->
-        val startDateTime = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST)
-
-        print.toCsvRows(startDateTime, intervalInMinutes)
-    }.flatten()
-
-    csvRows
-        .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
-        .forEachIndexed { index, chunk ->
-            output.parent.resolve("${output.nameWithoutExtension}-$index.csv")
-                .toFile()
-                .bufferedWriter()
-                .use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
-        }
+    listOf(
+        VideoPreviewGenerationStep(),
+        VideoPreviewUploadStep(batch = batch),
+        PinterestSchedulingStep(batch = batch),
+    ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
 }

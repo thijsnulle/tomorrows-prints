@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import tmrw.model.Print
+import java.io.FileOutputStream
+import java.io.PrintStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -17,7 +19,6 @@ interface JsonMappable {
 }
 
 interface CsvMappable {
-    fun toCsvHeaders(): String
     fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String>
 }
 
@@ -61,6 +62,21 @@ class Files {
             Files.createDirectories(folder)
 
             return folder.resolve(print.path.nameWithoutExtension)
+        }
+
+        fun enableLoggingToFile() {
+            val logFile = logs.resolve("${LocalDateTime.now()}.log").toFile()
+            val logFilePrintStream = FileOutputStream(logFile)
+
+            val teeOutputStream = TeeOutputStream(System.out, logFilePrintStream)
+            val printStream = PrintStream(teeOutputStream)
+
+            System.setOut(printStream)
+            System.setErr(printStream)
+
+            Runtime.getRuntime().addShutdownHook(Thread {
+                logFilePrintStream.close()
+            })
         }
     }
 }

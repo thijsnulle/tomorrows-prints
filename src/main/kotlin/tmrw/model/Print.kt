@@ -153,20 +153,16 @@ data class Print(
         return jsonObject
     }
 
-    override fun toCsvHeaders(): String = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
-
     override fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String> {
         val getTaggedTopics = { taggedTopics.shuffled().take(10).joinToString(",") }
 
-        val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,$startDate,\"${getTaggedTopics()}\""
-
-        val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->
+        val csvRows = previewUrls.mapIndexed { index, previewUrl ->
             val publishDate = startDate.plusMinutes((index + 1) * intervalInMinutes)
 
             "\"$title [${index + 1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,$publishDate,\"${getTaggedTopics()}\""
         }
 
-        return listOf(generalCsvRow) + previewCsvRows
+        return csvRows
     }
 
     private fun decorateDescription(): String {
