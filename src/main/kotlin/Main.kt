@@ -7,15 +7,15 @@ import social.pinterest.PinContent
 import utility.files.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.*
+import kotlin.io.path.exists
 
 fun main() {
     print("""
         Please select what you want to do:
           [1] Load prints from backup file.
           [2] Load prints from batch file.
-        
-        Selected choice: 
+
+        Selected choice:
     """.trimIndent())
 
     val choice = readln().ifEmpty { null } ?: "1"
@@ -37,7 +37,7 @@ fun main() {
         PreviewGenerationStep(),
         PrintFileCreationStep(),
         PrintFileUploadStep(),
-        PrintfulStep(),
+        ShopifyUploadStep(),
     ).fold(prints) { current, step -> step.start(current) }
 
     createPinSchedule(processedPrints, Files.social.resolve("schedule.json"))
