@@ -8,13 +8,14 @@ import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.PostProcessingStep
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolder
+import java.awt.Color
 import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.*
 import kotlin.random.Random
 
 const val PRINTS_PER_VIDEO_PREVIEW = 30
-const val FRAME_RATE_VIDEO_PREVIEW = 5
+const val CAROUSEL_SIZE = 12
 
 class VideoPreviewGenerationStep: PostProcessingStep() {
 
@@ -33,10 +34,14 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
 
         videoPreviewsFolder.createDirectories()
 
+        val carouselPreviews = prints
+            .shuffled()
+            .chunked(CAROUSEL_SIZE)
+            .map { createCarouselPreview(it, videoPreviewsFolder) }
         val cyclePreviews = createCyclePreviews(prints, videoPreviewsFolder)
         val glitchPreviews = prints.map { createGlitchPreview(it, videoPreviewsFolder) }
 
-        return aggregate.copy(videoPreviews = cyclePreviews + glitchPreviews)
+        return aggregate.copy(videoPreviews = carouselPreviews + cyclePreviews + glitchPreviews)
     }
 
     private fun createCyclePreviews(prints: List<Print>, videoPreviewsFolder: Path): List<Path> {
@@ -53,25 +58,11 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
             if (previews.size != PRINTS_PER_VIDEO_PREVIEW) return@map null
 
             temporaryDirectory.listDirectoryEntries("*.jpeg").forEach { it.deleteIfExists() }
-            previews.forEach { java.nio.file.Files.copy(it, temporaryDirectory.resolve(it.fileName)) }
+            previews.forEachIndexed { index, preview ->
+                java.nio.file.Files.copy(preview, temporaryDirectory.resolve("$index.jpeg"))
+            }
 
-            val output = videoPreviewsFolder.resolve("${UUID.randomUUID()}.mp4")
-            val commandsToGenerateCompleteVideoPreview = listOf(
-                "ffmpeg", "-y",
-                "-framerate", FRAME_RATE_VIDEO_PREVIEW.toString(),
-                "-pattern_type", "glob",
-                "-i", "*.jpeg",
-                "-c:v", "libx264",
-                "-pix_fmt", "yuv420p",
-                output.toString(),
-            )
-
-            ProcessBuilder(commandsToGenerateCompleteVideoPreview)
-                .directory(temporaryDirectory.toFile())
-                .start()
-                .waitFor()
-
-            output
+            createVideoPreview(temporaryDirectory, videoPreviewsFolder, frameRate = 5)
         }.filterNotNull()
     }
 
@@ -103,10 +94,64 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
                 .also { it.output(writer, temporaryDirectory.resolve("${totalFrames - frame}.jpeg")) }
         }
 
+        return createVideoPreview(temporaryDirectory, videoPreviewsFolder, frameRate = 12)
+    }
+
+    fun createCarouselPreview(prints: List<Print>, videoPreviewsFolder: Path): Path {
+        val temporaryDirectory = java.nio.file.Files.createTempDirectory("")
+        val framesPerImage = 60
+        val images = prints.map { loader.fromPath(it.path) }
+        val emptyFrame = images.first().map { Color.WHITE }
+
+        images.forEachIndexed { index, image ->
+            val nextImage = images[(index + 1) % images.size]
+            val option = random.nextInt(4)
+
+            (0..framesPerImage).forEach { frameIndex ->
+                val offsetX1 = (-image.width / (framesPerImage - 1) * frameIndex).coerceIn(-image.width, 0)
+                val offsetX2 = (-image.width / (framesPerImage - 1) * frameIndex + image.width).coerceIn(0, image.width)
+                val offsetY1 = (-image.height / (framesPerImage - 1) * frameIndex).coerceIn(-image.height, 0)
+                val offsetY2 = (-image.height / (framesPerImage - 1) * frameIndex + image.height).coerceIn(0, image.height)
+
+                val x1 = when (option % 4) {
+                    0 -> offsetX1
+                    2 -> -offsetX1
+                    else -> 0
+                }
+
+                val x2 = when (option % 4) {
+                    0 -> offsetX2
+                    2 -> -offsetX2
+                    else -> 0
+                }
+
+                val y1 = when (option % 4) {
+                    1 -> offsetY1
+                    3 -> -offsetY1
+                    else -> 0
+                }
+
+                val y2 = when (option % 4) {
+                    1 -> offsetY2
+                    3 -> -offsetY2
+                    else -> 0
+                }
+
+                emptyFrame
+                    .overlay(image, x1, y1)
+                    .overlay(nextImage, x2, y2)
+                    .also { it.output(writer, temporaryDirectory.resolve("${index * framesPerImage + frameIndex}.jpeg")) }
+            }
+        }
+
+        return createVideoPreview(temporaryDirectory, videoPreviewsFolder, frameRate = 75)
+    }
+
+    private fun createVideoPreview(directory: Path, videoPreviewsFolder: Path, frameRate: Int): Path {
         val output = videoPreviewsFolder.resolve("${UUID.randomUUID()}.mp4")
         val commandsToGenerateCompleteVideoPreview = listOf(
             "ffmpeg", "-y",
-            "-framerate", "12",
+            "-framerate", frameRate.toString(),
             "-i", "%d.jpeg",
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
@@ -114,7 +159,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         )
 
         ProcessBuilder(commandsToGenerateCompleteVideoPreview)
-            .directory(temporaryDirectory.toFile())
+            .directory(directory.toFile())
             .start()
             .waitFor()
 
