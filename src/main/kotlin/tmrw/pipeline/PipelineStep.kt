@@ -20,25 +20,32 @@ abstract class PipelineStep(private val maximumThreads: Int = 8) {
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
 
     fun start(prints: List<Print>): List<Print> {
+        val className = this::class.simpleName
+
         if (prints.all { shouldSkip(it) }) {
-            logger.info { "Skipping ${this::class.simpleName}" }
+            logger.info { "Skipping $className" }
             return prints
         }
 
-        logger.info { "Starting ${this::class.simpleName}" }
+        logger.info { "Starting $className" }
 
         val printsWithErrors = mutableListOf<Print>()
 
         val semaphore = Semaphore(maximumThreads)
+        var counter = 0
         val (processedPrints: List<Print>, duration: Duration) = measureTimedValue {
             runBlocking {
-                prints.map {
+                prints.map { print ->
                     async(Dispatchers.Default) {
                         semaphore.withPermit {
                             try {
-                                if (shouldSkip(it)) it else process(it)
+                                val newPrint = if (shouldSkip(print)) print else process(print)
+                                counter += 1
+                                logger.info { "$className [$counter/${prints.size}]" }
+
+                                newPrint
                             } catch (e: Exception) {
-                                printsWithErrors.add(it.copy(error = "$e\n${e.stackTraceToString()}"))
+                                printsWithErrors.add(print.copy(error = "$e\n${e.stackTraceToString()}"))
                                 null
                             }
                         }
@@ -50,7 +57,7 @@ abstract class PipelineStep(private val maximumThreads: Int = 8) {
         backup(processedPrints)
         if (printsWithErrors.isNotEmpty()) backup(printsWithErrors, withErrors = true)
 
-        logger.info { "Pipeline ${this::class.simpleName} took ${duration.inWholeMilliseconds} ms" }
+        logger.info { "Pipeline $className took ${duration.inWholeMilliseconds} ms" }
 
         return processedPrints
     }
