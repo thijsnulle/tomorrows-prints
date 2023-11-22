@@ -38,11 +38,12 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
             print.toCsvRows(startDateTime, intervalInMinutes)
         }.flatten()
 
+        val totalTime = previewCsvRows.size * INTERVAL_BETWEEN_POST
         val videoPreviewCsvRows = aggregate.videoPreviewUrls.mapIndexed { index, videoPreviewUrl ->
-            val publishDate = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST * FRAME_RATE_VIDEO_PREVIEW)
+            val publishDate = initialDateTime.plusMinutes(index * totalTime / aggregate.videoPreviewUrls.size)
 
-            // TODO: add store URl
-            "\"Exclusive Print Showcase [${index + 1}/${aggregate.videoPreviewUrls.size}]\",$videoPreviewUrl,All Posters,,,#storeUrl,$publishDate,"
+            // TODO: add store URL
+            "\"Exclusive Print Showcase • Tomorrow's Prints #${index + 1}\",$videoPreviewUrl,All Posters,,,#storeUrl,$publishDate,"
         }
 
         (showCaseCsvRows + previewCsvRows + videoPreviewCsvRows)
