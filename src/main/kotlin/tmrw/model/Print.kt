@@ -159,7 +159,7 @@ data class Print(
         val csvRows = previewUrls.mapIndexed { index, previewUrl ->
             val publishDate = startDate.plusMinutes((index + 1) * intervalInMinutes)
 
-            "\"$title [${index + 1}/${previewUrls.size}]\",${previewUrl},${theme.value},,\"${decorateDescription()}\",$listingUrl,$publishDate,\"${getTaggedTopics()}\""
+            "\"$title [${index + 1}/${previewUrls.size}]\",$previewUrl,${theme.value},,\"${decorateDescription()}\",$listingUrl,$publishDate,\"${getTaggedTopics()}\""
         }
 
         return csvRows

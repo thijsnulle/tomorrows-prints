@@ -2,7 +2,6 @@ package tmrw.post_processing.video_preview_generation
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.JpegWriter
-import com.sksamuel.scrimage.nio.PngWriter
 import tmrw.model.Print
 import tmrw.pipeline.preview_generation.FramedPreviewGenerator
 import tmrw.post_processing.PostProcessingAggregate
@@ -56,7 +55,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
             temporaryDirectory.listDirectoryEntries("*.jpeg").forEach { it.deleteIfExists() }
             previews.forEach { java.nio.file.Files.copy(it, temporaryDirectory.resolve(it.fileName)) }
 
-            val output = "$videoPreviewsFolder/${UUID.randomUUID()}.mp4"
+            val output = videoPreviewsFolder.resolve("${UUID.randomUUID()}.mp4")
             val commandsToGenerateCompleteVideoPreview = listOf(
                 "ffmpeg", "-y",
                 "-framerate", FRAME_RATE_VIDEO_PREVIEW.toString(),
@@ -64,7 +63,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
                 "-i", "*.jpeg",
                 "-c:v", "libx264",
                 "-pix_fmt", "yuv420p",
-                output,
+                output.toString(),
             )
 
             ProcessBuilder(commandsToGenerateCompleteVideoPreview)
@@ -72,7 +71,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
                 .start()
                 .waitFor()
 
-            Path(output)
+            output
         }.filterNotNull()
     }
 
@@ -104,14 +103,14 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
                 .also { it.output(writer, temporaryDirectory.resolve("${totalFrames - frame}.jpeg")) }
         }
 
-        val output = "$videoPreviewsFolder/${UUID.randomUUID()}.mp4"
+        val output = videoPreviewsFolder.resolve("${UUID.randomUUID()}.mp4")
         val commandsToGenerateCompleteVideoPreview = listOf(
             "ffmpeg", "-y",
             "-framerate", "12",
             "-i", "%d.jpeg",
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
-            output,
+            output.toString(),
         )
 
         ProcessBuilder(commandsToGenerateCompleteVideoPreview)
@@ -119,6 +118,6 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
             .start()
             .waitFor()
 
-        return Path(output)
+        return output
     }
 }

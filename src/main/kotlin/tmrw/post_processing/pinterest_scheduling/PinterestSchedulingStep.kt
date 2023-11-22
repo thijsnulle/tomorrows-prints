@@ -1,17 +1,17 @@
 package tmrw.post_processing.pinterest_scheduling
 
-import tmrw.INTERVAL_BETWEEN_POST
-import tmrw.MAXIMUM_SIZE_BULK_UPLOAD_PINS
 import tmrw.model.Print
 import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.PostProcessingStep
-import tmrw.post_processing.video_preview_generation.FRAME_RATE_VIDEO_PREVIEW
 import tmrw.utils.Files
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
+
+const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
+const val INTERVAL_BETWEEN_POST: Long = 30
 
 class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
