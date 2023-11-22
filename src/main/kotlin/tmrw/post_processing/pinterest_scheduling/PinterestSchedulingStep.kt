@@ -5,6 +5,7 @@ import tmrw.MAXIMUM_SIZE_BULK_UPLOAD_PINS
 import tmrw.model.Print
 import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.PostProcessingStep
+import tmrw.post_processing.video_preview_generation.FRAME_RATE_VIDEO_PREVIEW
 import tmrw.utils.Files
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -15,29 +16,44 @@ import kotlin.io.path.exists
 class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
         val outputFolder = Files.social.resolve(batch)
+
+        if (outputFolder.exists()) return aggregate
+
         outputFolder.createDirectories()
 
         val initialDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(1)
         val intervalInMinutes = INTERVAL_BETWEEN_POST * prints.size
 
-        val csvHeaders = prints.first().toCsvHeaders()
-        val csvRows = prints.mapIndexed { index, print ->
+        val csvHeader = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
+
+        val showCaseCsvRows = prints.mapIndexed { index, print ->
+            val publishDate = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST * print.previews.size)
+
+            "\"${print.title}\",${print.url},All Posters,,,${print.listingUrl},$publishDate,"
+        }
+
+        val previewCsvRows = prints.mapIndexed { index, print ->
             val startDateTime = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST)
 
             print.toCsvRows(startDateTime, intervalInMinutes)
         }.flatten()
 
-        csvRows
+        val videoPreviewCsvRows = aggregate.videoPreviewUrls.mapIndexed { index, videoPreviewUrl ->
+            val publishDate = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST * FRAME_RATE_VIDEO_PREVIEW)
+
+            // TODO: add store URl
+            "\"Exclusive Print Showcase [${index + 1}/${aggregate.videoPreviewUrls.size}]\",$videoPreviewUrl,All Posters,,,#storeUrl,$publishDate,"
+        }
+
+        (showCaseCsvRows + previewCsvRows + videoPreviewCsvRows)
             .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
             .forEachIndexed { index, chunk ->
                 outputFolder.resolve("$batch-$index.csv")
                     .toFile()
                     .bufferedWriter()
-                    .use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
+                    .use { it.write("$csvHeader\n${chunk.joinToString("\n")}") }
             }
 
         return aggregate
     }
-
-    override fun shouldSkip(aggregate: PostProcessingAggregate): Boolean = Files.social.resolve(batch).exists()
 }

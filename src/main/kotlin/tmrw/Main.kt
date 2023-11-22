@@ -16,6 +16,7 @@ import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.PostProcessingStep
 import tmrw.post_processing.pinterest_scheduling.PinterestSchedulingStep
 import tmrw.post_processing.video_preview_generation.VideoPreviewGenerationStep
+import tmrw.post_processing.video_preview_upload.VideoPreviewUploadStep
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolder
 import tmrw.utils.TeeOutputStream
@@ -57,19 +58,20 @@ fun main() {
     enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-//        TitleAllocationStep(),
-//        DescriptionAllocationStep(),
-//        ThemeAllocationStep(),
-//        ThumbnailGenerationStep(),
-//        SizeGuideGenerationStep(),
+        TitleAllocationStep(),
+        DescriptionAllocationStep(),
+        ThemeAllocationStep(),
+        ThumbnailGenerationStep(),
+        SizeGuideGenerationStep(),
         PreviewGenerationStep(),
-//        PreviewUploadStep(),
-//        PrintFileGenerationStep(),
-//        PrintFileUploadStep(),
+        PreviewUploadStep(),
+        PrintFileGenerationStep(),
+        PrintFileUploadStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
-    val postProcessingAggregate = listOf(
-//        VideoPreviewGenerationStep(),
+    listOf(
+        VideoPreviewGenerationStep(),
+        VideoPreviewUploadStep(batch = batch),
         PinterestSchedulingStep(batch = batch),
     ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
 }

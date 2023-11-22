@@ -8,7 +8,8 @@ import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 data class PostProcessingAggregate(
-    val videoPreviews: List<String> = emptyList(),
+    val videoPreviews: List<Path> = emptyList(),
+    val videoPreviewUrls: List<String> = emptyList(),
 )
 
 abstract class PostProcessingStep {
@@ -16,11 +17,6 @@ abstract class PostProcessingStep {
     private val logger = KotlinLogging.logger {}
 
     fun start(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
-        if (shouldSkip(aggregate)) {
-            logger.info { "Skipping ${this::class.simpleName}" }
-            return aggregate
-        }
-
         logger.info { "Starting ${this::class.simpleName}" }
 
         val (updatedAggregate: PostProcessingAggregate, duration: Duration) = measureTimedValue {
@@ -33,6 +29,4 @@ abstract class PostProcessingStep {
     }
 
     abstract fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate
-    abstract fun shouldSkip(aggregate: PostProcessingAggregate): Boolean
-
 }

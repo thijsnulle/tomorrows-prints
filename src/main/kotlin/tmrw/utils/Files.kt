@@ -17,7 +17,6 @@ interface JsonMappable {
 }
 
 interface CsvMappable {
-    fun toCsvHeaders(): String
     fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String>
 }
 

@@ -6,10 +6,9 @@ import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.PostProcessingStep
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolder
+import java.nio.file.Path
 import java.util.*
-import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteIfExists
-import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.*
 
 const val PRINTS_PER_VIDEO_PREVIEW = 30
 const val FRAME_RATE_VIDEO_PREVIEW = 5
@@ -17,6 +16,13 @@ const val FRAME_RATE_VIDEO_PREVIEW = 5
 class VideoPreviewGenerationStep: PostProcessingStep() {
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
         val videoPreviewsFolder = Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
+
+        if (videoPreviewsFolder.exists()) {
+            return aggregate.copy(
+                videoPreviews = videoPreviewsFolder.listDirectoryEntries("*")
+            )
+        }
+
         videoPreviewsFolder.createDirectories()
 
         val temporaryDirectory = java.nio.file.Files.createTempDirectory("")
@@ -50,11 +56,9 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
                 .start()
                 .waitFor()
 
-            output
+            Path(output)
         }.filterNotNull()
 
         return aggregate.copy(videoPreviews = videoPreviews)
     }
-
-    override fun shouldSkip(aggregate: PostProcessingAggregate): Boolean = aggregate.videoPreviews.isNotEmpty()
 }
