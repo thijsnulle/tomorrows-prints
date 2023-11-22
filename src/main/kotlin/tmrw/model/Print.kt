@@ -156,6 +156,7 @@ data class Print(
     override fun toCsvRows(startDate: LocalDateTime, intervalInMinutes: Long): List<String> {
         val getTaggedTopics = { taggedTopics.shuffled().take(10).joinToString(",") }
 
+        // TODO: extract this from this method and interlace them in the final result (not at 30-minute interval)
         val generalCsvRow = "\"$title\",$url,${theme.value},,\"$description\",$listingUrl,$startDate,\"${getTaggedTopics()}\""
 
         val previewCsvRows = previewUrls.mapIndexed { index, previewUrl ->

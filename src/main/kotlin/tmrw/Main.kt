@@ -12,6 +12,10 @@ import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
 import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
 import tmrw.pipeline.title_allocation.TitleAllocationStep
+import tmrw.post_processing.PostProcessingAggregate
+import tmrw.post_processing.PostProcessingStep
+import tmrw.post_processing.pinterest_scheduling.PinterestSchedulingStep
+import tmrw.post_processing.video_preview_generation.VideoPreviewGenerationStep
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolder
 import tmrw.utils.TeeOutputStream
@@ -62,49 +66,12 @@ fun main() {
 //        PreviewUploadStep(),
 //        PrintFileGenerationStep(),
 //        PrintFileUploadStep(),
-    ).fold(prints) { current, step -> step.start(current) }
+    ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
-    createVideoPreviews(processedPrints)
-    createPinSchedule(processedPrints, Files.social.resolve("$batch.csv"))
-}
-
-const val PRINTS_PER_VIDEO_PREVIEW = 18
-const val FRAME_RATE_VIDEO_PREVIEW = 6
-
-private fun createVideoPreviews(prints: List<Print>) {
-    val videoPreviewsFolder = Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
-    videoPreviewsFolder.createDirectories()
-
-    val temporaryDirectory = java.nio.file.Files.createTempDirectory("")
-    val previewGenerator = FramedPreviewGenerator(previewFolder = temporaryDirectory, createSquarePreviews = true)
-
-    val previewChunks = prints
-        .map(previewGenerator::generate)
-        .flatMap { it.previews }
-        .shuffled()
-        .chunked(PRINTS_PER_VIDEO_PREVIEW)
-
-    previewChunks.forEach { previews ->
-        if (previews.size != PRINTS_PER_VIDEO_PREVIEW) return@forEach
-
-        temporaryDirectory.listDirectoryEntries("*.jpeg").forEach { it.deleteIfExists() }
-        previews.forEach { java.nio.file.Files.copy(it, temporaryDirectory.resolve(it.fileName)) }
-
-        val commandsToGenerateCompleteVideoPreview = listOf(
-            "ffmpeg", "-y",
-            "-framerate", FRAME_RATE_VIDEO_PREVIEW.toString(),
-            "-pattern_type", "glob",
-            "-i", "*.jpeg",
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "$videoPreviewsFolder/${UUID.randomUUID()}.mp4"
-        )
-
-        ProcessBuilder(commandsToGenerateCompleteVideoPreview)
-            .directory(temporaryDirectory.toFile())
-            .start()
-            .waitFor()
-    }
+    val postProcessingAggregate = listOf(
+//        VideoPreviewGenerationStep(),
+        PinterestSchedulingStep(batch = batch),
+    ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
 }
 
 private fun enableLoggingToFile() {
@@ -120,25 +87,4 @@ private fun enableLoggingToFile() {
     Runtime.getRuntime().addShutdownHook(Thread {
         logFilePrintStream.close()
     })
-}
-
-private fun createPinSchedule(prints: List<Print>, output: Path) {
-    val initialDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(1)
-    val intervalInMinutes = INTERVAL_BETWEEN_POST * prints.size
-
-    val csvHeaders = prints.first().toCsvHeaders()
-    val csvRows = prints.mapIndexed { index, print ->
-        val startDateTime = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST)
-
-        print.toCsvRows(startDateTime, intervalInMinutes)
-    }.flatten()
-
-    csvRows
-        .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
-        .forEachIndexed { index, chunk ->
-            output.parent.resolve("${output.nameWithoutExtension}-$index.csv")
-                .toFile()
-                .bufferedWriter()
-                .use { it.write("$csvHeaders\n${chunk.joinToString("\n")}") }
-        }
 }
