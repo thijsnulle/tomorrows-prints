@@ -50,7 +50,7 @@ fun main() {
         prints.filterNot { it.path.exists() }.joinToString("\n -") { it.path.toString() }
     }
 
-    enableLoggingToFile()
+    Files.enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
         TitleAllocationStep(),
@@ -69,19 +69,4 @@ fun main() {
         VideoPreviewUploadStep(batch = batch),
         PinterestSchedulingStep(batch = batch),
     ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
-}
-
-private fun enableLoggingToFile() {
-    val logFile = Files.logs.resolve("${LocalDateTime.now()}.log").toFile()
-    val logFilePrintStream = FileOutputStream(logFile)
-
-    val teeOutputStream = TeeOutputStream(System.out, logFilePrintStream)
-    val printStream = PrintStream(teeOutputStream)
-
-    System.setOut(printStream)
-    System.setErr(printStream)
-
-    Runtime.getRuntime().addShutdownHook(Thread {
-        logFilePrintStream.close()
-    })
 }
