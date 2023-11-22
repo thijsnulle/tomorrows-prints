@@ -41,7 +41,9 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         val cyclePreviews = createCyclePreviews(prints, videoPreviewsFolder)
         val glitchPreviews = prints.map { createGlitchPreview(it, videoPreviewsFolder) }
 
-        return aggregate.copy(videoPreviews = carouselPreviews + cyclePreviews + glitchPreviews)
+        val allVideoPreviews = carouselPreviews + cyclePreviews + glitchPreviews
+
+        return aggregate.copy(videoPreviews = allVideoPreviews.shuffled())
     }
 
     private fun createCyclePreviews(prints: List<Print>, videoPreviewsFolder: Path): List<Path> {
