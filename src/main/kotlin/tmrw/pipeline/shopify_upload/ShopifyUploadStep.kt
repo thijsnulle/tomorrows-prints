@@ -1,8 +1,8 @@
 package tmrw.pipeline.shopify_upload
 
 import kotlinx.serialization.json.*
-import model.Print
-import pipeline.PipelineStep
+import tmrw.model.Print
+import tmrw.pipeline.PipelineStep
 
 class ShopifyUploadStep: PipelineStep() {
 
@@ -55,9 +55,8 @@ class ShopifyUploadStep: PipelineStep() {
         return print
     }
 
-    override fun shouldSkip(print: Print): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isEmpty()
+
 
 }
 
