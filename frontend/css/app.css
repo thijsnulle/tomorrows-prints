@@ -1,0 +1,127 @@
+body {
+    background: #111111;
+}
+
+#selection-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    height: 80vh;
+    aspect-ratio: 1/1;
+}
+
+#selection-container.full-size .frame-container {
+    display: none;
+}
+
+#selection-container.full-size .frame-container:nth-child(1) {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+#title {
+    position: absolute;
+    top: -.25em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Helvetica';
+    font-size: 2.5em;
+    color: white;
+}
+
+#title.wrong-aspect-ratio {
+    color: orangered;
+}
+
+.frame-container {
+    position: relative;
+    aspect-ratio: 1/1;
+
+    width: 50%;
+}
+
+.frame-container:nth-child(1), .frame-container:nth-child(4) {
+    background: white;
+}
+
+.frame-container:nth-child(2) {
+    background-color: rgb(255, 240, 240);
+}
+
+.frame-container:nth-child(3) {
+    background-color: rgb(240, 240, 255);
+}
+
+.frame-container .print, .frame-container .frame {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.frame-container .frame {
+    width: 100%;
+}
+
+.frame-container .print {
+    height: 56%;
+    width: 37%;
+}
+
+.selection-container {
+    position: absolute;
+    top: 0;
+    background: whitesmoke;
+    height: 100vh;
+    width: calc((100vw - 80vh) / 2);
+    overflow: auto;
+    background: #16161D;
+}
+
+.selection-container h1 {
+    text-align: center;
+    font-size: 1.5em;
+    font-family: 'Helvetica';
+    letter-spacing: 1px;
+    color: white;
+}
+
+.selection-container .image-container {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+
+    width: calc(100% - 2em);
+    padding: 0 1em;
+    gap: 1em;
+}
+
+.selection-container .image-container img {
+    width: calc(25% - .75em - 2px);
+    aspect-ratio: 2/3;
+    border: 1px solid #424250;
+}
+
+#yes-selection-container {
+    right: 0;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+#no-selection-container {
+    left: 0;
+    box-shadow: -2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+#export-button {
+    position: absolute;
+    bottom: 3em;
+    left: 50%;
+    transform: translateX(-50%);
+}

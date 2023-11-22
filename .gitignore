@@ -182,8 +182,6 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-src/main/resources/backups/**
-src/main/resources/images/prints/upscaled/**
-src/main/resources/images/previews/**
-src/main/resources/images/thumbnails/**
-src/main/resources/social/**
+src/main/resources/**/*
+frontend/csv/*
+frontend/json/*
