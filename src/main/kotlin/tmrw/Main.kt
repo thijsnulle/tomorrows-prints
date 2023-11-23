@@ -2,7 +2,7 @@ package tmrw
 import tmrw.model.BatchPrint
 import tmrw.model.JsonPrint
 import tmrw.model.Print
-import tmrw.pipeline.colour_tagging.ColourTaggingStep
+import tmrw.pipeline.colour_tagging.ColourAllocationStep
 import tmrw.pipeline.description_allocation.DescriptionAllocationStep
 import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
@@ -51,10 +51,10 @@ fun main() {
     Files.enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-        ColourTaggingStep(),
         TitleAllocationStep(),
         DescriptionAllocationStep(),
         ThemeAllocationStep(),
+        ColourAllocationStep(),
         ThumbnailGenerationStep(),
         SizeGuideGenerationStep(),
         PreviewGenerationStep(),

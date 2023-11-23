@@ -1,16 +1,13 @@
 package tmrw.pipeline.colour_tagging
 
 import com.sksamuel.scrimage.ImmutableImage
-import tmrw.model.Colour
 import tmrw.model.HsbColour
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
-import kotlin.math.abs
-import kotlin.time.measureTime
 
 const val MINIMUM_COLOUR_PERCENTAGE = 10
 
-class ColourTaggingStep: PipelineStep() {
+class ColourAllocationStep: PipelineStep() {
 
     private val loader = ImmutableImage.loader()
 
