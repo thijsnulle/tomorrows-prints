@@ -16,6 +16,7 @@ import kotlin.random.Random
 
 const val PRINTS_PER_VIDEO_PREVIEW = 30
 const val CAROUSEL_SIZE = 12
+const val GLITCH_PREVIEW_SIZE = 24
 
 class VideoPreviewGenerationStep: PostProcessingStep() {
 
@@ -38,10 +39,18 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
             .shuffled()
             .chunked(CAROUSEL_SIZE)
             .map { createCarouselPreview(it, videoPreviewsFolder) }
-        val cyclePreviews = createCyclePreviews(prints, videoPreviewsFolder)
-        val glitchPreviews = prints.map { createGlitchPreview(it, videoPreviewsFolder) }
 
-        val allVideoPreviews = carouselPreviews + cyclePreviews + glitchPreviews
+        val cyclePreviews = createCyclePreviews(prints, videoPreviewsFolder)
+
+        val randomGlitchPreviews = prints.map { print ->
+            createGlitchPreview(print, prints.shuffled().take(GLITCH_PREVIEW_SIZE), videoPreviewsFolder)
+        }
+
+        val glitchPreviews = prints.map { print ->
+            createGlitchPreview(print, (1..GLITCH_PREVIEW_SIZE).map { print }, videoPreviewsFolder)
+        }
+
+        val allVideoPreviews = carouselPreviews + cyclePreviews + randomGlitchPreviews + glitchPreviews
 
         return aggregate.copy(videoPreviews = allVideoPreviews.shuffled())
     }
@@ -68,9 +77,9 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         }.filterNotNull()
     }
 
-    private fun createGlitchPreview(print: Print, videoPreviewsFolder: Path): Path {
+    private fun createGlitchPreview(print: Print, glitchPrints: List<Print>, videoPreviewsFolder: Path): Path {
         val skippedFrames = 6
-        val totalFrames = 96
+        val totalFrames = 2 * (glitchPrints.size + skippedFrames) - 1
 
         val image = loader.fromPath(print.path)
         val temporaryDirectory = java.nio.file.Files.createTempDirectory("")
@@ -90,8 +99,10 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
             val x = random.nextInt(-scaledWidth / 2, image.width - scaledWidth / 2)
             val y = random.nextInt(-scaledHeight / 2, image.height - scaledHeight / 2)
 
+            val overlayImage = loader.fromPath(glitchPrints[frame - skippedFrames].path)
+
             aggregateImage
-                .overlay(image.scale(scaleFactor), x, y)
+                .overlay(overlayImage.scale(scaleFactor), x, y)
                 .also { it.output(writer, temporaryDirectory.resolve("$frame.jpeg")) }
                 .also { it.output(writer, temporaryDirectory.resolve("${totalFrames - frame}.jpeg")) }
         }
@@ -99,7 +110,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         return createVideoPreview(temporaryDirectory, videoPreviewsFolder, frameRate = 12)
     }
 
-    fun createCarouselPreview(prints: List<Print>, videoPreviewsFolder: Path): Path {
+    private fun createCarouselPreview(prints: List<Print>, videoPreviewsFolder: Path): Path {
         val temporaryDirectory = java.nio.file.Files.createTempDirectory("")
         val framesPerImage = 60
         val images = prints.map { loader.fromPath(it.path) }
