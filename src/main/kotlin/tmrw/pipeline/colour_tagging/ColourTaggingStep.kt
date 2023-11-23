@@ -29,5 +29,5 @@ class ColourTaggingStep: PipelineStep() {
         return print.copy(colours = colours.toList())
     }
 
-    override fun shouldSkip(print: Print): Boolean = false
+    override fun shouldSkip(print: Print): Boolean = print.colours.isNotEmpty()
 }
