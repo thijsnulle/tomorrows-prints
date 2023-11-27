@@ -30,16 +30,16 @@ class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12) {
 
         (0 until GLITCH_SIZE).fold(image) { aggregate, frame ->
             val scale = random.nextDouble(0.25, 0.75)
-            val scaledWidth = (image.width * scale).toInt()
-            val scaledHeight = (image.height * scale).toInt()
+            val width = (image.width * scale).toInt()
+            val height = (image.height * scale).toInt()
 
-            val x = random.nextInt(-scaledWidth / 2, image.width - scaledWidth / 2)
-            val y = random.nextInt(-scaledHeight / 2, image.height - scaledHeight / 2)
+            val x = random.nextInt(-width / 2, image.width - width / 2)
+            val y = random.nextInt(-height / 2, image.height - height / 2)
 
-            val overlayImage = loader.fromPath(prints[frame].path)
+            val overlayImage = loader.fromPath(prints[frame].path).scaleTo(width, height)
 
             aggregate
-                .overlay(overlayImage.scale(scale), x, y)
+                .overlay(overlayImage, x, y)
                 .also { it.output(writer, inputFolder.resolve("${frame + 1}.jpeg")) }
                 .also { it.output(writer, inputFolder.resolve("${GLITCH_SIZE * 2 - frame}.jpeg")) }
         }
