@@ -14,6 +14,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         CarouselVideoPreviewGenerator(),
         CycleVideoPreviewGenerator(),
         GlitchVideoPreviewGenerator(),
+        HueRotateVideoPreviewGenerator(),
     )
 
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {

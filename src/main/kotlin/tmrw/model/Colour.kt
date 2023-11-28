@@ -3,7 +3,7 @@ package tmrw.model
 import com.sksamuel.scrimage.pixels.Pixel
 import java.awt.Color
 
-data class HsbColour(val h: Int, val s: Int, val b: Int) {
+data class HsbColour(val h: Int, val s: Int, val b: Int, val x: Int, val y: Int) {
     companion object {
         fun fromPixel(pixel: Pixel): HsbColour {
             val hsb = FloatArray(3)
@@ -11,10 +11,14 @@ data class HsbColour(val h: Int, val s: Int, val b: Int) {
             return HsbColour(
                 (hsb[0] * 360).toInt(),
                 (hsb[1] * 100).toInt(),
-                (hsb[2] * 100).toInt()
+                (hsb[2] * 100).toInt(),
+                pixel.x,
+                pixel.y,
             )
         }
     }
+
+    fun rotate(degrees: Int) = HsbColour(h + degrees, s, b, x, y)
 
     fun toColour(): Colour {
         if (s <= 15) {
@@ -41,6 +45,11 @@ data class HsbColour(val h: Int, val s: Int, val b: Int) {
         if (h <= 330) return Colour.PINK
 
         return Colour.RED
+    }
+
+    fun toPixel(): Pixel {
+        val rgb = Color.HSBtoRGB((h.toFloat() / 360), (s.toFloat() / 100), (b.toFloat() / 100))
+        return Pixel(x, y, rgb)
     }
 }
 
