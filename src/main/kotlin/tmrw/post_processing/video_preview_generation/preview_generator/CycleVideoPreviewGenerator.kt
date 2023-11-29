@@ -18,7 +18,7 @@ class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = 
         // TODO: figure out how to handle this
         if (prints.size < VIDEO_PREVIEW_CYCLE_SIZE) return emptyList()
 
-        return prints.map { print ->
+        return prints.mapIndexed { index, print ->
             val previews = prints
                 .shuffled()
                 .take(VIDEO_PREVIEW_CAROUSEL_SIZE)
@@ -28,9 +28,11 @@ class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = 
 
             inputFolder.listDirectoryEntries("*.jpeg").forEach { it.deleteIfExists() }
 
-            previews.forEachIndexed { index, preview ->
-                Files.copy(preview, inputFolder.resolve("$index.jpeg"))
+            previews.forEachIndexed { i, preview ->
+                Files.copy(preview, inputFolder.resolve("$i.jpeg"))
             }
+
+            progress(prints, index)
 
             save(inputFolder, outputFolder(print), frameRate = frameRate)
         }

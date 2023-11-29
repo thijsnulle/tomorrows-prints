@@ -8,17 +8,21 @@ import kotlin.io.path.nameWithoutExtension
 const val GLITCH_SIZE = 18
 
 class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix = "glitch") {
-    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.flatMap { print ->
+    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.flatMapIndexed { index, print ->
         // TODO: figure out how to handle this
-        if (prints.size < GLITCH_SIZE) return@flatMap emptyList()
+        if (prints.size < GLITCH_SIZE) return@flatMapIndexed emptyList()
 
         val samePrints = List(GLITCH_SIZE) { print }
         val randomPrints = prints.shuffled().take(GLITCH_SIZE)
 
-        listOf(
+        val previews = listOf(
             generateGlitchPreview(print, samePrints, inputFolder, outputFolder(print)),
             generateGlitchPreview(print, randomPrints, inputFolder, outputFolder(print))
         )
+
+        progress(prints, index)
+
+        previews
     }
 
     private fun generateGlitchPreview(

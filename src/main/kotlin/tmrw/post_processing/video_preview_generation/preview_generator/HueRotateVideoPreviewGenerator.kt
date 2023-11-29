@@ -14,7 +14,7 @@ import kotlin.io.path.nameWithoutExtension
 const val VIDEO_PREVIEW_HUE_ROTATION_FRAME_COUNT = 60
 
 class HueRotateVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 30, prefix = "hue-rotate") {
-    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.map { print ->
+    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.mapIndexed { index, print ->
         val image = loader.fromPath(print.path)
         val hsbPixels = image.pixels().map(HsbColour::fromPixel)
 
@@ -29,6 +29,8 @@ class HueRotateVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 30, pref
                 }
             }.awaitAll()
         }
+
+        progress(prints, index)
 
         save(inputFolder, outputFolder(print), frameRate)
     }
