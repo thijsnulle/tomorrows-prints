@@ -35,8 +35,6 @@ class ImageUpscaler(private val upscaler: ImageUpscalerImpl) {
     }
 
     private fun downscale(image: ImmutableImage, output: Path, maxPixelsPerSide: Int): Path {
-        KotlinLogging.logger {}.info { "Downscaling ${output.fileName} to $maxPixelsPerSide pixels" }
-
         return when(image.width > image.height) {
             true -> image.scaleToWidth(maxPixelsPerSide)
             false -> image.scaleToHeight(maxPixelsPerSide)

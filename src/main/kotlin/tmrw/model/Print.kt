@@ -36,6 +36,7 @@ data class Print(
     val printFileUrl: String = "",
     val listingUrl: String = "",
     val error: String = "",
+    val colours: List<Colour> = emptyList(),
 ) : JsonMappable, CsvMappable {
     constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
 
@@ -150,6 +151,12 @@ data class Print(
         jsonObject.addProperty("printFileUrl", printFileUrl)
         jsonObject.addProperty("error", error)
 
+        val colours = JsonArray()
+        this.colours.forEach{
+            colour -> colours.add(colour.value)
+        }
+        jsonObject.add("colours", colours)
+
         return jsonObject
     }
 
@@ -188,6 +195,7 @@ data class JsonPrint(
     val printFileUrl: String?,
     val listingUrl: String?,
     val error: String?,
+    val colours: List<String>?,
 ) {
     fun toPrint() = Print(
         Files.prints.resolve(path).toAbsolutePath(),
@@ -204,6 +212,7 @@ data class JsonPrint(
         printFileUrl ?: "",
         listingUrl ?: "",
         error ?: "",
+        colours?.map { colour -> Colour.valueOf(colour.uppercase().replace(' ', '_')) } ?: emptyList(),
     )
 }
 
