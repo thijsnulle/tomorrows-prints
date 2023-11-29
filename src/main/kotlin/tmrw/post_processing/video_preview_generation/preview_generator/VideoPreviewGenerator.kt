@@ -8,9 +8,11 @@ import tmrw.utils.Files.Companion.batchFolder
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.nameWithoutExtension
 import kotlin.random.Random
 
-abstract class VideoPreviewGenerator(val frameRate: Int) {
+abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
 
     protected val loader: ImmutableImageLoader = ImmutableImage.loader()
     protected val random = Random.Default
@@ -23,7 +25,7 @@ abstract class VideoPreviewGenerator(val frameRate: Int) {
     }
 
     protected fun save(inputFolder: Path, outputFolder: Path, frameRate: Int): Path {
-        val output = outputFolder.resolve("${UUID.randomUUID()}.mp4")
+        val output = outputFolder.resolve("$prefix-${UUID.randomUUID()}.mp4")
         val commandsToGenerateCompleteVideoPreview = listOf(
             "ffmpeg", "-y",
             "-framerate", frameRate.toString(),
@@ -41,7 +43,8 @@ abstract class VideoPreviewGenerator(val frameRate: Int) {
         return output
     }
 
-    protected fun outputFolder(prints: List<Print>): Path = tmrw.utils.Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
+    protected fun outputFolder(print: Print) = tmrw.utils.Files.previews.batchFolder(print).parent
+        .resolve("videos").resolve(print.path.nameWithoutExtension).createDirectories()
 
     abstract fun generate(prints: List<Print>, inputFolder: Path): List<Path>
 }
