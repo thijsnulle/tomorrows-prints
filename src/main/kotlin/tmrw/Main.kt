@@ -65,9 +65,9 @@ fun main() {
         ShopifyUploadStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
-//    listOf(
-//        VideoPreviewGenerationStep(),
-//        VideoPreviewUploadStep(batch = batch),
-//        PinterestSchedulingStep(batch = batch),
-//    ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
+    listOf(
+        VideoPreviewGenerationStep(),
+        VideoPreviewUploadStep(batch = batch),
+        PinterestSchedulingStep(batch = batch),
+    ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
 }
