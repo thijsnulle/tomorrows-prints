@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
 import io.github.oshai.kotlinlogging.KotlinLogging
+import tmrw.pipeline.shopify_upload.PrintVariant
 import tmrw.pipeline.theme_allocation.Theme
 import tmrw.utils.CsvMappable
 import tmrw.utils.Files
@@ -38,7 +39,7 @@ data class Print(
     val error: String = "",
     val colours: List<Colour> = emptyList(),
 ) : JsonMappable, CsvMappable {
-    constructor(fileName: String, prompt: String): this(Files.prints.resolve(fileName), prompt)
+    constructor(fileName: String, prompt: String) : this(Files.prints.resolve(fileName), prompt)
 
     companion object {
         private val hashtags = listOf(
@@ -132,16 +133,17 @@ data class Print(
         jsonObject.addProperty("theme", theme.value)
         jsonObject.addProperty("title", title)
         jsonObject.addProperty("description", description)
+        jsonObject.addProperty("listingUrl", listingUrl)
 
         val previews = JsonArray()
-        this.previews.forEach {
-            preview -> previews.add(preview.toString())
+        this.previews.forEach { preview ->
+            previews.add(preview.toString())
         }
         jsonObject.add("previews", previews)
 
         val previewUrls = JsonArray()
-        this.previewUrls.forEach {
-                previewUrl -> previewUrls.add(previewUrl)
+        this.previewUrls.forEach { previewUrl ->
+            previewUrls.add(previewUrl)
         }
         jsonObject.add("previewUrls", previewUrls)
 
@@ -152,8 +154,8 @@ data class Print(
         jsonObject.addProperty("error", error)
 
         val colours = JsonArray()
-        this.colours.forEach{
-            colour -> colours.add(colour.value)
+        this.colours.forEach { colour ->
+            colours.add(colour.value)
         }
         jsonObject.add("colours", colours)
 
@@ -173,10 +175,43 @@ data class Print(
     }
 
     private fun decorateDescription(): String {
-        val hashtags = hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" "){ "#$it" }
+        val hashtags = hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" ") { "#$it" }
         val callToAction = callToActions.shuffled().first()
 
         return "$description ${callToAction.replace("[link]", listingUrl)} $hashtags"
+    }
+
+    fun toShopifyJson(): JsonObject {
+        val product = JsonObject()
+
+        product.addProperty("vendor", "Tomorrow's Prints")
+        product.addProperty("status", "active")
+        product.addProperty("metafields_global_title_tag", "Tomorrow's Prints")
+        product.addProperty("metafields_global_description_tag", "SEO description") // TODO: add SEO description
+
+        product.addProperty("title", title)
+        product.addProperty("body_html", description) // TODO: format description as HTML
+        product.addProperty("product_type", theme.value)
+        product.addProperty("tags", colours.joinToString(",") { it.value })
+
+        product.add("images", JsonArray()
+            .also { it.add(JsonObject().also { obj -> obj.addProperty("src", previewUrls.random()) }) }
+            .also { it.add(JsonObject().also { obj -> obj.addProperty("src", url) }) }
+        )
+
+        product.add("options", JsonArray().also { arr -> arr.add(JsonObject()
+            .also { obj -> obj.addProperty("name", "Size") }
+            .also { obj -> obj.addProperty("values", "[${PrintVariant.variants.joinToString(",") { it.size }}]") }
+        )})
+
+        product.add("variants", JsonArray().also { arr -> PrintVariant.variants.forEach { variant ->
+            arr.add(JsonObject()
+                .also { obj -> obj.addProperty("option1", variant.size) }
+                .also { obj -> obj.addProperty("price", variant.price) }
+            )}
+        })
+
+        return JsonObject().also { it.add("product", product) }
     }
 }
 
