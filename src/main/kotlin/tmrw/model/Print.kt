@@ -134,30 +134,15 @@ data class Print(
         jsonObject.addProperty("title", title)
         jsonObject.addProperty("description", description)
         jsonObject.addProperty("listingUrl", listingUrl)
-
-        val previews = JsonArray()
-        this.previews.forEach { preview ->
-            previews.add(preview.toString())
-        }
-        jsonObject.add("previews", previews)
-
-        val previewUrls = JsonArray()
-        this.previewUrls.forEach { previewUrl ->
-            previewUrls.add(previewUrl)
-        }
-        jsonObject.add("previewUrls", previewUrls)
-
         jsonObject.addProperty("thumbnail", thumbnail)
         jsonObject.addProperty("sizeGuide", sizeGuide)
         jsonObject.addProperty("printFile", printFile)
         jsonObject.addProperty("printFileUrl", printFileUrl)
         jsonObject.addProperty("error", error)
 
-        val colours = JsonArray()
-        this.colours.forEach { colour ->
-            colours.add(colour.value)
-        }
-        jsonObject.add("colours", colours)
+        jsonObject.add("previews", JsonArray().also { previews.forEach { preview -> it.add(preview.toString()) }})
+        jsonObject.add("previewUrls", JsonArray().also { previewUrls.forEach { previewUrl -> it.add(previewUrl) }})
+        jsonObject.add("colours", JsonArray().also { colours.forEach { colour -> it.add(colour.value) }})
 
         return jsonObject
     }
