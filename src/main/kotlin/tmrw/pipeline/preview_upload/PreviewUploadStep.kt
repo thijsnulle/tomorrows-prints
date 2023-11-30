@@ -9,7 +9,7 @@ import java.nio.file.Files
 import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 
-class PreviewUploadStep: PipelineStep(maximumThreads = 1) {
+class PreviewUploadStep: PipelineStep() {
 
     private val bucketId = dotenv().get("GOOGLE_BUCKET_ID")
     private val bucket = StorageOptions.getDefaultInstance().service.get(bucketId)
@@ -19,10 +19,10 @@ class PreviewUploadStep: PipelineStep(maximumThreads = 1) {
         require(print.previews.isNotEmpty()) { "${print.path.name} should have a previews associated with it." }
         require(print.theme != Theme.DEFAULT) { "${print.path.name} should have a theme associated with it." }
 
-        val folderName = "${print.theme.value}/${print.path.nameWithoutExtension}"
+        val folderName = "${print.theme.value}/previews/${print.path.nameWithoutExtension}"
         val previewUrls = print.previews.map { preview ->
             val fileName = "$folderName/${preview.fileName}"
-            bucket.create(fileName, Files.readAllBytes(preview), "image/png")
+            bucket.create(fileName, Files.readAllBytes(preview), "image/jpeg")
 
             "https://storage.googleapis.com/$bucketId/$fileName"
         }
