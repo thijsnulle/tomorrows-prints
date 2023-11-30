@@ -17,7 +17,7 @@ class SizeGuideUploadStep: PipelineStep() {
         ?: error("Bucket $bucketId does not exist or you have not setup the correct credentials.")
 
     override fun process(print: Print): Print {
-        require(print.sizeGuide.isNotEmpty()) { "${print.path.name} should have a thumbnail." }
+        require(print.sizeGuide.isNotEmpty()) { "${print.path.name} should have a size guide." }
         require(print.theme != Theme.DEFAULT) { "${print.path.name} should have a theme associated with it." }
 
         val fileName = "${print.theme.value}/sizeGuide/${print.path.nameWithoutExtension}.jpeg"
