@@ -31,13 +31,13 @@ class FramedPreviewGenerator(
     private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
     private val gradient = LinearGradient.horizontal(Color.WHITE, Color.decode("#f2f2f2"))
 
-    override fun generate(print: Print): Print = runBlocking {
+    override fun generate(print: Print): List<Path> = runBlocking {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
         val outputFolder = previewFolder.batchFolderWithoutExtension(print)
 
         if (!outputFolder.exists()) outputFolder.createDirectories()
 
-        val previews = frames.map { frame ->
+        return@runBlocking frames.map { frame ->
             async(Dispatchers.Default) {
                 val background = ImmutableImage.create(
                     SIZE,
@@ -47,8 +47,6 @@ class FramedPreviewGenerator(
                 processImage(background, frame, printImage, outputFolder)
             }
         }.awaitAll()
-
-        print.copy(previews = previews)
     }
 
     private fun processImage(background: ImmutableImage, frame: ImmutableImage, print: ImmutableImage, outputFolder: Path): Path {
