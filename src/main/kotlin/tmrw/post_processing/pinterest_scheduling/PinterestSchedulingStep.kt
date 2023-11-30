@@ -29,7 +29,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
         val showCaseCsvRows = prints.mapIndexed { index, print ->
             val publishDate = initialDateTime.plusMinutes(index * INTERVAL_BETWEEN_POST * print.previews.size)
 
-            "\"${print.title}\",${print.url},All Posters,,,${print.listingUrl},$publishDate,"
+            "\"${print.title} • Tomorrow's Prints\",${print.url},All Posters,,,${print.listingUrl},$publishDate,"
         }
 
         val previewCsvRows = prints.mapIndexed { index, print ->

@@ -22,7 +22,7 @@ class ThemePrompter: Prompter<Theme>(
         Your task is to determine, based on a set of keywords used to 
         generate a poster image, the theme that is best associated
         with the keywords from a list of pre-determined themes. The available
-        themes are: ${Theme.entries.joinToString(", ") { it.value }}.
+        themes are: ${Theme.entries.filterNot { it == Theme.DEFAULT }.joinToString(", ") { it.value }}.
         Only return the theme that fits the description of the image the best.
     """.trimIndent(),
 
