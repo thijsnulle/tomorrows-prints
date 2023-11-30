@@ -4,12 +4,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import tmrw.model.Print
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolderWithoutExtension
+import java.nio.file.Path
 import kotlin.io.path.*
 
 abstract class PreviewGenerator {
-
-    private val logger = KotlinLogging.logger {}
-
     fun generatePreviewsFor(print: Print): Print {
         val directory = Files.previews.batchFolderWithoutExtension(print)
 
@@ -17,8 +15,8 @@ abstract class PreviewGenerator {
 
         directory.createDirectory()
 
-        return generate(print)
+        return print.copy(previews = generate(print))
     }
 
-    abstract fun generate(print: Print): Print
+    abstract fun generate(print: Print): List<Path>
 }

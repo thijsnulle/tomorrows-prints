@@ -24,7 +24,7 @@ class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = 
                 .take(VIDEO_PREVIEW_CAROUSEL_SIZE)
                 .let { it + print }
                 .map(previewGenerator::generate)
-                .map { it.previews.random() }
+                .map { it.random() }
 
             inputFolder.listDirectoryEntries("*.jpeg").forEach { it.deleteIfExists() }
 
