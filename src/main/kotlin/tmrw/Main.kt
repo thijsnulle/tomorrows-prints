@@ -8,6 +8,7 @@ import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
 import tmrw.pipeline.print_file_generation.PrintFileGenerationStep
 import tmrw.pipeline.print_file_upload.PrintFileUploadStep
+import tmrw.pipeline.shopify_upload.ShopifyUploadStep
 import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
 import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
@@ -61,6 +62,7 @@ fun main() {
         PreviewUploadStep(),
         PrintFileGenerationStep(),
         PrintFileUploadStep(),
+        ShopifyUploadStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
     listOf(

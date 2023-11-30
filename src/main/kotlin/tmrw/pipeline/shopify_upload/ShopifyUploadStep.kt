@@ -1,63 +1,44 @@
 package tmrw.pipeline.shopify_upload
 
-import kotlinx.serialization.json.*
+import fuel.Fuel
+import fuel.post
+import io.github.cdimascio.dotenv.dotenv
+import kotlinx.coroutines.runBlocking
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 
-class ShopifyUploadStep: PipelineStep() {
-
-    private val httpHandler = ShopifyHttpHandler()
-
-    fun createJsonBody(title: String, bodyHtml: String, productType: String, status: String, imageUrl: String, variants: List<ShopifyVariant>): JsonObject {
-
-        fun buildVariantJson(size: String, price: Int): JsonObject = buildJsonObject {
-            put("option1", size)
-            put("price", price)
-        }
-
-        return buildJsonObject {
-            putJsonObject("product") {
-                put("title", title)
-                put("body_html", bodyHtml)
-                put("vendor", "Tomorrow's Prints")
-                put("product_type", productType)
-                put("status", status)
-                put("tags", "ADD TAGS")
-                put("metafields_global_title_tag", "SEO title")
-                put("metafields_global_description_tag", "SEO description")
-                putJsonArray("images") {
-                    addJsonObject {
-                        put("src", imageUrl)
-                    }
-                }
-                putJsonArray("options")  {
-                    val stringBuilder = StringBuilder()
-                    stringBuilder.append("[")
-                    variants.forEach { variant -> stringBuilder.append("\"${variant.size}\"") }
-                    stringBuilder.append("]")
-
-                    addJsonObject {
-                        put("name", "size")
-                        put("values", stringBuilder.toString())
-                    }
-                }
-                putJsonArray("variants") {
-                    variants.forEach { variant -> add(buildVariantJson(variant.size, variant.price))}
-                }
-            }
-        }
+data class PrintVariant(val size: String, val price: Int) {
+    companion object {
+        val variants = listOf(
+            PrintVariant("12″×16″", 20),
+            PrintVariant("12″×18″", 40),
+            PrintVariant("18″×24″", 60),
+            PrintVariant("20″×30″", 80),
+            PrintVariant("24″×36″", 100),
+        )
     }
-
-    override fun process(print: Print): Print {
-        val variants = listOf(ShopifyVariant("20x30", 100))
-        val body = createJsonBody("Poster", "A nice poster", "Abstract poster", "draft", print.printFileUrl, variants).toString()
-        httpHandler.post(body)
-        return print
-    }
-
-    override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isEmpty()
-
-
 }
 
-data class ShopifyVariant(val size: String, val price: Int)
+class ShopifyUploadStep: PipelineStep() {
+
+    override fun process(print: Print): Print = print.copy(listingUrl = upload(print))
+    override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isEmpty()
+
+    private fun upload(print: Print): String {
+        val result = runBlocking { Fuel.post(
+            url = "${dotenv().get("SHOPIFY_STORE")}/admin/api/2023-10/products.json",
+            headers = mapOf(
+                "Content-Type" to "application/json",
+                "X-Shopify-Access-Token" to dotenv().get("SHOPIFY_KEY")
+            ),
+            body = print.toShopifyJson().toString()
+        )}
+
+        if (result.statusCode != 201) throw IllegalArgumentException(result.body)
+
+        val handleRegex = Regex("\"handle\":\"([^\"]+)\"")
+        val handle = handleRegex.find(result.body)?.groups?.get(1)?.value ?: throw IllegalArgumentException()
+
+        return "${dotenv().get("SHOPIFY_STORE")}/products/$handle"
+    }
+}
