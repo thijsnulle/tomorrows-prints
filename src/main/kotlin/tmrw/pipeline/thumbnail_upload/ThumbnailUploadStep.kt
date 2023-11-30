@@ -10,7 +10,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 
-class ThumbnailUploadStep: PipelineStep(maximumThreads = 1) {
+class ThumbnailUploadStep: PipelineStep() {
 
     private val bucketId = dotenv().get("GOOGLE_BUCKET_ID")
     private val bucket = StorageOptions.getDefaultInstance().service.get(bucketId)
