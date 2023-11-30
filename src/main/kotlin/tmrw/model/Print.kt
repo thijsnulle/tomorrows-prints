@@ -32,9 +32,13 @@ data class Print(
     val previews: List<Path> = emptyList(),
     val previewUrls: List<String> = emptyList(),
     val thumbnail: String = "",
+    val thumbnailUrl: String = "",
     val sizeGuide: String = "",
+    val sizeGuideUrl: String = "",
     val printFile: String = "",
     val printFileUrl: String = "",
+    val screenshot: String = "",
+    val screenshotUrl: String = "",
     val listingUrl: String = "",
     val error: String = "",
     val colours: List<Colour> = emptyList(),
@@ -135,9 +139,13 @@ data class Print(
         jsonObject.addProperty("description", description)
         jsonObject.addProperty("listingUrl", listingUrl)
         jsonObject.addProperty("thumbnail", thumbnail)
+        jsonObject.addProperty("thumbnailUrl", thumbnailUrl)
         jsonObject.addProperty("sizeGuide", sizeGuide)
+        jsonObject.addProperty("sizeGuideUrl", sizeGuideUrl)
         jsonObject.addProperty("printFile", printFile)
         jsonObject.addProperty("printFileUrl", printFileUrl)
+        jsonObject.addProperty("screenshot", screenshot)
+        jsonObject.addProperty("screenshotUrl", screenshotUrl)
         jsonObject.addProperty("error", error)
 
         jsonObject.add("previews", JsonArray().also { previews.forEach { preview -> it.add(preview.toString()) }})
@@ -200,8 +208,10 @@ data class Print(
         product.addProperty("tags", colours.joinToString(",") { it.value })
 
         product.add("images", JsonArray()
-            .also { it.add(JsonObject().also { obj -> obj.addProperty("src", previewUrls.random()) }) }
+            .also { it.add(JsonObject().also { obj -> obj.addProperty("src", thumbnailUrl) }) }
             .also { it.add(JsonObject().also { obj -> obj.addProperty("src", url) }) }
+            .also { it.add(JsonObject().also { obj -> obj.addProperty("src", screenshotUrl) }) }
+            .also { it.add(JsonObject().also { obj -> obj.addProperty("src", sizeGuideUrl) }) }
         )
 
         product.add("options", JsonArray().also { arr -> arr.add(JsonObject()
@@ -230,9 +240,13 @@ data class JsonPrint(
     val previews: List<String>?,
     val previewUrls: List<String>?,
     val thumbnail: String?,
+    val thumbnailUrl: String?,
     val sizeGuide: String?,
+    val sizeGuideUrl: String?,
     val printFile: String?,
     val printFileUrl: String?,
+    val screenshot: String?,
+    val screenshotUrl: String?,
     val listingUrl: String?,
     val error: String?,
     val colours: List<String>?,
@@ -247,9 +261,13 @@ data class JsonPrint(
         previews?.map { preview -> Path(preview) } ?: emptyList(),
         previewUrls ?: emptyList(),
         thumbnail ?: "",
+        thumbnailUrl ?: "",
         sizeGuide ?: "",
+        sizeGuideUrl ?: "",
         printFile ?: "",
         printFileUrl ?: "",
+        screenshot ?: "",
+        screenshotUrl ?: "",
         listingUrl ?: "",
         error ?: "",
         colours?.map { colour -> Colour.valueOf(colour.uppercase().replace(' ', '_')) } ?: emptyList(),
