@@ -1,11 +1,11 @@
 package tmrw.pipeline.size_guide_generation
 
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.nio.PngWriter
+import com.sksamuel.scrimage.nio.JpegWriter
 import tmrw.model.Print
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolder
-import java.awt.Color
+import tmrw.utils.Files.Companion.batchFolderWithoutExtension
 import java.nio.file.Path
 import kotlin.io.path.exists
 
@@ -17,9 +17,9 @@ private data class Size(val x: Int, val y: Int, val w: Int, val h: Int)
 
 class SizeGuideGenerator {
 
-    private val sizeGuideBackground = ImmutableImage.filled(
-        SIZE_GUIDE_SIZE, SIZE_GUIDE_SIZE, Color.WHITE
-    )
+    private val writer = JpegWriter.compression(85).withProgressive(true)
+    private val sizeGuideBackground = ImmutableImage.loader()
+        .fromPath(Files.images.resolve("size-guide-template.png"))
 
     private val sizes = listOf(
         Size(0, 0, 24, 36),
@@ -33,7 +33,8 @@ class SizeGuideGenerator {
     private val maxUnitsHorizontal = sizes.maxOf { it.x + it.w }
 
     fun generateSizeGuide(print: Print): Path {
-        val output = Files.sizeGuides.batchFolder(print)
+        val output = Files.sizeGuides.batchFolderWithoutExtension(print)
+            .let { it.resolveSibling("${it.fileName}.jpeg") }
 
         if (output.exists()) return output
 
@@ -50,8 +51,6 @@ class SizeGuideGenerator {
             guide.overlay(printImage.cover(w, h), x, y)
         }
 
-        sizeGuide.output(PngWriter(), output)
-
-        return Files.images.resolve("test.png")
+        return sizeGuide.output(writer, output)
     }
 }

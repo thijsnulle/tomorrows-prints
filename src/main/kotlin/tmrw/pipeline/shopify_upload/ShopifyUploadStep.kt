@@ -10,11 +10,11 @@ import tmrw.pipeline.PipelineStep
 data class PrintVariant(val size: String, val price: Int) {
     companion object {
         val variants = listOf(
-            PrintVariant("12″×16″", 20),
-            PrintVariant("12″×18″", 40),
-            PrintVariant("18″×24″", 60),
-            PrintVariant("20″×30″", 80),
-            PrintVariant("24″×36″", 100),
+            PrintVariant("12″×16″ • 30×40 cm", 20),
+            PrintVariant("12″×18″ • 30×45 cm", 40),
+            PrintVariant("18″×24″ • 45×60 cm", 60),
+            PrintVariant("20″×30″ • 50×75 cm", 80),
+            PrintVariant("24″×36″ • 60×90 cm", 100),
         )
     }
 }
@@ -22,7 +22,7 @@ data class PrintVariant(val size: String, val price: Int) {
 class ShopifyUploadStep: PipelineStep() {
 
     override fun process(print: Print): Print = print.copy(listingUrl = upload(print))
-    override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isEmpty()
+    override fun shouldSkip(print: Print): Boolean = print.listingUrl.isNotEmpty()
 
     private fun upload(print: Print): String {
         val result = runBlocking { Fuel.post(
