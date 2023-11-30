@@ -171,11 +171,31 @@ data class Print(
 
         product.addProperty("vendor", "Tomorrow's Prints")
         product.addProperty("status", "active")
-        product.addProperty("metafields_global_title_tag", "Tomorrow's Prints")
-        product.addProperty("metafields_global_description_tag", "SEO description") // TODO: add SEO description
+        product.addProperty("metafields_global_title_tag", "$title • Tomorrow's Prints")
+        product.addProperty("metafields_global_description_tag", """
+            Discover our exclusive collection of unique and custom-made posters at Tomorrow's Prints. Each poster is meticulously designed in-house, ensuring that no two are alike.
+            Perfect for adding a touch of personality to any space and whether you're looking for a statement piece or something subtle, Tomorrow's Prints has a poster for everyone.
+            Shop now and elevate your space with our one-of-a-kind posters. With Tomorrow's Prints, you're not just getting a poster; you're bringing a unique piece of art into your life.
+        """.trimIndent())
 
         product.addProperty("title", title)
-        product.addProperty("body_html", description) // TODO: format description as HTML
+        product.addProperty("body_html", """
+            <p><strong>$title</strong></p>
+
+            <p>$description</p>
+            
+            <p>Immerse yourself in the world of unique, custom-made posters that reflect the essence of your style. Our posters are more than just art; they're an expression of your individuality, crafted with care and passion.</p>
+
+            <ul>
+              <li><strong>Paper Thickness:</strong> 10.3 mil (0.26 mm)</li>
+              <li><strong>Paper Weight:</strong> 189 g/m²</li>
+              <li><strong>Opacity:</strong> 94%</li>
+              <li><strong>ISO Brightness:</strong> 104%</li>
+              <li><strong>Source:</strong> Paper is responsibly sourced from Japan 🇯🇵</li>
+            </ul>
+
+            <p>Perfect for adding a touch of personality to any space, our posters range from 12"x16" to 24"x36", allowing you to choose the perfect size for your home or office.</p>
+        """.trimIndent())
         product.addProperty("product_type", theme.value)
         product.addProperty("tags", colours.joinToString(",") { it.value })
 
