@@ -205,7 +205,7 @@ data class Print(
             <p>Perfect for adding a touch of personality to any space, our posters range from 12"x16" to 24"x36", allowing you to choose the perfect size for your home or office.</p>
         """.trimIndent())
         product.addProperty("product_type", theme.value)
-        product.addProperty("tags", colours.joinToString(",") { it.value })
+        product.addProperty("tags", (colours.map { it.value } + theme.value).joinToString(","))
 
         product.add("images", JsonArray()
             .also { it.add(JsonObject().also { obj -> obj.addProperty("src", thumbnailUrl) }) }
