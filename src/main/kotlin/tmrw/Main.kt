@@ -8,10 +8,14 @@ import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
 import tmrw.pipeline.print_file_generation.PrintFileGenerationStep
 import tmrw.pipeline.print_file_upload.PrintFileUploadStep
+import tmrw.pipeline.screenshot_generation.ScreenshotGenerationStep
+import tmrw.pipeline.screenshot_upload.ScreenshotUploadStep
 import tmrw.pipeline.shopify_upload.ShopifyUploadStep
 import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
+import tmrw.pipeline.size_guide_upload.SizeGuideUploadStep
 import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
+import tmrw.pipeline.thumbnail_upload.ThumbnailUploadStep
 import tmrw.pipeline.title_allocation.TitleAllocationStep
 import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.pinterest_scheduling.PinterestSchedulingStep
@@ -57,11 +61,15 @@ fun main() {
         ThemeAllocationStep(),
         ColourAllocationStep(),
         ThumbnailGenerationStep(),
+        ThumbnailUploadStep(),
         SizeGuideGenerationStep(),
+        SizeGuideUploadStep(),
         PreviewGenerationStep(),
         PreviewUploadStep(),
         PrintFileGenerationStep(),
         PrintFileUploadStep(),
+        ScreenshotGenerationStep(),
+        ScreenshotUploadStep(),
         ShopifyUploadStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
