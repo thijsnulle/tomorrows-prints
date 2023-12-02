@@ -11,7 +11,7 @@ import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.nameWithoutExtension
 
-const val VIDEO_PREVIEW_HUE_ROTATION_FRAME_COUNT = 60
+const val VIDEO_PREVIEW_HUE_ROTATION_FRAME_COUNT = 180
 
 class HueRotateVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 30, prefix = "hue-rotate") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.mapIndexed { index, print ->
