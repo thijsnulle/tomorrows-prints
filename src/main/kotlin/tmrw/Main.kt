@@ -56,21 +56,21 @@ fun main() {
     Files.enableLoggingToFile()
 
     val processedPrints: List<Print> = listOf(
-        TitleAllocationStep(),
-        DescriptionAllocationStep(),
-        ThemeAllocationStep(),
+//        TitleAllocationStep(),
+//        DescriptionAllocationStep(),
+//        ThemeAllocationStep(),
         ColourAllocationStep(),
         ThumbnailGenerationStep(),
-        ThumbnailUploadStep(),
-        SizeGuideGenerationStep(),
-        SizeGuideUploadStep(),
-        PreviewGenerationStep(),
-        PreviewUploadStep(),
-        PrintFileGenerationStep(),
-        PrintFileUploadStep(),
-        ScreenshotGenerationStep(),
-        ScreenshotUploadStep(),
-        ShopifyUploadStep(),
+//        ThumbnailUploadStep(),
+//        SizeGuideGenerationStep(),
+//        SizeGuideUploadStep(),
+//        PreviewGenerationStep(),
+//        PreviewUploadStep(),
+//        PrintFileGenerationStep(),
+//        PrintFileUploadStep(),
+//        ScreenshotGenerationStep(),
+//        ScreenshotUploadStep(),
+//        ShopifyUploadStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
     listOf(
