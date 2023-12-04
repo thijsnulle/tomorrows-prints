@@ -23,8 +23,7 @@ data class HsbColour(val h: Int, val s: Int, val b: Int, val x: Int, val y: Int)
     fun toColour(): Colour {
         if (s <= 15) {
             if (b <= 25) return Colour.BLACK
-            if (b <= 50) return Colour.DARK_GRAY
-            if (b <= 75) return Colour.LIGHT_GRAY
+            if (b <= 75) return Colour.GRAY
 
             return Colour.WHITE
         }
@@ -57,9 +56,8 @@ enum class Colour(val value: String) {
     BLACK("Black"),
     BLUE("Blue"),
     CYAN("Cyan"),
-    DARK_GRAY("Dark Gray"),
+    GRAY("Gray"),
     GREEN("Green"),
-    LIGHT_GRAY("Light Gray"),
     NAVY("Navy"),
     NEUTRAL("Neutral"),
     ORANGE("Orange"),
