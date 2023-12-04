@@ -1,4 +1,4 @@
-const IMAGES_TO_SELECT_JSON_FILE = 'json/until-161123.json';
+const IMAGES_TO_SELECT_JSON_FILE = 'json/011123-041223.json';
 
 const addImageToSelectedContainer = (image, key) => {
     const containerId = (key === "Enter") ? "yes-selection-container" : "no-selection-container";
@@ -103,8 +103,8 @@ const startSelection = (images) => {
 };
 
 $.getJSON(IMAGES_TO_SELECT_JSON_FILE, (images) => {
-    const selectedImageURLs = selectedImages.map((img) => img['url']);
-    const notSelectedImageURLs = notSelectedImages.map((img) => img['url']);
+    const selectedImageURLs = selectedImages.map((img) => img['url'].split('?')[0]);
+    const notSelectedImageURLs = notSelectedImages.map((img) => img['url'].split('?')[0]);
     const processedImageURLs = new Set(selectedImageURLs.concat(notSelectedImageURLs));
 
     selectedImageURLs.reverse();
@@ -117,7 +117,7 @@ $.getJSON(IMAGES_TO_SELECT_JSON_FILE, (images) => {
         addImageToSelectedContainer({ 'url': url }, 'Escape');
     });
 
-    const imagesToProcess = images.filter((image) => !processedImageURLs.has(image['url']));
+    const imagesToProcess = images.filter((image) => !processedImageURLs.has(image['url'].split('?')[0]));
     startSelection(imagesToProcess);
 });
 
