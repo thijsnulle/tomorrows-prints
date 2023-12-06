@@ -40,6 +40,10 @@ data class Print(
     val screenshot: String = "",
     val screenshotUrl: String = "",
     val listingUrl: String = "",
+    val productId: String = "",
+    val variantIds: List<String> = emptyList(),
+    val synchronised: Boolean = false,
+    val published: Boolean = false,
     val error: String = "",
     val colours: List<Colour> = emptyList(),
 ) : JsonMappable, CsvMappable {
@@ -147,10 +151,14 @@ data class Print(
         jsonObject.addProperty("screenshot", screenshot)
         jsonObject.addProperty("screenshotUrl", screenshotUrl)
         jsonObject.addProperty("error", error)
+        jsonObject.addProperty("productId", productId)
+        jsonObject.addProperty("synchronised", synchronised)
+        jsonObject.addProperty("published", published)
 
         jsonObject.add("previews", JsonArray().also { previews.forEach { preview -> it.add(preview.toString()) }})
         jsonObject.add("previewUrls", JsonArray().also { previewUrls.forEach { previewUrl -> it.add(previewUrl) }})
         jsonObject.add("colours", JsonArray().also { colours.forEach { colour -> it.add(colour.value) }})
+        jsonObject.add("variantIds", JsonArray().also { variantIds.forEach { variantId -> it.add(variantId) }})
 
         return jsonObject
     }
@@ -178,7 +186,7 @@ data class Print(
         val product = JsonObject()
 
         product.addProperty("vendor", "Tomorrow's Prints")
-        product.addProperty("status", "active")
+        product.addProperty("status", "draft")
         product.addProperty("metafields_global_title_tag", "$title • Tomorrow's Prints")
         product.addProperty("metafields_global_description_tag", """
             Discover our exclusive collection of unique and custom-made posters at Tomorrow's Prints. Each poster is meticulously designed in-house, ensuring that no two are alike.
@@ -248,6 +256,10 @@ data class JsonPrint(
     val screenshot: String?,
     val screenshotUrl: String?,
     val listingUrl: String?,
+    val productId: String?,
+    val variantIds: List<String>?,
+    val synchronised: Boolean?,
+    val published: Boolean?,
     val error: String?,
     val colours: List<String>?,
 ) {
@@ -269,6 +281,10 @@ data class JsonPrint(
         screenshot ?: "",
         screenshotUrl ?: "",
         listingUrl ?: "",
+        productId ?: "",
+        variantIds ?: emptyList(),
+        synchronised ?: false,
+        published ?: false,
         error ?: "",
         colours?.map { colour -> Colour.valueOf(colour.uppercase().replace(' ', '_')) } ?: emptyList(),
     )

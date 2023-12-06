@@ -1,9 +1,7 @@
 package tmrw.pipeline.print_file_generation
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.name
 
 fun interface ImageUpscalerImpl {
     fun upscale(input: Path, output: Path): Path

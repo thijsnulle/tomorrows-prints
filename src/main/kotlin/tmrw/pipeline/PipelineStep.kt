@@ -14,12 +14,14 @@ import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
-abstract class PipelineStep(private val maximumThreads: Int = 8) {
+abstract class PipelineStep(private val maximumThreads: Int = 64) {
 
     private val logger = KotlinLogging.logger {}
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
 
     fun start(prints: List<Print>): List<Print> {
+        System.gc()
+
         val className = this::class.simpleName
 
         if (prints.all { shouldSkip(it) }) {

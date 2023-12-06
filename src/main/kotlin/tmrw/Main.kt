@@ -8,8 +8,10 @@ import tmrw.pipeline.preview_generation.PreviewGenerationStep
 import tmrw.pipeline.preview_upload.PreviewUploadStep
 import tmrw.pipeline.print_file_generation.PrintFileGenerationStep
 import tmrw.pipeline.print_file_upload.PrintFileUploadStep
+import tmrw.pipeline.printful_synchronisation.PrintfulSynchronisationStep
 import tmrw.pipeline.screenshot_generation.ScreenshotGenerationStep
 import tmrw.pipeline.screenshot_upload.ScreenshotUploadStep
+import tmrw.pipeline.shopify_publishing.ShopifyPublishingStep
 import tmrw.pipeline.shopify_upload.ShopifyUploadStep
 import tmrw.pipeline.size_guide_generation.SizeGuideGenerationStep
 import tmrw.pipeline.size_guide_upload.SizeGuideUploadStep
@@ -71,6 +73,8 @@ fun main() {
         ScreenshotGenerationStep(),
         ScreenshotUploadStep(),
         ShopifyUploadStep(),
+        PrintfulSynchronisationStep(),
+        ShopifyPublishingStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
     listOf(

@@ -1,6 +1,5 @@
 package tmrw.pipeline.preview_generation
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import tmrw.model.Print
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolderWithoutExtension
