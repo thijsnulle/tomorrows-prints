@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 import tmrw.pipeline.shopify_upload.PrintVariant
-import java.time.Duration
 
 const val SYNC_DELAY = 10000L
 const val NOT_FOUND_DELAY = 30000L

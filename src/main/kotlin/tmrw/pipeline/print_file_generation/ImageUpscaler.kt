@@ -2,7 +2,6 @@ package tmrw.pipeline.print_file_generation
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.PngWriter
-import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.exists

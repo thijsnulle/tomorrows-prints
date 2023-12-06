@@ -8,8 +8,6 @@ import kotlinx.coroutines.runBlocking
 import tmrw.model.HsbColour
 import tmrw.model.Print
 import java.nio.file.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.nameWithoutExtension
 
 const val VIDEO_PREVIEW_HUE_ROTATION_FRAME_COUNT = 180
 

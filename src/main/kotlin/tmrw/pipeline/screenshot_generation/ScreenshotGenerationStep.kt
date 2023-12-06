@@ -5,10 +5,8 @@ import com.sksamuel.scrimage.nio.JpegWriter
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 import tmrw.utils.Files
-import tmrw.utils.Files.Companion.batchFolder
 import tmrw.utils.Files.Companion.batchFolderWithoutExtension
 import kotlin.io.path.name
-import kotlin.io.path.nameWithoutExtension
 
 const val SCREENSHOT_FACTOR = 0.33
 

@@ -4,7 +4,6 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.JpegWriter
 import tmrw.model.Print
 import tmrw.utils.Files
-import tmrw.utils.Files.Companion.batchFolder
 import tmrw.utils.Files.Companion.batchFolderWithoutExtension
 import java.nio.file.Path
 import kotlin.io.path.exists
