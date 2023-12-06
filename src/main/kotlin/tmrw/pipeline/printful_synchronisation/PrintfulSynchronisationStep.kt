@@ -34,9 +34,6 @@ class PrintfulSynchronisationStep: PipelineStep(maximumThreads = 1) {
         if (responses.all { it.statusCode == 200 }) return@runBlocking true
         if (!retry) return@runBlocking false
 
-        if (responses.any { it.statusCode == 404 }) println("Not found")
-        if (responses.any { it.statusCode == 429 }) println("Too many requests")
-
         delay(if (responses.any { it.statusCode == 404 }) NOT_FOUND_DELAY else TOO_MANY_REQUESTS_DELAY)
 
         return@runBlocking sync(print, retry = false)
