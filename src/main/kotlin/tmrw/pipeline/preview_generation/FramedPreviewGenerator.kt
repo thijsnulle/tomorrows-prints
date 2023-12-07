@@ -3,6 +3,7 @@ package tmrw.pipeline.preview_generation
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.canvas.painters.LinearGradient
 import com.sksamuel.scrimage.nio.JpegWriter
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import tmrw.model.Print
 import tmrw.utils.Files
@@ -31,22 +32,20 @@ class FramedPreviewGenerator(
     private val frames = Files.frames.listDirectoryEntries("*.png").map(loader::fromPath)
     private val gradient = LinearGradient.horizontal(Color.WHITE, Color.decode("#f2f2f2"))
 
-    override fun generate(print: Print): List<Path> = runBlocking {
+    override fun generate(print: Print): List<Path> {
         val printImage = loader.fromPath(print.path).cover(PRINT_WIDTH, PRINT_HEIGHT)
         val outputFolder = previewFolder.batchFolderWithoutExtension(print)
 
         if (!outputFolder.exists()) outputFolder.createDirectories()
 
-        return@runBlocking frames.map { frame ->
-            async(Dispatchers.Default) {
-                val background = ImmutableImage.create(
-                    SIZE,
-                    if (createSquarePreviews) SIZE else SIZE + random.nextInt(SIZE / 2)
-                ).fill(gradient)
+        return frames.map { frame ->
+            val background = ImmutableImage.create(
+                SIZE,
+                if (createSquarePreviews) SIZE else SIZE + random.nextInt(SIZE / 2)
+            ).fill(gradient)
 
-                processImage(background, frame, printImage, outputFolder)
-            }
-        }.awaitAll()
+            processImage(background, frame, printImage, outputFolder)
+        }
     }
 
     private fun processImage(background: ImmutableImage, frame: ImmutableImage, print: ImmutableImage, outputFolder: Path): Path {
