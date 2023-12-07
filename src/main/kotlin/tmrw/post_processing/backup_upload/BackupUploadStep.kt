@@ -20,7 +20,7 @@ class BackupUploadStep: PostProcessingStep() {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
-        val fileName = "backups/Backup ${dateFormatter.format(ZonedDateTime.now())}"
+        val fileName = "backups/${dateFormatter.format(ZonedDateTime.now())}"
         val jsonContent = gson.toJson(prints.map { it.toJson() })
 
         bucket.create(fileName, jsonContent.toByteArray(), "application/json")
