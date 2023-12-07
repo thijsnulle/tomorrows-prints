@@ -20,6 +20,7 @@ import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
 import tmrw.pipeline.thumbnail_upload.ThumbnailUploadStep
 import tmrw.pipeline.title_allocation.TitleAllocationStep
 import tmrw.post_processing.PostProcessingAggregate
+import tmrw.post_processing.backup_upload.BackupUploadStep
 import tmrw.post_processing.pinterest_scheduling.PinterestSchedulingStep
 import tmrw.post_processing.video_preview_generation.VideoPreviewGenerationStep
 import tmrw.post_processing.video_preview_upload.VideoPreviewUploadStep
@@ -78,6 +79,7 @@ fun main() {
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
     listOf(
+        BackupUploadStep(),
         VideoPreviewGenerationStep(),
         VideoPreviewUploadStep(batch = batch),
         PinterestSchedulingStep(batch = batch),
