@@ -1,6 +1,9 @@
 package tmrw.post_processing.video_preview_generation.preview_generator
 
 import com.sksamuel.scrimage.ImmutableImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import tmrw.model.Colour
 import tmrw.model.HsbColour
 import tmrw.model.Print
@@ -15,8 +18,12 @@ class ColourFlickingVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12,
         val colours = ColourAllocationStep.getColours(image)
 
         val frames = colours.map { colour -> getFrame(image, colour) }
-        (0..VIDEO_PREVIEW_COLOUR_FLICKING_FRAME_COUNT).map { frameIndex ->
-            frames.random().output(writer, inputFolder.resolve("$frameIndex.jpeg"))
+        runBlocking {
+            (0..VIDEO_PREVIEW_COLOUR_FLICKING_FRAME_COUNT).map { frameIndex ->
+                async(Dispatchers.Default) {
+                    frames.random().output(writer, inputFolder.resolve("$frameIndex.jpeg"))
+                }
+            }
         }
 
         save(inputFolder, outputFolder(print), frameRate)
