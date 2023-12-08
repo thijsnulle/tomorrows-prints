@@ -8,19 +8,19 @@ import kotlinx.coroutines.runBlocking
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 
-data class PrintVariant(val id: Int, val size: String, val price: Int) {
+data class PrintVariant(val id: Int, val size: String, val price: Double) {
     companion object {
         val variants = listOf(
-            PrintVariant(1349, "12″×16″ • 30×40 cm", 20),
-            PrintVariant(3876, "12″×18″ • 30×45 cm", 40),
-            PrintVariant(1, "18″×24″ • 45×60 cm", 60),
-            PrintVariant(16365, "20″×30″ • 50×75 cm", 80),
-            PrintVariant(2, "24″×36″ • 60×90 cm", 100),
+            PrintVariant(1349, "12″×16″ • 30×40 cm", 15.95),
+            PrintVariant(3876, "12″×18″ • 30×45 cm", 17.95),
+            PrintVariant(1, "18″×24″ • 45×60 cm", 21.95),
+            PrintVariant(16365, "20″×30″ • 50×75 cm", 24.95),
+            PrintVariant(2, "24″×36″ • 60×90 cm", 29.95),
         )
     }
 }
 
-class ShopifyUploadStep: PipelineStep() {
+class ShopifyUploadStep: PipelineStep(maximumThreads = 4) {
 
     override fun process(print: Print): Print {
         val response = upload(print)

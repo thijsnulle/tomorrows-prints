@@ -16,7 +16,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         CycleVideoPreviewGenerator(),
         GlitchVideoPreviewGenerator(),
         HueRotateVideoPreviewGenerator(),
-        ColourFlickingVideoPreviewGenerator(),
+        ColourRotationVideoPreviewGenerator(),
     )
 
     @OptIn(ExperimentalPathApi::class)

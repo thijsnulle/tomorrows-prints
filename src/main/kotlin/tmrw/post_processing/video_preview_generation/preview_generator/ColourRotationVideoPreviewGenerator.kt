@@ -10,18 +10,21 @@ import tmrw.model.Print
 import tmrw.pipeline.colour_tagging.ColourAllocationStep
 import java.nio.file.Path
 
-const val VIDEO_PREVIEW_COLOUR_FLICKING_FRAME_COUNT = 60
+const val VIDEO_PREVIEW_COLOUR_ROTATION_FRAME_COUNT = 32
 
-class ColourFlickingVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix = "colour-flicking") {
+class ColourRotationVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 8, prefix = "colour-rotation") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.map { print ->
         val image = loader.fromPath(print.path)
-        val colours = ColourAllocationStep.getColours(image)
+        val colours = ColourAllocationStep.getColours(image, minimumPercentage = 5)
 
         val frames = colours.map { colour -> getFrame(image, colour) }
+        val repeatedFrames = (0 until (VIDEO_PREVIEW_COLOUR_ROTATION_FRAME_COUNT / frames.size))
+            .flatMap { frames }.take(VIDEO_PREVIEW_COLOUR_ROTATION_FRAME_COUNT)
+
         runBlocking {
-            (0..VIDEO_PREVIEW_COLOUR_FLICKING_FRAME_COUNT).map { frameIndex ->
+            repeatedFrames.mapIndexed { frameIndex, frame ->
                 async(Dispatchers.Default) {
-                    frames.random().output(writer, inputFolder.resolve("$frameIndex.jpeg"))
+                    frame.output(writer, inputFolder.resolve("$frameIndex.jpeg"))
                 }
             }
         }

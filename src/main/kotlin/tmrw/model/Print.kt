@@ -209,8 +209,6 @@ data class Print(
               <li><strong>ISO Brightness:</strong> 104%</li>
               <li><strong>Source:</strong> Paper is responsibly sourced from Japan 🇯🇵</li>
             </ul>
-
-            <p>Perfect for adding a touch of personality to any space, our posters range from 12"x16" to 24"x36", allowing you to choose the perfect size for your home or office.</p>
         """.trimIndent())
         product.addProperty("product_type", theme.value)
         product.addProperty("tags", (colours.map { it.value } + theme.value).joinToString(","))

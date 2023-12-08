@@ -11,13 +11,13 @@ const val MINIMUM_COLOUR_PERCENTAGE = 10
 class ColourAllocationStep: PipelineStep() {
 
     companion object {
-        fun getColours(image: ImmutableImage): Set<Colour> = image.pixels()
+        fun getColours(image: ImmutableImage, minimumPercentage: Int = MINIMUM_COLOUR_PERCENTAGE): Set<Colour> = image.pixels()
             .map(HsbColour::fromPixel)
             .map(HsbColour::toColour)
             .groupingBy { it }.eachCount()
             .entries
             .associate { it.key to it.value * 100 / image.pixels().size }
-            .filter { it.value >= MINIMUM_COLOUR_PERCENTAGE }
+            .filter { it.value >= minimumPercentage }
             .keys
     }
 
