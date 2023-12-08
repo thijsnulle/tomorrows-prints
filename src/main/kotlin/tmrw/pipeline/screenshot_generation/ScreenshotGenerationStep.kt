@@ -10,7 +10,7 @@ import kotlin.io.path.name
 
 const val SCREENSHOT_FACTOR = 0.33
 
-class ScreenshotGenerationStep: PipelineStep() {
+class ScreenshotGenerationStep: PipelineStep(maximumThreads = 4) {
 
     private val loader = ImmutableImage.loader()
     private val writer = JpegWriter.compression(85).withProgressive(true)
