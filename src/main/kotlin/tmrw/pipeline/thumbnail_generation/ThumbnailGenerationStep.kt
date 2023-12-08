@@ -5,7 +5,7 @@ import tmrw.pipeline.PipelineStep
 import tmrw.pipeline.preview_generation.FramedPreviewGenerator
 import tmrw.utils.Files
 
-class ThumbnailGenerationStep: PipelineStep() {
+class ThumbnailGenerationStep: PipelineStep(maximumThreads = 4) {
     private val generator = FramedPreviewGenerator(previewFolder = Files.thumbnails, createSquarePreviews = true)
 
     override fun process(print: Print): Print = print.copy(thumbnail = generator.generate(print).random().toString())
