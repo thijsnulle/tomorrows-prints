@@ -15,7 +15,7 @@ const val VIDEO_PREVIEW_COLOUR_FLICKING_FRAME_COUNT = 60
 class ColourFlickingVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix = "colour-flicking") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.map { print ->
         val image = loader.fromPath(print.path)
-        val colours = ColourAllocationStep.getColours(image)
+        val colours = ColourAllocationStep.getColours(image, minimumPercentage = 1)
 
         val frames = colours.map { colour -> getFrame(image, colour) }
         runBlocking {
