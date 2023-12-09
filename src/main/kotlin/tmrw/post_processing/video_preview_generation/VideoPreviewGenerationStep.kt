@@ -19,17 +19,9 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         ColourRotationVideoPreviewGenerator(),
     )
 
-    @OptIn(ExperimentalPathApi::class)
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
-        val videoPreviewsFolder = Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
-
-        if (videoPreviewsFolder.exists()) {
-            return aggregate.copy(
-                videoPreviews = videoPreviewsFolder.walk().filter(Path::isRegularFile).filterNot(Path::isHidden).toList()
-            )
-        }
-
-        videoPreviewsFolder.createDirectories()
+        Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
+            .createDirectories()
 
         return aggregate.copy(videoPreviews = videoPreviewGenerators.flatMap {
             it.generateVideoPreviews(prints)
