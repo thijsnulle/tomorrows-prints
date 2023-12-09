@@ -7,14 +7,14 @@ enum class Theme(val value: String) {
     DEFAULT("Default"),
     ABSTRACT("Abstract"),
     ANIMAL("Animal"),
-    COLOR_FIELD("Color Field"),
-    CYBERPUNK("Cyberpunk"),
+    DIGITAL_ART("Digital Art"),
+    FANTASY("Fantasy"),
     IMPRESSIONISM("Impressionism"),
     MINIMALISM("Minimalism"),
-    PIXEL_ART("Pixel Art"),
     POP_ART("Pop Art"),
     PSYCHEDELIC("Psychedelic"),
     RETRO("Retro"),
+    SPACE("Space"),
 }
 
 class ThemePrompter: Prompter<Theme>(
@@ -24,11 +24,12 @@ class ThemePrompter: Prompter<Theme>(
     """.trimIndent(),
 
     examples = listOf(
-        Example("poster with two people walking on a platform, orange background, in the style of minimalistic surrealism, dark red and light aquamarine, contrast of scale, art that plays with scale, long lens, high horizon lines", "Minimalism"),
-        Example("an abstract painting of green and white animallike patterns, in the style of gary hume, organic simplicity, dark white and dark green, shaped canvases, leaf patterns, henri matisse, dappled", "Abstract"),
-        Example("paris on a rainy night, 1900s paris, in the style of expressionist color palette, atmospheric urbanscapes, strip painting, light bronze and blue, plein-air, nightscapes", "Impressionism"),
-        Example("bauhaus poster retro poster in orange, yellow and brown, in the style of calming symmetry, flowing lines, patrick brown, groovy, light beige and red, carpetpunk, wallpaper", "Retro"),
-        Example("the gas station in the desert, in the style of crisp neo-pop illustrations, minimalist portraits, neo-geo, sōsaku hanga, dark brown, teal and orange, everyday objects, 1970–present, simplistic", "Pop Art"),
+        Example("two people walking, orange background, minimalistic surrealism, contrast of scale, art that plays with scale, long lens, high horizon lines", "Minimalism"),
+        Example("abstract painting of green and white animallike patterns, organic simplicity, shaped canvases, leaf patterns", "Abstract"),
+        Example("paris on a rainy night, in the style of expressionist color palette, atmospheric urbanscapes, plein-air", "Impressionism"),
+        Example("bauhaus poster retro poster in orange, yellow and brown, in the style of calming symmetry, flowing lines", "Retro"),
+        Example("the gas station in the desert, in the style of crisp neo-pop illustrations, minimalist portraits", "Pop Art"),
+        Example("poster combining earths and suns stars, in the style of crisp neo-pop illustrations", "Space")
     )
 ) {
     override fun process(output: String): Theme = Theme.valueOf(output.trim().replace(' ', '_').uppercase())
