@@ -6,7 +6,6 @@ import tmrw.post_processing.PostProcessingStep
 import tmrw.post_processing.video_preview_generation.preview_generator.*
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolder
-import java.nio.file.Path
 import kotlin.io.path.*
 
 class VideoPreviewGenerationStep: PostProcessingStep() {
@@ -17,6 +16,7 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
         GlitchVideoPreviewGenerator(),
         HueRotateVideoPreviewGenerator(),
         ColourRotationVideoPreviewGenerator(),
+        ZoomVideoPreviewGenerator(),
     )
 
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
@@ -24,7 +24,11 @@ class VideoPreviewGenerationStep: PostProcessingStep() {
             .createDirectories()
 
         return aggregate.copy(videoPreviews = videoPreviewGenerators.flatMap {
-            it.generateVideoPreviews(prints)
+            try {
+                it.generateVideoPreviews(prints)
+            } catch (e: Exception) {
+                emptyList()
+            }
         })
     }
 }

@@ -9,20 +9,19 @@ const val GLITCH_SIZE = 18
 
 class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix = "glitch") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.flatMapIndexed { index, print ->
-        // TODO: figure out how to handle this
-        if (prints.size < GLITCH_SIZE) return@flatMapIndexed emptyList()
-
         val samePrints = List(GLITCH_SIZE) { print }
         val randomPrints = prints.shuffled().take(GLITCH_SIZE)
 
-        val previews = listOf(
-            generateGlitchPreview(print, samePrints, inputFolder, outputFolder(print)),
-            generateGlitchPreview(print, randomPrints, inputFolder, outputFolder(print))
-        )
+        val sameGlitchPreviews = generateGlitchPreview(print, samePrints, inputFolder, outputFolder(print))
+        if (prints.size < GLITCH_SIZE) {
+            return@flatMapIndexed sameGlitchPreviews
+        }
+
+        val randomGlitchPreviews = generateGlitchPreview(print, randomPrints, inputFolder, outputFolder(print))
 
         progress(prints, index)
 
-        previews
+        sameGlitchPreviews + randomGlitchPreviews
     }
 
     private fun generateGlitchPreview(
@@ -51,6 +50,6 @@ class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix 
                 .also { it.output(writer, inputFolder.resolve("${GLITCH_SIZE * 2 - frame}.jpeg")) }
         }
 
-        return save(inputFolder, outputFolder.resolve(print.path.nameWithoutExtension).createDirectories(), frameRate)
+        return save(inputFolder, outputFolder(print), frameRate)
     }
 }

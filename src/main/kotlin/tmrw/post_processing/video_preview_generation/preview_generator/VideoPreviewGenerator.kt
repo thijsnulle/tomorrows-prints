@@ -31,7 +31,9 @@ abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
 
         val printsToProcess = prints.filterNot { print -> videoPreviews.any {
             it.toString().contains(print.path.nameWithoutExtension)
-        }}
+        }}.ifEmpty {
+            return videoPreviews
+        }
 
         return videoPreviews + generate(printsToProcess, temporaryDirectory)
     }

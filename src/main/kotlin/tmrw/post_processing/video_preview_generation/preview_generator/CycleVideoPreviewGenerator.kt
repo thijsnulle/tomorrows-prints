@@ -13,11 +13,11 @@ class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = 
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> {
         val previewGenerator = FramedPreviewGenerator(previewFolder = inputFolder, createSquarePreviews = true)
 
-        // TODO: figure out how to handle this
-        if (prints.size < VIDEO_PREVIEW_CYCLE_SIZE) return emptyList()
+        val printsToSelectFrom = (0 .. (VIDEO_PREVIEW_CYCLE_SIZE / prints.size))
+            .flatMap { prints }.take(VIDEO_PREVIEW_CYCLE_SIZE)
 
         return prints.mapIndexed { index, print ->
-            val previews = prints
+            val previews = printsToSelectFrom
                 .shuffled()
                 .take(VIDEO_PREVIEW_CAROUSEL_SIZE)
                 .let { it + print }
