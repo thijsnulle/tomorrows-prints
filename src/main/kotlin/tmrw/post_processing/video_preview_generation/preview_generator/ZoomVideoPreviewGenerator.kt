@@ -17,8 +17,8 @@ class ZoomVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 30, prefix = 
 
         (0 until FRAME_COUNT).fold(image) { acc, frame ->
             val zoom = 1 - (1 - 1 / MAX_ZOOM) * frame / FRAME_COUNT
-            val newWidth = max((width * zoom).toInt(), 1)
-            val newHeight = max((height * zoom).toInt(), 1)
+            val newWidth = (width * zoom).toInt()
+            val newHeight = (height * zoom).toInt()
 
             val img = acc.resizeTo(newWidth, newHeight).also { it
                 .cover(1000, 1500)
