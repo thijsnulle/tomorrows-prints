@@ -9,10 +9,7 @@ import tmrw.utils.Files.Companion.batchFolder
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.createDirectories
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.walk
+import kotlin.io.path.*
 import kotlin.random.Random
 
 abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
@@ -27,7 +24,10 @@ abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
         val temporaryDirectory = Files.createTempDirectory("")
 
         val videoPreviews = tmrw.utils.Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
-            .walk().filter { it.toString().contains(prefix) }.toList()
+            .walk()
+            .filter { it.extension == "mp4" }
+            .filter { it.toString().contains(prefix) }
+            .toList()
 
         val printsToProcess = prints.filterNot { print -> videoPreviews.any {
             it.toString().contains(print.path.nameWithoutExtension)
