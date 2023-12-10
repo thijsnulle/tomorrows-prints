@@ -209,6 +209,8 @@ data class Print(
               <li><strong>ISO Brightness:</strong> 104%</li>
               <li><strong>Source:</strong> Paper is responsibly sourced from Japan 🇯🇵</li>
             </ul>
+
+            Important: Please refer to the size guide for an accurate representation of how the image will appear in your chosen poster size.
         """.trimIndent())
         product.addProperty("product_type", theme.value)
         product.addProperty("tags", (colours.map { it.value } + theme.value).joinToString(","))
