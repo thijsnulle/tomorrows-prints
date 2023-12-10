@@ -15,7 +15,7 @@ class VideoPreviewUploadStep(val batch: String): PostProcessingStep() {
 
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
         val videoPreviewUrls = aggregate.videoPreviews.map {
-            val fileName = "videos/$batch/${it.fileName}"
+            val fileName = "videos/$batch/${it.parent.fileName}/${it.fileName}"
             bucket.create(fileName, Files.readAllBytes(it), "video/mp4")
 
             "https://storage.googleapis.com/$bucketId/$fileName"
