@@ -50,7 +50,7 @@ data class Print(
     constructor(fileName: String, prompt: String) : this(Files.prints.resolve(fileName), prompt)
 
     companion object {
-        private val hashtags = listOf(
+        val hashtags = listOf(
             "aesthetic",
             "art",
             "artinspiration",
@@ -79,7 +79,7 @@ data class Print(
             "walldecor",
         )
 
-        private val callToActions = listOf(
+        val callToActions = listOf(
             "See more: [link]",
             "Shop here: [link]",
             "Find yours: [link]",
@@ -107,7 +107,7 @@ data class Print(
             "Click the link to explore our poster gallery: [link]",
         )
 
-        private val taggedTopics = listOf(
+        val taggedTopics = listOf(
             "architecture poster",
             "art deco interior",
             "bedroom",
@@ -210,7 +210,9 @@ data class Print(
               <li><strong>Source:</strong> Paper is responsibly sourced from Japan 🇯🇵</li>
             </ul>
 
-            Important: Please refer to the size guide for an accurate representation of how the image will appear in your chosen poster size.
+            <br>
+
+            <strong>Important:<strong> Please refer to the size guide for an accurate representation of how the image will appear in your chosen poster size.
         """.trimIndent())
         product.addProperty("product_type", theme.value)
         product.addProperty("tags", (colours.map { it.value } + theme.value).joinToString(","))
