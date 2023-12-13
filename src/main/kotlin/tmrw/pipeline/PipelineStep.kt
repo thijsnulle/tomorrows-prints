@@ -62,6 +62,8 @@ abstract class PipelineStep(private val maximumThreads: Int = 10) {
         backup(processedPrints)
         if (printsWithErrors.isNotEmpty()) backup(printsWithErrors, withErrors = true)
 
+        postProcess(processedPrints)
+
         logger.info { "Pipeline $className took ${duration.inWholeMilliseconds} ms" }
 
         return processedPrints
