@@ -9,7 +9,7 @@ import tmrw.pipeline.PipelineStep
 
 class ShopifyPublishingStep: PipelineStep() {
     override fun process(print: Print): Print = print.copy(published = publish(print))
-
+    override fun postProcess(prints: List<Print>) {}
     override fun shouldSkip(print: Print): Boolean = print.published
 
     private fun publish(print: Print): Boolean {

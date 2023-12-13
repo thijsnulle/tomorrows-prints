@@ -28,5 +28,7 @@ class ThumbnailUploadStep: PipelineStep() {
         return print.copy(thumbnailUrl = "https://storage.googleapis.com/$bucketId/$fileName")
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.thumbnailUrl.isNotEmpty()
 }

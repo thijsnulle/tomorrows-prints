@@ -15,6 +15,7 @@ const val TOO_MANY_REQUESTS_DELAY = 60000L
 class PrintfulSynchronisationStep: PipelineStep(maximumThreads = 1) {
 
     override fun process(print: Print): Print = print.copy(synchronised = sync(print))
+    override fun postProcess(prints: List<Print>) {}
     override fun shouldSkip(print: Print): Boolean = print.synchronised
 
     private fun sync(print: Print, retry: Boolean = true): Boolean = runBlocking {

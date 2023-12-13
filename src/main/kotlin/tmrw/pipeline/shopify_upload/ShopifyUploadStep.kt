@@ -32,6 +32,8 @@ class ShopifyUploadStep: PipelineStep(maximumThreads = 4) {
         )
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.productId.isNotEmpty()
 
     private fun upload(print: Print): HttpResponse {

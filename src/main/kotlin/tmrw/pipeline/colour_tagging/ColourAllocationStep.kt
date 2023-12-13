@@ -30,5 +30,9 @@ class ColourAllocationStep: PipelineStep() {
         return print.copy(colours = colours.toList())
     }
 
+    override fun postProcess(prints: List<Print>) = prints
+        .filter { it.colours.size == 1 }
+        .forEach { println(it.prompt) }
+
     override fun shouldSkip(print: Print): Boolean = print.colours.isNotEmpty()
 }

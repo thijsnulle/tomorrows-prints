@@ -8,5 +8,14 @@ class TitleAllocationStep: PipelineStep() {
 
     override fun process(print: Print): Print = print.copy(title = prompter.ask(print.prompt))
 
+    override fun postProcess(prints: List<Print>) {
+        val duplicateTitles = prints
+            .groupingBy { it.title }
+            .eachCount()
+            .filter { it.value > 1 }
+
+        duplicateTitles.forEach(::println)
+    }
+
     override fun shouldSkip(print: Print): Boolean = print.title.isNotEmpty()
 }

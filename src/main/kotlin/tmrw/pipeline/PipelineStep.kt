@@ -26,6 +26,9 @@ abstract class PipelineStep(private val maximumThreads: Int = 10) {
 
         if (prints.all { shouldSkip(it) }) {
             logger.info { "Skipping $className" }
+
+            postProcess(prints)
+
             return prints
         }
 
@@ -59,12 +62,15 @@ abstract class PipelineStep(private val maximumThreads: Int = 10) {
         backup(processedPrints)
         if (printsWithErrors.isNotEmpty()) backup(printsWithErrors, withErrors = true)
 
+        postProcess(processedPrints)
+
         logger.info { "Pipeline $className took ${duration.inWholeMilliseconds} ms" }
 
         return processedPrints
     }
 
     abstract fun process(print: Print): Print
+    abstract fun postProcess(prints: List<Print>)
     abstract fun shouldSkip(print: Print): Boolean
 
     private fun backup(prints: List<Print>, withErrors: Boolean = false) {
