@@ -14,7 +14,15 @@ class ThemeAllocationStep: PipelineStep() {
         return print.copy(theme = theme)
     }
 
-    override fun postProcess(prints: List<Print>) {}
+    override fun postProcess(prints: List<Print>) {
+        val promptsWithDifferentThemes = prints
+            .groupBy { it.prompt }
+            .map { it.key to it.value.map { print -> print.theme }.toSet() }
+            .toMap()
+            .filterValues { it.size > 1 }
+
+        promptsWithDifferentThemes.forEach { println(it.key.substring(0, 100)) }
+    }
 
     override fun shouldSkip(print: Print): Boolean = print.theme != Theme.DEFAULT
 }
