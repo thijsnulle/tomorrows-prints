@@ -27,5 +27,7 @@ class PrintFileUploadStep: PipelineStep() {
         return print.copy(printFileUrl = "https://storage.googleapis.com/$bucketId/$fileName")
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isNotEmpty()
 }

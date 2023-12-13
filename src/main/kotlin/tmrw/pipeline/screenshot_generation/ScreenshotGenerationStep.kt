@@ -27,5 +27,7 @@ class ScreenshotGenerationStep: PipelineStep(maximumThreads = 4) {
         return print.copy(screenshot = screenshot.toString())
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.screenshot.isNotEmpty()
 }

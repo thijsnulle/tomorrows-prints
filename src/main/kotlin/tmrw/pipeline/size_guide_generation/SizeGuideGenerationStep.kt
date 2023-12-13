@@ -10,5 +10,7 @@ class SizeGuideGenerationStep: PipelineStep() {
         sizeGuide = sizeGuideGenerator.generateSizeGuide(print).toString()
     )
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.sizeGuide.isNotEmpty()
 }

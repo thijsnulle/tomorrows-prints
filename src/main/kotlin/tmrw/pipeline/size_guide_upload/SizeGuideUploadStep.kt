@@ -28,5 +28,7 @@ class SizeGuideUploadStep: PipelineStep() {
         return print.copy(sizeGuideUrl = "https://storage.googleapis.com/$bucketId/$fileName")
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.sizeGuideUrl.isNotEmpty()
 }

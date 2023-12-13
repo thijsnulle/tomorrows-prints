@@ -28,5 +28,7 @@ class ScreenshotUploadStep: PipelineStep(maximumThreads = 1) {
         return print.copy(screenshotUrl = "https://storage.googleapis.com/$bucketId/$fileName")
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.screenshotUrl.isNotEmpty()
 }

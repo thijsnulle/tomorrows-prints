@@ -7,5 +7,7 @@ class PrintFileGenerationStep: PipelineStep(maximumThreads = 4) {
     private val printFileGenerator = PrintFileGenerator()
 
     override fun process(print: Print): Print = printFileGenerator.generate(print)
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.printFileUrl.isNotEmpty()
 }

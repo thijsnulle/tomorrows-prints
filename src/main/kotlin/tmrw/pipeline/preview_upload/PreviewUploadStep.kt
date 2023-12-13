@@ -30,6 +30,8 @@ class PreviewUploadStep: PipelineStep() {
         return print.copy(previewUrls = previewUrls)
     }
 
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.previewUrls.isNotEmpty()
 
 }

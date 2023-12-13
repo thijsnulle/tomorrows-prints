@@ -13,5 +13,8 @@ class ThemeAllocationStep: PipelineStep() {
 
         return print.copy(theme = theme)
     }
+
+    override fun postProcess(prints: List<Print>) {}
+
     override fun shouldSkip(print: Print): Boolean = print.theme != Theme.DEFAULT
 }
