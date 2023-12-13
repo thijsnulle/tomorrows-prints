@@ -10,9 +10,9 @@ import tmrw.model.Print
 import tmrw.pipeline.colour_tagging.ColourAllocationStep
 import java.nio.file.Path
 
-const val VIDEO_PREVIEW_COLOUR_ROTATION_FRAME_COUNT = 32
+const val VIDEO_PREVIEW_COLOUR_ROTATION_FRAME_COUNT = 30
 
-class ColourRotationVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 8, prefix = "colour-rotation") {
+class ColourRotationVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 10, prefix = "colour-rotation") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.map { print ->
         val image = loader.fromPath(print.path)
         val colours = ColourAllocationStep.getColours(image, minimumPercentage = 5)
