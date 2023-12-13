@@ -16,8 +16,9 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.math.max
 import kotlin.math.min
 
-const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
-const val INTERVAL_BETWEEN_POST: Long = 30
+private const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
+private const val NUMBER_OF_TAGGED_TOPICS = 50
+private const val INTERVAL_BETWEEN_POST: Long = 30
 
 data class Pin(
     val title: String,
@@ -100,7 +101,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
     }
 }
 
-private fun getTaggedTopics() = Print.taggedTopics.shuffled().take(10).joinToString(",")
+private fun getTaggedTopics() = Print.taggedTopics.shuffled().take(NUMBER_OF_TAGGED_TOPICS).joinToString(",")
 
 private fun getUUID(str: String): String? {
     val printUuidRegex = Regex("([a-f\\d]{8}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{12})")
@@ -113,8 +114,8 @@ private fun title(fileName: String) = when {
     fileName.contains("carousel") -> "Carousel Wonders:"
     fileName.contains("colour-rotation") -> "All Shades:"
     fileName.contains("cycle") -> "Image Symphony:"
-    fileName.contains("hue-rotate") -> "The Full Spectrum:"
-    fileName.contains("glitch") -> "Pulsating:"
+    fileName.contains("hue-rotate") -> "Full Spectrum:"
+    fileName.contains("glitch") -> "Pulsating Views:"
     fileName.contains("zoom") -> "Zoom Magic:"
     else -> "Simply Stunning:"
 }
