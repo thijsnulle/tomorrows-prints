@@ -48,7 +48,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
             title = "${print.title} • Tomorrow's Prints",
             mediaUrl = print.url,
             board = "All Posters",
-            description = print.description,
+            description = decorateDescription(print),
             link = print.listingUrl,
             keywords = getTaggedTopics(),
         )}.shuffled()
@@ -69,10 +69,10 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
             val print = prints.firstOrNull { it.path.nameWithoutExtension == printUuid } ?: return@mapIndexed null
 
             Pin(
-                title = "${title(videoPreviewUrl)} ${print.title} • Tomorrow's Prints",
+                title = "$cta: ${print.title} • Tomorrow's Prints",
                 mediaUrl = videoPreviewUrl,
                 board = "Video Posters",
-                description = "", // TODO: create description for video previews
+                description = decorateDescription(print),
                 link = print.listingUrl,
                 keywords = getTaggedTopics(),
             )
@@ -110,15 +110,33 @@ private fun getUUID(str: String): String? {
     return matches.getOrNull(matches.size - 2)?.groupValues?.get(1)
 }
 
-private fun title(fileName: String) = when {
-    fileName.contains("carousel") -> "Carousel Wonders:"
-    fileName.contains("colour-rotation") -> "All Shades:"
-    fileName.contains("cycle") -> "Image Symphony:"
-    fileName.contains("hue-rotate") -> "Full Spectrum:"
-    fileName.contains("glitch") -> "Pulsating Views:"
-    fileName.contains("zoom") -> "Zoom Magic:"
-    else -> "Simply Stunning:"
-}
+private val cta get() = listOf(
+    "Buy Now",
+    "Shop Today",
+    "Order Today",
+    "Don't Miss Out",
+    "Get Yours Today",
+    "Shop Art Prints",
+    "Secure Your Print",
+    "Revamp Your Space",
+    "Elevate Your Space",
+    "Immerse Your Space",
+    "Make Your Walls Pop",
+    "Decorate Your Walls",
+    "Transform Your Walls",
+    "Buy Your Masterpiece",
+    "Shop Now, Frame Later",
+    "Order Your Poster Now",
+    "Elevate Your Artistry",
+    "Grab Your Print Today",
+    "Find Your Masterpiece",
+    "Explore the Collection",
+    "Personalise Your Space",
+    "Redefine Your Interior",
+    "Elevate Your Aesthetic",
+    "Discover Our Collection",
+    "Unleash Your Creativity",
+).shuffled().first()
 
 private fun decorateDescription(print: Print): String {
     val hashtags = Print.hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" ") { "#$it" }
@@ -139,8 +157,8 @@ private fun <T> interlace(vararg lists: List<T>): List<T> {
 private fun <T> interlace2(l1: List<T>, l2: List<T>): List<T> {
     val minSize = min(l1.size, l2.size).coerceAtLeast(2)
 
-    val chunksL1 = l1.chunked(l1.size / minSize)
-    val chunksL2 = l2.chunked(l2.size / minSize)
+    val chunksL1 = l1.chunked(max(l1.size / minSize, 1))
+    val chunksL2 = l2.chunked(max(l2.size / minSize, 1))
 
     return (0 until max(chunksL1.size, chunksL2.size)).flatMap { i ->
         chunksL1.getOrNull(i).orEmpty() + chunksL2.getOrNull(i).orEmpty()
