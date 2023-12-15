@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .image-container img {
+            width: 200px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        const fetch = (url) => {
+            let json = [];
+            $.ajax({
+                'async': false,
+                'global': false,
+                'url': url,
+                'dataType': "json",
+                'success': function (data) {
+                    json = data;
+                }
+            });
+            return json;
+        };
+
+        const jsonFile = "json/output.json";
+        const jsonContent = fetch(jsonFile);
+
+        const printsPerTheme = jsonContent.reduce((acc, curr) => {
+            const theme = curr.theme;
+            if (!acc[theme]) {
+                acc[theme] = [];
+            }
+            acc[theme].push(curr);
+            return acc;
+        }, {});
+
+        Object.keys(printsPerTheme).forEach((key) => {
+            const theme = key;
+            const prints = printsPerTheme[key];
+
+            if (theme != "Minimalism") return;
+
+            const imageContainer = $(`<div class="image-container" id="${theme}"><h1>${theme} (${prints.length})</h1></div>`);
+            // shuffle prints
+            prints.sort(() => Math.random() - 0.5);
+
+            prints.forEach(print => {
+                const url = print.url;
+
+                const image = $(`<img src="${url}" alt="${print.prompt}" />`);
+                image.click(() => console.log(print.url));
+                imageContainer.append(image);
+            });
+
+            $("body").append(imageContainer);
+        });
+    </script>
+</body>
+</html>
