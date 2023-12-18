@@ -50,7 +50,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
             board = "All Posters",
             description = decorateDescription(print),
             link = print.listingUrl,
-            keywords = getTaggedTopics(),
+            keywords = keywords,
         )}.shuffled()
 
         val previewPins = prints.flatMap { print ->
@@ -60,7 +60,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
                 board = print.theme.value,
                 description = decorateDescription(print),
                 link = print.listingUrl,
-                keywords = getTaggedTopics(),
+                keywords = keywords,
             )}
         }.shuffled()
 
@@ -74,7 +74,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
                 board = "Video Posters",
                 description = decorateDescription(print),
                 link = print.listingUrl,
-                keywords = getTaggedTopics(),
+                keywords = keywords,
             )
         }.filterNotNull().shuffled()
 
@@ -101,7 +101,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
     }
 }
 
-private fun getTaggedTopics() = Print.taggedTopics.shuffled().take(NUMBER_OF_TAGGED_TOPICS).joinToString(",")
+private val keywords = Print.taggedTopics.shuffled().take(NUMBER_OF_TAGGED_TOPICS).joinToString(",")
 
 private fun getUUID(str: String): String? {
     val printUuidRegex = Regex("([a-f\\d]{8}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{12})")
