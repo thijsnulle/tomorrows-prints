@@ -7,7 +7,7 @@ import java.nio.file.Path
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
 
-const val VIDEO_PREVIEW_CYCLE_SIZE = 25
+const val VIDEO_PREVIEW_CYCLE_SIZE = 50
 
 class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = "cycle") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> {
