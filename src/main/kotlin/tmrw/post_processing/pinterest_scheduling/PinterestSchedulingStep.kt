@@ -86,7 +86,9 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
             .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
             .forEachIndexed { batchIndex, pins ->
                 val scheduledPinContents = pins.mapIndexed { pinIndex, pin ->
-                    val publishDate = initialPublishDate.plusMinutes(INTERVAL_BETWEEN_POST * pinIndex)
+                    val publishDate = initialPublishDate.plusMinutes(
+                        INTERVAL_BETWEEN_POST * (pinIndex + batchIndex * MAXIMUM_SIZE_BULK_UPLOAD_PINS)
+                    )
                     pin.toScheduledPin(publishDate)
                 }.joinToString("\n")
 
