@@ -28,7 +28,7 @@
             return json;
         };
 
-        const jsonFile = "json/output.json";
+        const jsonFile = "json/batch-2-before.json";
         const jsonContent = fetch(jsonFile);
 
         const printsPerTheme = jsonContent.reduce((acc, curr) => {
@@ -43,8 +43,6 @@
         Object.keys(printsPerTheme).forEach((key) => {
             const theme = key;
             const prints = printsPerTheme[key];
-
-            if (theme != "Minimalism") return;
 
             const imageContainer = $(`<div class="image-container" id="${theme}"><h1>${theme} (${prints.length})</h1></div>`);
             // shuffle prints
