@@ -1,4 +1,4 @@
-const IMAGES_TO_SELECT_JSON_FILE = 'json/011123-041223.json';
+const IMAGES_TO_SELECT_JSON_FILE = 'json/output-241223.json';
 
 const addImageToSelectedContainer = (image, key) => {
     const containerId = (key === "Enter") ? "yes-selection-container" : "no-selection-container";

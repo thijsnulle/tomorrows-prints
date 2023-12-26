@@ -7,7 +7,6 @@ from dataclasses import dataclass, asdict
 @dataclass
 class Message:
     attachments: list
-    author: str
     content: str
     username: str
 
@@ -27,9 +26,8 @@ def process_messages(input_file, output_file_name):
         for raw_message in raw_messages:
             message = Message(
                 attachments=raw_message['attachments'],
-                author=raw_message['author'],
                 content=raw_message['content'],
-                username=raw_message['username']
+                username=raw_message['author']['username']
             )
 
             messages.append(message)
@@ -42,7 +40,7 @@ def process_messages(input_file, output_file_name):
         prompt=re.search(r'\*\*([^*]+)\*', m.content).group(1) if re.search(r'\*\*([^*]+)\*', m.content) else '',
     )) for m in messages_with_image]
 
-    with open(f'frontend/json/{output_file_name}', 'w') as file:
+    with open(f'json/{output_file_name}', 'w') as file:
         json.dump(images, file, indent=4)
 
     print(f"Processing {len(list(messages))} messages.")
