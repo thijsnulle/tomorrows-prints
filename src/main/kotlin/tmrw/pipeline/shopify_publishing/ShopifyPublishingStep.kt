@@ -3,11 +3,12 @@ package tmrw.pipeline.shopify_publishing
 import fuel.Fuel
 import fuel.put
 import io.github.cdimascio.dotenv.dotenv
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
 
-class ShopifyPublishingStep: PipelineStep() {
+class ShopifyPublishingStep: PipelineStep(maximumThreads = 1) {
     override fun process(print: Print): Print = print.copy(published = publish(print))
     override fun postProcess(prints: List<Print>) {}
     override fun shouldSkip(print: Print): Boolean = print.published
@@ -22,6 +23,10 @@ class ShopifyPublishingStep: PipelineStep() {
         )}
 
         if (response.statusCode != 200) throw IllegalArgumentException(response.body)
+
+        runBlocking {
+            delay(500)
+        }
 
         return true
     }
