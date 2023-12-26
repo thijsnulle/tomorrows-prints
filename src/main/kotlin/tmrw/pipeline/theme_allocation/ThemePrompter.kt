@@ -11,6 +11,7 @@ enum class Theme(val value: String) {
     FANTASY("Fantasy"),
     IMPRESSIONISM("Impressionism"),
     MINIMALISM("Minimalism"),
+    NATURE("Nature"),
     PSYCHEDELIC("Psychedelic"),
     RETRO("Retro"),
     SPACE("Space"),
