@@ -2,6 +2,7 @@ package tmrw.pipeline.theme_allocation
 
 import tmrw.model.Print
 import tmrw.pipeline.PipelineStep
+import kotlin.math.min
 
 class ThemeAllocationStep: PipelineStep() {
     private val prompter = ThemePrompter()
@@ -21,7 +22,7 @@ class ThemeAllocationStep: PipelineStep() {
             .toMap()
             .filterValues { it.size > 1 }
 
-        promptsWithDifferentThemes.forEach { println(it.key.substring(0, 100)) }
+        promptsWithDifferentThemes.forEach { println(it.key.substring(0, min(100, it.key.length))) }
     }
 
     override fun shouldSkip(print: Print): Boolean = print.theme != Theme.DEFAULT
