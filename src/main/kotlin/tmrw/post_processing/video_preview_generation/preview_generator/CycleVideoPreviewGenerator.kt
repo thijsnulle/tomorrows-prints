@@ -6,20 +6,21 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
+import kotlin.math.max
 
-const val VIDEO_PREVIEW_CYCLE_SIZE = 50
+const val VIDEO_PREVIEW_CYCLE_SIZE = 25
 
 class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = "cycle") {
     override fun generate(prints: List<Print>, inputFolder: Path): List<Path> {
         val previewGenerator = FramedPreviewGenerator(previewFolder = inputFolder, createSquarePreviews = true)
 
         val printsToSelectFrom = (0 .. (VIDEO_PREVIEW_CYCLE_SIZE / prints.size))
-            .flatMap { prints }.take(VIDEO_PREVIEW_CYCLE_SIZE)
+            .flatMap { prints }.take(max( VIDEO_PREVIEW_CYCLE_SIZE, prints.size))
 
         return prints.mapIndexed { index, print ->
             val previews = printsToSelectFrom
                 .shuffled()
-                .take(VIDEO_PREVIEW_CAROUSEL_SIZE)
+                .take(VIDEO_PREVIEW_CYCLE_SIZE)
                 .let { it + print }
                 .map(previewGenerator::generate)
                 .map { it.random() }
