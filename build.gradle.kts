@@ -36,3 +36,12 @@ kotlin {
 application {
     mainClass.set("MainKt")
 }
+
+tasks.processResources {
+    exclude("backups/**")
+    exclude("batches/**")
+    exclude("errors/**")
+    exclude("logs/**")
+    exclude("images/**")
+    exclude("social/**")
+}

@@ -8,6 +8,8 @@ import tmrw.utils.Files
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.Month
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
@@ -16,9 +18,9 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.math.max
 import kotlin.math.min
 
-private const val MAXIMUM_SIZE_BULK_UPLOAD_PINS = 200
+private const val NUMBER_OF_UPLOADS_PER_HOUR = 2
 private const val NUMBER_OF_TAGGED_TOPICS = 50
-private const val INTERVAL_BETWEEN_POST: Long = 30
+private val INITIAL_DATE = LocalDate.of(2024, Month.JANUARY, 1)
 
 data class Pin(
     val title: String,
@@ -36,6 +38,8 @@ data class Pin(
 private const val CSV_HEADER = "Title,Media URL,Pinterest board,Thumbnail,Description,Link,Publish date,Keywords"
 
 class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
+
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     override fun process(prints: List<Print>, aggregate: PostProcessingAggregate): PostProcessingAggregate {
         val outputFolder = Files.social.resolve(batch)
@@ -79,21 +83,21 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
         }.filterNotNull().shuffled()
 
         val allPins = interlace(showcasePins, previewPins, videoPreviewPins)
-        val initialPublishDate = LocalDateTime.now().plusHours(1)
-            .withMinute(0).withSecond(0).withNano(0)
 
         allPins
-            .chunked(MAXIMUM_SIZE_BULK_UPLOAD_PINS)
-            .forEachIndexed { batchIndex, pins ->
+            .chunked(NUMBER_OF_UPLOADS_PER_HOUR * 24)
+            .forEachIndexed { day, pins ->
+                val date = INITIAL_DATE.plusDays(day.toLong()).atStartOfDay()
+
                 val scheduledPinContents = pins.mapIndexed { pinIndex, pin ->
-                    val publishDate = initialPublishDate.plusMinutes(
-                        INTERVAL_BETWEEN_POST * (pinIndex + batchIndex * MAXIMUM_SIZE_BULK_UPLOAD_PINS)
-                    )
+                    val interval = 60L / NUMBER_OF_UPLOADS_PER_HOUR
+                    val publishDate = date.plusMinutes(interval * pinIndex)
+
                     pin.toScheduledPin(publishDate)
                 }.joinToString("\n")
 
                 outputFolder
-                    .resolve("$batch-$batchIndex.csv")
+                    .resolve("${formatter.format(date)}.csv")
                     .toFile()
                     .bufferedWriter()
                     .use { it.write("$CSV_HEADER\n$scheduledPinContents") }
