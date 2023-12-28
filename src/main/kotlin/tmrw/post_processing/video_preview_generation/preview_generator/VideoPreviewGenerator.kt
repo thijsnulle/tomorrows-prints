@@ -14,7 +14,7 @@ import kotlin.random.Random
 
 abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
 
-    protected val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
     protected val loader: ImmutableImageLoader = ImmutableImage.loader()
     protected val random = Random.Default
     protected val writer: JpegWriter = JpegWriter.compression(85).withProgressive(true)
@@ -35,7 +35,10 @@ abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
             return videoPreviews
         }
 
-        return videoPreviews + generate(printsToProcess, temporaryDirectory)
+        val newVideoPreviews = generate(printsToProcess, temporaryDirectory)
+            .also { temporaryDirectory.deleteRecursively() }
+
+        return videoPreviews + newVideoPreviews
     }
 
     protected fun save(inputFolder: Path, outputFolder: Path, frameRate: Int): Path {
