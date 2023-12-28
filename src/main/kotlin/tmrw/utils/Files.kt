@@ -29,7 +29,7 @@ class Files {
 
         val backups: Path = resources.resolve("backups")
         val errors: Path = resources.resolve("errors")
-        val logs: Path = resources.resolve("logs")
+        private val logs: Path = resources.resolve("logs")
 
         val images: Path = resources.resolve("images")
         val frames: Path = images.resolve("frames")

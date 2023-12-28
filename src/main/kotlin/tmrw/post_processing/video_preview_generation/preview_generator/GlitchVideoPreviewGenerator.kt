@@ -2,8 +2,6 @@ package tmrw.post_processing.video_preview_generation.preview_generator
 
 import tmrw.model.Print
 import java.nio.file.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.nameWithoutExtension
 
 const val GLITCH_SIZE = 18
 
@@ -12,24 +10,19 @@ class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix 
         val samePrints = List(GLITCH_SIZE) { print }
         val randomPrints = prints.shuffled().take(GLITCH_SIZE)
 
-        val sameGlitchPreviews = generateGlitchPreview(print, samePrints, inputFolder, outputFolder(print))
+        val sameGlitchPreviews = generateGlitchPreview(print, samePrints, inputFolder)
         if (prints.size < GLITCH_SIZE) {
             return@flatMapIndexed sameGlitchPreviews
         }
 
-        val randomGlitchPreviews = generateGlitchPreview(print, randomPrints, inputFolder, outputFolder(print))
+        val randomGlitchPreviews = generateGlitchPreview(print, randomPrints, inputFolder)
 
         progress(prints, index)
 
         sameGlitchPreviews + randomGlitchPreviews
     }
 
-    private fun generateGlitchPreview(
-        print: Print,
-        prints: List<Print>,
-        inputFolder: Path,
-        outputFolder: Path,
-    ): Path {
+    private fun generateGlitchPreview(print: Print, prints: List<Print>, inputFolder: Path): Path {
         val image = loader.fromPath(print.path)
             .also { it.output(writer, inputFolder.resolve("0.jpeg")) }
             .also { it.output(writer, inputFolder.resolve("${GLITCH_SIZE * 2 + 1}.jpeg")) }
