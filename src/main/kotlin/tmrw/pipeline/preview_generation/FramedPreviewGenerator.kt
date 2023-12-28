@@ -3,8 +3,6 @@ package tmrw.pipeline.preview_generation
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.canvas.painters.LinearGradient
 import com.sksamuel.scrimage.nio.JpegWriter
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.*
 import tmrw.model.Print
 import tmrw.utils.Files
 import tmrw.utils.Files.Companion.batchFolderWithoutExtension

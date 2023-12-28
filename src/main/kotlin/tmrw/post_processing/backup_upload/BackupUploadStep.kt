@@ -27,12 +27,4 @@ class BackupUploadStep: PostProcessingStep() {
 
         return aggregate
     }
-
-    private fun backup(prints: List<Print>, withErrors: Boolean = false) {
-        val fileName = "Backup ${dateFormatter.format(ZonedDateTime.now())}.json"
-
-        Files.storeAsJson(prints, if (withErrors) Files.errors.resolve(fileName) else Files.backups.resolve(fileName))
-
-
-    }
 }
