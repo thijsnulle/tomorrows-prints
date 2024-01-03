@@ -41,8 +41,16 @@ class Files {
 
         val social: Path = resources.resolve("social")
 
+        inline fun <reified T> loadFromJsonAsObject(json: Path): T = Gson()
+            .fromJson(json.toAbsolutePath().toFile().bufferedReader().use { it.readText() }, object : TypeToken<T>() {}.type)
+
         inline fun <reified T> loadFromJson(json: Path): List<T> = Gson()
             .fromJson(json.toAbsolutePath().toFile().bufferedReader().use { it.readText() }, object : TypeToken<List<T>>() {}.type)
+
+        fun <T> storeAsJson(obj: T, output: Path) where T : JsonMappable {
+            val jsonContent = gson.toJson(obj.toJson())
+            output.toFile().bufferedWriter().use { it.write(jsonContent) }
+        }
 
         fun <T> storeAsJson(objects: List<T>, output: Path) where T : JsonMappable {
             val jsonContent = gson.toJson(objects.map { it.toJson() })

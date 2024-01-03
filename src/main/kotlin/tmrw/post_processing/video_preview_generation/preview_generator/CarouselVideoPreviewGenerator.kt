@@ -8,10 +8,10 @@ import tmrw.model.Print
 import java.awt.Color
 import java.nio.file.Path
 
-const val VIDEO_PREVIEW_CAROUSEL_SIZE = 5
+const val VIDEO_PREVIEW_CAROUSEL_SIZE = 10
 
 class CarouselVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 60, prefix = "carousel") {
-    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.mapIndexed { index, print ->
+    override fun generate(prints: List<Print>, inputFolder: Path, outputFolder: Path): List<Path> = prints.mapIndexed { index, print ->
         val remainingPrints = prints.shuffled().take(VIDEO_PREVIEW_CAROUSEL_SIZE - 1)
         val images = (listOf(print) + remainingPrints).map { loader.fromPath(it.path) }
         val frame = images.first().map { Color.WHITE }
@@ -56,6 +56,6 @@ class CarouselVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 60, prefi
         }
 
         progress(prints, index)
-        save(inputFolder, outputFolder(print), frameRate)
+        save(inputFolder, output(outputFolder, print), frameRate)
     }
 }
