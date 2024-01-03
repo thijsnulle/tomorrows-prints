@@ -1,7 +1,9 @@
 package tmrw.post_processing.pinterest_scheduling
 
+import io.github.cdimascio.dotenv.dotenv
 import tmrw.model.MAX_NUMBER_OF_HASHTAGS
 import tmrw.model.Print
+import tmrw.post_processing.JsonPostProcessingAggregate
 import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.PostProcessingStep
 import tmrw.utils.Files
@@ -10,6 +12,7 @@ import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.nameWithoutExtension
@@ -47,23 +50,24 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
         outputFolder.createDirectories()
 
         val showcasePins = prints.map { print -> Pin(
-            title = "${print.title} • Tomorrow's Prints",
+            title = "Now Available! ${print.title} • Tomorrow's Prints",
             mediaUrl = print.url,
             board = "All Posters",
             description = decorateDescription(print),
-            link = print.listingUrl,
-            keywords = keywords,
+            link = print.listingUrl.replace(dotenv()["SHOPIFY_STORE"], dotenv()["STORE_DOMAIN"]),
+            keywords = keywords(),
         )}.shuffled()
 
-        val previewPins = prints.flatMap { print ->
-            print.previewUrls.mapIndexed { index, previewUrl -> Pin(
-                title = "${print.title} • Tomorrow's Prints [${index + 1}/${print.previewUrls.size}]",
-                mediaUrl = previewUrl,
+        val previewPins = prints.map { print ->
+            print.previewUrls.random().let { Pin(
+                title = "${print.title} • Tomorrow's Prints",
+                mediaUrl = it,
                 board = print.theme.value,
                 description = decorateDescription(print),
-                link = print.listingUrl,
-                keywords = keywords,
-            )}
+                link = print.listingUrl
+                    .replace(dotenv()["SHOPIFY_STORE"], dotenv()["STORE_DOMAIN"]),
+                keywords = keywords(),
+            ) }
         }.shuffled()
 
         val videoPreviewPins = aggregate.videoPreviewUrls.mapIndexed { index, videoPreviewUrl ->
@@ -75,8 +79,8 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
                 mediaUrl = videoPreviewUrl,
                 board = "Video Posters",
                 description = decorateDescription(print),
-                link = print.listingUrl,
-                keywords = keywords,
+                link = print.listingUrl.replace(dotenv()["SHOPIFY_STORE"], dotenv()["STORE_DOMAIN"]),
+                keywords = keywords(),
             )
         }.filterNotNull().shuffled()
 
@@ -105,7 +109,7 @@ class PinterestSchedulingStep(val batch: String): PostProcessingStep() {
     }
 }
 
-private val keywords = Print.taggedTopics.shuffled().take(NUMBER_OF_TAGGED_TOPICS).joinToString(",")
+private fun keywords() = Print.taggedTopics.shuffled().take(NUMBER_OF_TAGGED_TOPICS).joinToString(",")
 
 private fun getUUID(str: String): String? {
     val printUuidRegex = Regex("([a-f\\d]{8}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{4}-[a-f\\d]{12})")
@@ -146,7 +150,7 @@ private fun decorateDescription(print: Print): String {
     val hashtags = Print.hashtags.shuffled().take(MAX_NUMBER_OF_HASHTAGS).joinToString(" ") { "#$it" }
     val callToAction = Print.callToActions.shuffled().first()
 
-    return "${print.description} ${callToAction.replace("[link]", print.listingUrl)} $hashtags"
+    return "${print.description} ${callToAction.replace("[link]", print.listingUrl.replace(dotenv()["SHOPIFY_STORE"], dotenv()["STORE_DOMAIN"]))} $hashtags"
 }
 
 private fun <T> interlace(vararg lists: List<T>): List<T> {
