@@ -11,7 +11,7 @@ import kotlin.math.max
 const val VIDEO_PREVIEW_CYCLE_SIZE = 25
 
 class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = "cycle") {
-    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> {
+    override fun generate(prints: List<Print>, inputFolder: Path, outputFolder: Path): List<Path> {
         val previewGenerator = FramedPreviewGenerator(previewFolder = inputFolder, createSquarePreviews = true)
 
         val printsToSelectFrom = (0 .. (VIDEO_PREVIEW_CYCLE_SIZE / prints.size))
@@ -33,7 +33,7 @@ class CycleVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 5, prefix = 
 
             progress(prints, index)
 
-            save(inputFolder, outputFolder(print), frameRate = frameRate)
+            save(inputFolder, output(outputFolder, print), frameRate = frameRate)
         }
     }
 }

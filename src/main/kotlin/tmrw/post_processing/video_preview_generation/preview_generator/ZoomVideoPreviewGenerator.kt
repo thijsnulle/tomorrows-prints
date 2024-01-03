@@ -5,6 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.UUID
 import kotlin.io.path.createDirectories
+import kotlin.io.path.nameWithoutExtension
 
 private const val FRAME_COUNT = 90
 private const val MAX_ZOOM = 100.0
@@ -12,7 +13,7 @@ private const val REVERSE_SPEEDUP = 3
 private const val FRAME_COUNT_WITH_REVERSE = FRAME_COUNT * (REVERSE_SPEEDUP + 1) / REVERSE_SPEEDUP
 
 class ZoomVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 30, prefix = "zoom") {
-    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.map { print ->
+    override fun generate(prints: List<Print>, inputFolder: Path, outputFolder: Path): List<Path> = prints.mapIndexed { index, print ->
         val image = loader.fromFile(print.printFile)
         val width = image.width
         val height = image.height
@@ -42,6 +43,8 @@ class ZoomVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 30, prefix = 
             img
         }
 
-        save(personalInputFolder, outputFolder(print), frameRate)
+        progress(prints, index)
+
+        save(personalInputFolder, output(outputFolder, print), frameRate)
     }
 }

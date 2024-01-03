@@ -19,6 +19,7 @@ import tmrw.pipeline.theme_allocation.ThemeAllocationStep
 import tmrw.pipeline.thumbnail_generation.ThumbnailGenerationStep
 import tmrw.pipeline.thumbnail_upload.ThumbnailUploadStep
 import tmrw.pipeline.title_allocation.TitleAllocationStep
+import tmrw.post_processing.JsonPostProcessingAggregate
 import tmrw.post_processing.PostProcessingAggregate
 import tmrw.post_processing.backup_upload.BackupUploadStep
 import tmrw.post_processing.pinterest_scheduling.PinterestSchedulingStep
@@ -78,10 +79,13 @@ fun main() {
         ShopifyPublishingStep(),
     ).fold(prints) { aggregate, step -> step.start(aggregate) }
 
-    listOf(
+
+    val aggregate = listOf(
         BackupUploadStep(),
         VideoPreviewGenerationStep(),
         VideoPreviewUploadStep(batch = batch),
         PinterestSchedulingStep(batch = batch),
     ).fold(PostProcessingAggregate()) { aggregate, step -> step.start(processedPrints, aggregate) }
+
+    Files.storeAsJson(aggregate, Files.backups.resolve("aggregate.json"))
 }

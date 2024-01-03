@@ -23,7 +23,8 @@ abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
     fun generateVideoPreviews(prints: List<Print>): List<Path> {
         val temporaryDirectory = Files.createTempDirectory("")
 
-        val videoPreviews = tmrw.utils.Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
+        val videoPreviewsFolder = tmrw.utils.Files.previews.batchFolder(prints.first()).parent.resolve("videos").toAbsolutePath()
+        val videoPreviews = videoPreviewsFolder
             .walk()
             .filter { it.extension == "mp4" }
             .filter { it.toString().contains(prefix) }
@@ -35,7 +36,7 @@ abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
             return videoPreviews
         }
 
-        val newVideoPreviews = generate(printsToProcess, temporaryDirectory)
+        val newVideoPreviews = generate(printsToProcess, temporaryDirectory, videoPreviewsFolder)
             .also { temporaryDirectory.deleteRecursively() }
 
         return videoPreviews + newVideoPreviews
@@ -64,8 +65,8 @@ abstract class VideoPreviewGenerator(val frameRate: Int, val prefix: String) {
         logger.info { "${this::class.simpleName} [${index+1}/${prints.size}]" }
     }
 
-    protected fun outputFolder(print: Print): Path = tmrw.utils.Files.previews.batchFolder(print).parent
-        .resolve("videos").resolve(print.path.nameWithoutExtension).createDirectories().toAbsolutePath()
+    protected fun output(outputFolder: Path, print: Print): Path = outputFolder.resolve(print.path.nameWithoutExtension)
+        .createDirectories().toAbsolutePath()
 
-    abstract fun generate(prints: List<Print>, inputFolder: Path): List<Path>
+    abstract fun generate(prints: List<Print>, inputFolder: Path, outputFolder: Path): List<Path>
 }

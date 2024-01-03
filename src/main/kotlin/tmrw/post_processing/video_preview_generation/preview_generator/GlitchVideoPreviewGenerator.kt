@@ -6,23 +6,23 @@ import java.nio.file.Path
 const val GLITCH_SIZE = 18
 
 class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix = "glitch") {
-    override fun generate(prints: List<Print>, inputFolder: Path): List<Path> = prints.flatMapIndexed { index, print ->
+    override fun generate(prints: List<Print>, inputFolder: Path, outputFolder: Path): List<Path> = prints.flatMapIndexed { index, print ->
         val samePrints = List(GLITCH_SIZE) { print }
         val randomPrints = prints.shuffled().take(GLITCH_SIZE)
 
-        val sameGlitchPreviews = generateGlitchPreview(print, samePrints, inputFolder)
+        val sameGlitchPreviews = generateGlitchPreview(print, samePrints, inputFolder, outputFolder)
         if (prints.size < GLITCH_SIZE) {
             return@flatMapIndexed sameGlitchPreviews
         }
 
-        val randomGlitchPreviews = generateGlitchPreview(print, randomPrints, inputFolder)
+        val randomGlitchPreviews = generateGlitchPreview(print, randomPrints, inputFolder, outputFolder)
 
         progress(prints, index)
 
         sameGlitchPreviews + randomGlitchPreviews
     }
 
-    private fun generateGlitchPreview(print: Print, prints: List<Print>, inputFolder: Path): Path {
+    private fun generateGlitchPreview(print: Print, prints: List<Print>, inputFolder: Path, outputFolder: Path): Path {
         val image = loader.fromPath(print.path)
             .also { it.output(writer, inputFolder.resolve("0.jpeg")) }
             .also { it.output(writer, inputFolder.resolve("${GLITCH_SIZE * 2 + 1}.jpeg")) }
@@ -43,6 +43,6 @@ class GlitchVideoPreviewGenerator: VideoPreviewGenerator(frameRate = 12, prefix 
                 .also { it.output(writer, inputFolder.resolve("${GLITCH_SIZE * 2 - frame}.jpeg")) }
         }
 
-        return save(inputFolder, outputFolder(print), frameRate)
+        return save(inputFolder, output(outputFolder, print), frameRate)
     }
 }
